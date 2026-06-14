@@ -569,46 +569,43 @@
         }); 
     }
 
-    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (С ФОТО ИЗ ПАПКИ images) ----
-    const grid = document.getElementById('carsGrid');
+  // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (С ФОТО, БЕЗ НАДПИСИ ПРИ ОШИБКЕ) ----
+const grid = document.getElementById('carsGrid');
+
+cars.forEach(car => {
+    const card = document.createElement('div');
+    card.className = 'car-card';
     
-    cars.forEach(car => {
-        const card = document.createElement('div');
-        card.className = 'car-card';
-        
-        // Формируем имя файла для фото: транслитерируем номер, убираем пробелы, добавляем .jpg
-        let imageFileName = '';
-        let imagePath = '';
-        let noImageHtml = '';
-        
-        if (car.plate !== "Б/Н") {
-            // Транслитерация номера для имени файла
-            imageFileName = transliterate(car.plate);
-            // Убираем возможные пробелы и делаем все буквы заглавными
-            imageFileName = imageFileName.toUpperCase().replace(/\s/g, '');
-            imagePath = `images/${imageFileName}.jpg`;
-            noImageHtml = `<div class="no-image">📷 Фото не загружено<br>${car.plate}</div>`;
-        } else {
-            noImageHtml = `<div class="no-image">📷 Фото отсутствует<br>Без номера</div>`;
-        }
-        
-        card.innerHTML = `
-            <div class="car-image">
-                ${car.plate !== "Б/Н" ? `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = \`${noImageHtml}\`">` : noImageHtml}
-            </div>
-            <div class="car-info">
-                <div class="car-name">${car.name}</div>
-                <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
-                <div class="car-spec">${car.engine || ''} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
-                <div class="car-plate">🚛 Госномер: ${car.plate}</div>
-            </div>
-            <div class="card-buttons">
-                <button class="take-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">📝 Взять в пользование</button>
-                <button class="return-card-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">↩ Вернуть транспорт</button>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
+    // Формируем имя файла для фото
+    let imageHtml = '';
+    
+    if (car.plate !== "Б/Н") {
+        const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
+        const imagePath = `images/${imageFileName}.jpg`;
+        // При ошибке загрузки — показываем пустой блок (без текста)
+        imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.background='#1a1a2a'">`;
+    } else {
+        // Для машин без номера — просто тёмный фон, без надписи
+        imageHtml = `<div style="width:100%; height:100%; background:#1a1a2a;"></div>`;
+    }
+    
+    card.innerHTML = `
+        <div class="car-image">
+            ${imageHtml}
+        </div>
+        <div class="car-info">
+            <div class="car-name">${car.name}</div>
+            <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
+            <div class="car-spec">${car.engine || ''} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
+            <div class="car-plate">🚛 Госномер: ${car.plate}</div>
+        </div>
+        <div class="card-buttons">
+            <button class="take-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">📝 Взять в пользование</button>
+            <button class="return-card-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">↩ Вернуть транспорт</button>
+        </div>
+    `;
+    grid.appendChild(card);
+});
 
     // ---- МОДАЛКА АНКЕТЫ ----
     const modalAnketa = document.getElementById('anketaModal');
