@@ -646,7 +646,7 @@
             } else {
                 html += `—`;
             }
-            html += `NonNullable`;
+            html += `</td></tr>`;
         });
         
         html += `</tbody></table>`;
@@ -785,7 +785,7 @@
             localStorage.setItem('devillecar_user', currentUser);
             localStorage.setItem('devillecar_isAdmin', 'true');
             showUserInterface();
-            alert('✅ Вы вошли как администратор. Вам доступны одобрение/отклонение заявок, а также создание собственных заявок.');
+            alert('✅ Вы вошли как администратор. Вам доступны одобрение/отклонение заявок.');
         } else if (password !== null) {
             registerError.textContent = 'Неверный пароль администратора';
         }
@@ -797,4 +797,122 @@
         currentUser = null;
         isAdmin = false;
         userInfoDiv.style.display = 'none';
-        showRegister
+        showRegisterModal();
+    }
+
+    function checkAuth() {
+        const savedUser = localStorage.getItem('devillecar_user');
+        const savedAdmin = localStorage.getItem('devillecar_isAdmin');
+        if (savedUser) {
+            currentUser = savedUser;
+            isAdmin = savedAdmin === 'true';
+            showUserInterface();
+        } else {
+            showRegisterModal();
+        }
+    }
+
+    registerBtn.addEventListener('click', loginAsUser);
+    adminLoginBtn.addEventListener('click', loginAsAdmin);
+    registerNick.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            loginAsUser();
+        }
+    });
+    logoutBtn.addEventListener('click', logout);
+
+    // ---- ОСТАЛЬНЫЕ МОДАЛКИ ----
+    const modalAnketa = document.getElementById('anketaModal');
+    const closeModalSpan = document.getElementById('closeModal');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    const form = document.getElementById('anketaForm');
+    const carBrandInput = document.getElementById('carBrand');
+    const carNumberInput = document.getElementById('carNumber');
+    let currentCarName = '', currentCarPlate = '';
+
+    function openAnketaModal(carName, carPlate) {
+        if (!currentUser) {
+            alert('Сначала авторизуйтесь!');
+            return;
+        }
+        if (isAdmin) {
+            alert('Администратор не может оформлять заявки на транспорт. Войдите как обычный пользователь.');
+            return;
+        }
+        currentCarName = carName; 
+        currentCarPlate = carPlate;
+        carBrandInput.value = carName; 
+        carNumberInput.value = carPlate;
+        document.getElementById('takeTime').value = ''; 
+        document.getElementById('reason').value = '';
+        const now = new Date(); 
+        const year = now.getFullYear(); 
+        const month = String(now.getMonth()+1).padStart(2,'0'); 
+        const day = String(now.getDate()).padStart(2,'0'); 
+        const hours = String(now.getHours()).padStart(2,'0'); 
+        const minutes = String(now.getMinutes()).padStart(2,'0');
+        document.getElementById('takeTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        modalAnketa.style.display = 'block';
+    }
+    
+    function closeAnketaModal() { modalAnketa.style.display = 'none'; }
+    
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!currentUser || isAdmin) {
+            alert('Только обычные пользователи могут оформлять заявки.');
+            return;
+        }
+        const takeTime = document.getElementById('takeTime').value || 'не указано';
+        const carNumber = document.getElementById('carNumber').value.trim() || 'не указан';
+        const reason = document.getElementById('reason').value.trim() || 'не указана';
+        addApplication({ nickname: currentUser, takeTime, carBrand: currentCarName, carNumber, reason });
+        alert(`✅ Заявка принята и ожидает одобрения!\nТранспорт: ${currentCarName}\nНик: ${currentUser}\nВремя: ${takeTime}\nНомер: ${carNumber}`);
+        closeAnketaModal();
+    });
+    
+    closeModalSpan.onclick = closeAnketaModal;
+    cancelModalBtn.onclick = closeAnketaModal;
+
+    // ---- МОДАЛКА ЗАЯВОК ----
+    const modalApps = document.getElementById('applicationsModal');
+    const closeAppsSpan = document.getElementById('closeAppsModal');
+    const viewAppsBtn = document.getElementById('viewAppsBtn');
+    
+    function openApplicationsModal() { 
+        renderApplicationsList(); 
+        modalApps.style.display = 'block'; 
+    }
+    function closeApplicationsModal() { modalApps.style.display = 'none'; }
+    
+    viewAppsBtn.addEventListener('click', openApplicationsModal);
+    closeAppsSpan.onclick = closeApplicationsModal;
+    window.onclick = function(event) { 
+        if(event.target == modalAnketa) closeAnketaModal(); 
+        if(event.target == modalApps) closeApplicationsModal(); 
+    };
+
+    // ---- ОБРАБОТЧИКИ КНОПОК НА КАРТОЧКАХ ----
+    document.addEventListener('click', (e) => {
+        if(e.target.classList.contains('take-btn')) {
+            const carName = e.target.dataset.carName;
+            const carPlate = e.target.dataset.carPlate;
+            openAnketaModal(carName, carPlate);
+        }
+        if(e.target.classList.contains('return-card-btn') && isAdmin) {
+            const carName = e.target.dataset.carName;
+            const carPlate = e.target.dataset.carPlate;
+            if (returnVehicleByModelAndPlate(carName, carPlate)) {
+                renderApplicationsList();
+            }
+        } else if (e.target.classList.contains('return-card-btn') && !isAdmin) {
+            alert('❌ Только администратор может возвращать транспорт.');
+        }
+    });
+
+    // ---- ИНИЦИАЛИЗАЦИЯ ----
+    loadApplications();
+    checkAuth();
+</script>
+</body>
+</html>
