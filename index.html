@@ -63,7 +63,7 @@
 
         .cars-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
         }
 
@@ -83,6 +83,31 @@
             transform: translateY(-6px);
             box-shadow: 0 16px 30px rgba(0,0,0,0.4);
             border-color: #1e88e5;
+        }
+
+        .car-image {
+            height: 200px;
+            background: #1a1a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .car-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .car-card:hover .car-image img {
+            transform: scale(1.03);
+        }
+        .car-image .no-image {
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 20px;
         }
 
         .car-info {
@@ -369,9 +394,21 @@
 </div>
 
 <script>
-    // ----- СПИСОК ТРАНСПОРТА (без фото) -----
+    // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ (русские буквы -> латиница) -----
+    function transliterate(plate) {
+        const map = {
+            'А': 'A', 'В': 'B', 'Е': 'E', 'К': 'K', 'М': 'M',
+            'Н': 'H', 'О': 'O', 'Р': 'P', 'С': 'C', 'Т': 'T',
+            'У': 'U', 'Х': 'X', 'а': 'a', 'в': 'b', 'е': 'e',
+            'к': 'k', 'м': 'm', 'н': 'h', 'о': 'o', 'р': 'p',
+            'с': 'c', 'т': 't', 'у': 'u', 'х': 'x'
+        };
+        return plate.split('').map(char => map[char] || char).join('');
+    }
+
+    // ----- СПИСОК ТРАНСПОРТА -----
     const cars = [
-        { name: "BMW X6 M (F86)", desc: "Спортивный кроссовер с twin-turbo V8, 575 л.с., полный привод M xDrive.", engine: "4.4 л V8 TwinPower Turbo", hp: 575, plate: "М078УР78", image: "images/584x438.jpg" },
+        { name: "BMW X6 M (F86)", desc: "Спортивный кроссовер с twin-turbo V8, 575 л.с., полный привод M xDrive.", engine: "4.4 л V8 TwinPower Turbo", hp: 575, plate: "М078УР78" },
         { name: "Volvo XC90 T5", desc: "Роскошный 7-местный SUV с турбодвигателем и скандинавским дизайном.", engine: "2.0 л Drive-E Turbo", hp: 250, plate: "Т550ОК63" },
         { name: "Volvo V60 Polestar", desc: "Заряженный универсал с подвеской Öhlins, карбоновыми деталями.", engine: "2.0 л Twin Charged", hp: 367, plate: "E200TM78" },
         { name: "Volvo 850 R", desc: "Классический «кирпич» с 5-цилиндровым турбо, икона 90-х.", engine: "2.3 л R5 Turbo", hp: 250, plate: "Т499МК78" },
@@ -532,12 +569,33 @@
         }); 
     }
 
-    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (БЕЗ ФОТО) ----
+    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (С ФОТО ИЗ ПАПКИ images) ----
     const grid = document.getElementById('carsGrid');
+    
     cars.forEach(car => {
         const card = document.createElement('div');
         card.className = 'car-card';
+        
+        // Формируем имя файла для фото: транслитерируем номер, убираем пробелы, добавляем .jpg
+        let imageFileName = '';
+        let imagePath = '';
+        let noImageHtml = '';
+        
+        if (car.plate !== "Б/Н") {
+            // Транслитерация номера для имени файла
+            imageFileName = transliterate(car.plate);
+            // Убираем возможные пробелы и делаем все буквы заглавными
+            imageFileName = imageFileName.toUpperCase().replace(/\s/g, '');
+            imagePath = `images/${imageFileName}.jpg`;
+            noImageHtml = `<div class="no-image">📷 Фото не загружено<br>${car.plate}</div>`;
+        } else {
+            noImageHtml = `<div class="no-image">📷 Фото отсутствует<br>Без номера</div>`;
+        }
+        
         card.innerHTML = `
+            <div class="car-image">
+                ${car.plate !== "Б/Н" ? `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = \`${noImageHtml}\`">` : noImageHtml}
+            </div>
             <div class="car-info">
                 <div class="car-name">${car.name}</div>
                 <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
