@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevilleCar</title>
+    <title>DevilleCar | Авторизация</title>
     <style>
         * {
             margin: 0;
@@ -36,9 +36,38 @@
 
         .sub {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             color: #aaa;
             font-size: 0.9rem;
+        }
+
+        .user-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(30,136,229,0.3);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 20;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .user-info span {
+            color: #ffaa66;
+            font-weight: bold;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #ffaa66;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+        .logout-btn:hover {
+            color: #ff8844;
         }
 
         .view-applications-btn {
@@ -102,12 +131,6 @@
         }
         .car-card:hover .car-image img {
             transform: scale(1.03);
-        }
-        .car-image .no-image {
-            color: #666;
-            font-size: 0.9rem;
-            text-align: center;
-            padding: 20px;
         }
 
         .car-info {
@@ -177,6 +200,7 @@
             background: #b45f1b;
         }
 
+        /* Модальное окно регистрации */
         .modal {
             display: none;
             position: fixed;
@@ -191,21 +215,57 @@
         }
         .modal-content {
             background: #1a1a2e;
-            margin: 5% auto;
+            margin: 10% auto;
             padding: 24px;
             border-radius: 28px;
             width: 90%;
-            max-width: 500px;
+            max-width: 400px;
             border: 1px solid #88aaff;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             color: #eee;
+            text-align: center;
         }
         .modal-content h2 {
             margin-bottom: 20px;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            background: #2a2a3a;
+            border: 1px solid #445;
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
             text-align: center;
+        }
+        .modal-content button {
+            background: #1e88e5;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+        .modal-content button:hover {
+            background: #0d5b9e;
+        }
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        /* Другие модалки */
+        .modal-anketa .modal-content, .modal-apps .modal-content {
+            max-width: 500px;
         }
         .form-group {
             margin-bottom: 16px;
+            text-align: left;
         }
         .form-group label {
             display: block;
@@ -264,10 +324,11 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            font-size: 0.85rem;
         }
         .applications-table th, .applications-table td {
             border: 1px solid #445;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
             vertical-align: top;
         }
@@ -278,14 +339,15 @@
         .status-buttons {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .btn-approve, .btn-reject {
             border: none;
             color: white;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
         }
         .btn-approve {
@@ -311,11 +373,11 @@
         .btn-return, .btn-delete {
             border: none;
             color: white;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
             cursor: pointer;
             margin-right: 5px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .btn-return {
             background: #3498db;
@@ -339,27 +401,49 @@
             gap: 6px;
             flex-wrap: wrap;
         }
+        @media (max-width: 700px) {
+            .applications-table th, .applications-table td {
+                padding: 5px;
+                font-size: 0.7rem;
+            }
+        }
     </style>
-     <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="icon" type="image/png" href="images/logo.png">
 </head>
 <body>
 <div class="container">
-      <h1>DevilleCar</h1>
+    <h1>DevilleCar</h1>
     <div class="sub">Заявки на взятие и возврат ТС</div>
     <div class="cars-grid" id="carsGrid"></div>
 </div>
 
+<div class="user-info" id="userInfo" style="display: none;">
+    👤 Вы вошли как: <span id="currentUserNick"></span>
+    <button class="logout-btn" id="logoutBtn">🚪 Выйти</button>
+</div>
+
 <button class="view-applications-btn" id="viewAppsBtn">📋 Просмотр заявок</button>
 
+<!-- Модалка регистрации -->
+<div id="registerModal" class="modal">
+    <div class="modal-content">
+        <h2>🔐 Добро пожаловать в DevilleCar</h2>
+        <p style="margin-bottom: 10px;">Введите ваш никнейм для входа</p>
+        <input type="text" id="registerNick" placeholder="Ваш никнейм" maxlength="30">
+        <button id="registerBtn">Войти</button>
+        <div id="registerError" class="error-msg"></div>
+    </div>
+</div>
+
 <!-- Модалка анкеты -->
-<div id="anketaModal" class="modal">
+<div id="anketaModal" class="modal modal-anketa">
     <div class="modal-content">
         <span class="close" id="closeModal">&times;</span>
         <h2>📋 Анкета взятия транспорта</h2>
         <form id="anketaForm">
             <div class="form-group">
                 <label>1. Ваш ник *</label>
-                <input type="text" id="nickname" required placeholder="Введите никнейм">
+                <input type="text" id="nickname" readonly style="background:#333; cursor:default;">
             </div>
             <div class="form-group">
                 <label>2. Время взятия</label>
@@ -386,7 +470,7 @@
 </div>
 
 <!-- Модалка со списком заявок -->
-<div id="applicationsModal" class="modal">
+<div id="applicationsModal" class="modal modal-apps">
     <div class="modal-content" style="max-width: 1200px;">
         <span class="close" id="closeAppsModal">&times;</span>
         <h2>📋 Все заявки на транспорт</h2>
@@ -395,7 +479,7 @@
 </div>
 
 <script>
-    // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ (русские буквы -> латиница) -----
+    // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
     function transliterate(plate) {
         const map = {
             'А': 'A', 'В': 'B', 'Е': 'E', 'К': 'K', 'М': 'M',
@@ -439,16 +523,21 @@
         { name: "Mercedes-Benz Sprinter", desc: "Универсальный коммерческий фургон, подходит для грузоперевозок.", engine: "3.0 л OM642", hp: 190, plate: "A942EB77" }
     ];
 
-    // ----- ЗАЯВКИ И СТАТУСЫ -----
+    // ----- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ -----
+    let currentUser = null;
+
+    // ----- ЗАЯВКИ -----
     let applications = [];
 
     function loadApplications() {
         const stored = localStorage.getItem('car_applications');
         applications = stored ? JSON.parse(stored) : [];
     }
+
     function saveApplications() {
         localStorage.setItem('car_applications', JSON.stringify(applications));
     }
+
     function addApplication(app) {
         app.id = Date.now();
         app.createdAt = new Date().toLocaleString();
@@ -456,6 +545,7 @@
         applications.push(app);
         saveApplications();
     }
+
     function updateApplicationStatus(id, newStatus) {
         const index = applications.findIndex(app => app.id === id);
         if (index !== -1) { 
@@ -463,11 +553,12 @@
             saveApplications(); 
         }
     }
+
     function deleteApplication(id) {
         applications = applications.filter(app => app.id !== id);
         saveApplications();
     }
-    // Возврат транспорта: удаляем ВСЕ одобренные заявки с указанной маркой и номером
+
     function returnVehicleByModelAndPlate(modelName, plateNumber) {
         const toDelete = applications.filter(app => app.status === 'approved' && app.carBrand === modelName && app.carNumber === plateNumber);
         if (toDelete.length === 0) {
@@ -477,7 +568,7 @@
         if (confirm(`Возврат транспорта:\n${modelName} (${plateNumber})\nБудут удалены ${toDelete.length} одобренн${toDelete.length === 1 ? 'ая заявка' : 'ые заявки'}.\nПродолжить?`)) {
             applications = applications.filter(app => !(app.status === 'approved' && app.carBrand === modelName && app.carNumber === plateNumber));
             saveApplications();
-            alert(`✅ Транспорт "${modelName}" (${plateNumber}) возвращён. Все одобренные заявки по этому ТС закрыты.`);
+            alert(`✅ Транспорт "${modelName}" (${plateNumber}) возвращён.`);
             return true;
         }
         return false;
@@ -509,11 +600,9 @@
                             <button class="btn-approve" data-id="${app.id}">✔ Одобрить</button>
                             <button class="btn-reject" data-id="${app.id}">✖ Отказать</button>
                         </div>`;
-            } 
-            else if (app.status === 'approved') {
+            } else if (app.status === 'approved') {
                 html += `<span class="status-text-approved">✅ Одобрено</span>`;
-            } 
-            else if (app.status === 'rejected') {
+            } else if (app.status === 'rejected') {
                 html += `<span class="status-text-rejected">❌ Отказано</span>`;
             }
             
@@ -570,45 +659,103 @@
         }); 
     }
 
-  // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (С ФОТО, БЕЗ НАДПИСИ ПРИ ОШИБКЕ) ----
-const grid = document.getElementById('carsGrid');
+    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА ----
+    const grid = document.getElementById('carsGrid');
 
-cars.forEach(car => {
-    const card = document.createElement('div');
-    card.className = 'car-card';
-    
-    // Формируем имя файла для фото
-    let imageHtml = '';
-    
-    if (car.plate !== "Б/Н") {
-        const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
-        const imagePath = `images/${imageFileName}.jpg`;
-        // При ошибке загрузки — показываем пустой блок (без текста)
-        imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.background='#1a1a2a'">`;
-    } else {
-        // Для машин без номера — просто тёмный фон, без надписи
-        imageHtml = `<div style="width:100%; height:100%; background:#1a1a2a;"></div>`;
+    cars.forEach(car => {
+        const card = document.createElement('div');
+        card.className = 'car-card';
+        
+        let imageHtml = '';
+        if (car.plate !== "B_H") {
+            const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
+            const imagePath = `images/${imageFileName}.jpg`;
+            imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.style.display='none'">`;
+        } else {
+            imageHtml = `<div style="width:100%; height:100%; background:#1a1a2a;"></div>`;
+        }
+        
+        card.innerHTML = `
+            <div class="car-image">
+                ${imageHtml}
+            </div>
+            <div class="car-info">
+                <div class="car-name">${car.name}</div>
+                <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
+                <div class="car-spec">${car.engine || ''} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
+                <div class="car-plate">🚛 Госномер: ${car.plate}</div>
+            </div>
+            <div class="card-buttons">
+                <button class="take-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">📝 Взять в пользование</button>
+                <button class="return-card-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">↩ Вернуть транспорт</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // ---- СИСТЕМА РЕГИСТРАЦИИ ----
+    const registerModal = document.getElementById('registerModal');
+    const registerNick = document.getElementById('registerNick');
+    const registerBtn = document.getElementById('registerBtn');
+    const registerError = document.getElementById('registerError');
+    const userInfoDiv = document.getElementById('userInfo');
+    const currentUserSpan = document.getElementById('currentUserNick');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function checkAuth() {
+        const savedUser = localStorage.getItem('devillecar_user');
+        if (savedUser) {
+            currentUser = savedUser;
+            showUserInterface();
+        } else {
+            showRegisterModal();
+        }
     }
-    
-    card.innerHTML = `
-        <div class="car-image">
-            ${imageHtml}
-        </div>
-        <div class="car-info">
-            <div class="car-name">${car.name}</div>
-            <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
-            <div class="car-spec">${car.engine || ''} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
-            <div class="car-plate">🚛 Госномер: ${car.plate}</div>
-        </div>
-        <div class="card-buttons">
-            <button class="take-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">📝 Взять в пользование</button>
-            <button class="return-card-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">↩ Вернуть транспорт</button>
-        </div>
-    `;
-    grid.appendChild(card);
-});
 
-    // ---- МОДАЛКА АНКЕТЫ ----
+    function showRegisterModal() {
+        registerModal.style.display = 'block';
+        registerNick.value = '';
+        registerError.textContent = '';
+    }
+
+    function showUserInterface() {
+        registerModal.style.display = 'none';
+        userInfoDiv.style.display = 'block';
+        currentUserSpan.textContent = currentUser;
+        document.getElementById('nickname').value = currentUser;
+    }
+
+    function logout() {
+        localStorage.removeItem('devillecar_user');
+        currentUser = null;
+        userInfoDiv.style.display = 'none';
+        showRegisterModal();
+    }
+
+    registerBtn.addEventListener('click', () => {
+        const nick = registerNick.value.trim();
+        if (nick.length < 2) {
+            registerError.textContent = 'Ник должен содержать минимум 2 символа';
+            return;
+        }
+        if (nick.length > 30) {
+            registerError.textContent = 'Ник не должен превышать 30 символов';
+            return;
+        }
+        currentUser = nick;
+        localStorage.setItem('devillecar_user', currentUser);
+        showUserInterface();
+    });
+
+    registerNick.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            registerBtn.click();
+        }
+    });
+
+    logoutBtn.addEventListener('click', logout);
+
+    // ---- ОСТАЛЬНЫЕ МОДАЛКИ ----
     const modalAnketa = document.getElementById('anketaModal');
     const closeModalSpan = document.getElementById('closeModal');
     const cancelModalBtn = document.getElementById('cancelModalBtn');
@@ -618,11 +765,14 @@ cars.forEach(car => {
     let currentCarName = '', currentCarPlate = '';
 
     function openAnketaModal(carName, carPlate) {
+        if (!currentUser) {
+            alert('Сначала авторизуйтесь!');
+            return;
+        }
         currentCarName = carName; 
         currentCarPlate = carPlate;
         carBrandInput.value = carName; 
         carNumberInput.value = carPlate;
-        document.getElementById('nickname').value = ''; 
         document.getElementById('takeTime').value = ''; 
         document.getElementById('reason').value = '';
         const now = new Date(); 
@@ -634,17 +784,20 @@ cars.forEach(car => {
         document.getElementById('takeTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
         modalAnketa.style.display = 'block';
     }
+    
     function closeAnketaModal() { modalAnketa.style.display = 'none'; }
     
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const nickname = document.getElementById('nickname').value.trim();
-        if(!nickname) { alert('Укажите ник'); return; }
+        if (!currentUser) {
+            alert('Авторизация не найдена. Пожалуйста, перезагрузите страницу.');
+            return;
+        }
         const takeTime = document.getElementById('takeTime').value || 'не указано';
         const carNumber = document.getElementById('carNumber').value.trim() || 'не указан';
         const reason = document.getElementById('reason').value.trim() || 'не указана';
-        addApplication({ nickname, takeTime, carBrand: currentCarName, carNumber, reason });
-        alert(`✅ Заявка принята и ожидает одобрения!\nТранспорт: ${currentCarName}\nНик: ${nickname}\nВремя: ${takeTime}\nНомер: ${carNumber}`);
+        addApplication({ nickname: currentUser, takeTime, carBrand: currentCarName, carNumber, reason });
+        alert(`✅ Заявка принята и ожидает одобрения!\nТранспорт: ${currentCarName}\nНик: ${currentUser}\nВремя: ${takeTime}\nНомер: ${carNumber}`);
         closeAnketaModal();
     });
     
@@ -667,6 +820,9 @@ cars.forEach(car => {
     window.onclick = function(event) { 
         if(event.target == modalAnketa) closeAnketaModal(); 
         if(event.target == modalApps) closeApplicationsModal(); 
+        if(event.target == registerModal && currentUser === null) {
+            // Не закрываем модалку регистрации по клику вне, только через кнопку
+        }
     };
 
     // ---- ОБРАБОТЧИКИ КНОПОК НА КАРТОЧКАХ ----
@@ -679,18 +835,15 @@ cars.forEach(car => {
         if(e.target.classList.contains('return-card-btn')) {
             const carName = e.target.dataset.carName;
             const carPlate = e.target.dataset.carPlate;
-            returnVehicleByModelAndPlate(carName, carPlate);
-            renderApplicationsList();
+            if (returnVehicleByModelAndPlate(carName, carPlate)) {
+                renderApplicationsList();
+            }
         }
     });
 
+    // ---- ИНИЦИАЛИЗАЦИЯ ----
     loadApplications();
+    checkAuth();
 </script>
 </body>
-</html>
-    // ---- ЗАГРУЗКА ПРИ СТАРТЕ ----
-    loadApplications();
-</script>
-</body>
-</html>
 </html>
