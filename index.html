@@ -57,6 +57,14 @@
             color: #ffaa66;
             font-weight: bold;
         }
+        .admin-badge {
+            background: #e67e22;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
         .logout-btn {
             background: none;
             border: none;
@@ -249,14 +257,29 @@
             cursor: pointer;
             font-size: 1rem;
             width: 100%;
+            margin-top: 10px;
         }
         .modal-content button:hover {
             background: #0d5b9e;
+        }
+        .admin-login-btn {
+            background: #e67e22;
+            margin-top: 10px;
+        }
+        .admin-login-btn:hover {
+            background: #b45f1b;
         }
         .error-msg {
             color: #e74c3c;
             font-size: 0.8rem;
             margin-top: 10px;
+        }
+        .info-text {
+            color: #aaa;
+            font-size: 0.75rem;
+            margin-top: 15px;
+            border-top: 1px solid #445;
+            padding-top: 15px;
         }
 
         /* Другие модалки */
@@ -418,7 +441,7 @@
 </div>
 
 <div class="user-info" id="userInfo" style="display: none;">
-    👤 Вы вошли как: <span id="currentUserNick"></span>
+    👤 Вы вошли как: <span id="currentUserNick"></span><span id="adminBadge" class="admin-badge" style="display: none;">Админ</span>
     <button class="logout-btn" id="logoutBtn">🚪 Выйти</button>
 </div>
 
@@ -430,8 +453,10 @@
         <h2>🔐 Добро пожаловать в DevilleCar</h2>
         <p style="margin-bottom: 10px;">Введите ваш никнейм для входа</p>
         <input type="text" id="registerNick" placeholder="Ваш никнейм" maxlength="30">
-        <button id="registerBtn">Войти</button>
+        <button id="registerBtn">Войти как пользователь</button>
+        <button id="adminLoginBtn" class="admin-login-btn">👑 Войти как администратор</button>
         <div id="registerError" class="error-msg"></div>
+        <div class="info-text">Администратор может одобрять/отклонять заявки</div>
     </div>
 </div>
 
@@ -525,6 +550,7 @@
 
     // ----- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ -----
     let currentUser = null;
+    let isAdmin = false;
 
     // ----- ЗАЯВКИ -----
     let applications = [];
@@ -574,7 +600,7 @@
         return false;
     }
 
-    // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК ----
+    // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК (скрываем кнопки управления для обычных пользователей) ----
     function renderApplicationsList() {
         const container = document.getElementById('applicationsList');
         if (!applications.length) {
@@ -596,10 +622,14 @@
                         <td>`;
             
             if (app.status === 'pending') {
-                html += `<div class="status-buttons">
-                            <button class="btn-approve" data-id="${app.id}">✔ Одобрить</button>
-                            <button class="btn-reject" data-id="${app.id}">✖ Отказать</button>
-                        </div>`;
+                if (isAdmin) {
+                    html += `<div class="status-buttons">
+                                <button class="btn-approve" data-id="${app.id}">✔ Одобрить</button>
+                                <button class="btn-reject" data-id="${app.id}">✖ Отказать</button>
+                            </div>`;
+                } else {
+                    html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+                }
             } else if (app.status === 'approved') {
                 html += `<span class="status-text-approved">✅ Одобрено</span>`;
             } else if (app.status === 'rejected') {
@@ -608,45 +638,51 @@
             
             html += `</td><td class="action-buttons">`;
             
-            if (app.status === 'approved') {
+            if (app.status === 'approved' && isAdmin) {
                 html += `<button class="btn-return" data-brand="${escapeHtml(app.carBrand)}" data-plate="${escapeHtml(app.carNumber)}">↩ Вернуть</button>`;
             }
-            html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
-            html += `</td></tr>`;
+            if (isAdmin) {
+                html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            html += `NonNullable`;
         });
         
         html += `</tbody></table>`;
         container.innerHTML = html;
 
-        document.querySelectorAll('.btn-approve').forEach(btn => {
-            btn.addEventListener('click', () => { 
-                updateApplicationStatus(parseInt(btn.dataset.id), 'approved'); 
-                renderApplicationsList(); 
+        if (isAdmin) {
+            document.querySelectorAll('.btn-approve').forEach(btn => {
+                btn.addEventListener('click', () => { 
+                    updateApplicationStatus(parseInt(btn.dataset.id), 'approved'); 
+                    renderApplicationsList(); 
+                });
             });
-        });
-        document.querySelectorAll('.btn-reject').forEach(btn => {
-            btn.addEventListener('click', () => { 
-                updateApplicationStatus(parseInt(btn.dataset.id), 'rejected'); 
-                renderApplicationsList(); 
+            document.querySelectorAll('.btn-reject').forEach(btn => {
+                btn.addEventListener('click', () => { 
+                    updateApplicationStatus(parseInt(btn.dataset.id), 'rejected'); 
+                    renderApplicationsList(); 
+                });
             });
-        });
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', () => { 
-                if(confirm('Удалить заявку?')) {
-                    deleteApplication(parseInt(btn.dataset.id)); 
-                    renderApplicationsList();
-                }
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => { 
+                    if(confirm('Удалить заявку?')) {
+                        deleteApplication(parseInt(btn.dataset.id)); 
+                        renderApplicationsList();
+                    }
+                });
             });
-        });
-        document.querySelectorAll('.btn-return').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const brand = btn.dataset.brand;
-                const plate = btn.dataset.plate;
-                if (returnVehicleByModelAndPlate(brand, plate)) {
-                    renderApplicationsList();
-                }
+            document.querySelectorAll('.btn-return').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const brand = btn.dataset.brand;
+                    const plate = btn.dataset.plate;
+                    if (returnVehicleByModelAndPlate(brand, plate)) {
+                        renderApplicationsList();
+                    }
+                });
             });
-        });
+        }
     }
 
     function escapeHtml(str) { 
@@ -693,46 +729,38 @@
         grid.appendChild(card);
     });
 
-    // ---- СИСТЕМА РЕГИСТРАЦИИ ----
+    // ---- СИСТЕМА РЕГИСТРАЦИИ С АДМИНОМ ----
     const registerModal = document.getElementById('registerModal');
     const registerNick = document.getElementById('registerNick');
     const registerBtn = document.getElementById('registerBtn');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
     const registerError = document.getElementById('registerError');
     const userInfoDiv = document.getElementById('userInfo');
     const currentUserSpan = document.getElementById('currentUserNick');
+    const adminBadge = document.getElementById('adminBadge');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    function checkAuth() {
-        const savedUser = localStorage.getItem('devillecar_user');
-        if (savedUser) {
-            currentUser = savedUser;
-            showUserInterface();
+    function showUserInterface() {
+        registerModal.style.display = 'none';
+        userInfoDiv.style.display = 'block';
+        currentUserSpan.textContent = currentUser;
+        if (isAdmin) {
+            adminBadge.style.display = 'inline-block';
         } else {
-            showRegisterModal();
+            adminBadge.style.display = 'none';
         }
+        document.getElementById('nickname').value = currentUser;
     }
 
     function showRegisterModal() {
         registerModal.style.display = 'block';
         registerNick.value = '';
         registerError.textContent = '';
-    }
-
-    function showUserInterface() {
-        registerModal.style.display = 'none';
-        userInfoDiv.style.display = 'block';
-        currentUserSpan.textContent = currentUser;
-        document.getElementById('nickname').value = currentUser;
-    }
-
-    function logout() {
-        localStorage.removeItem('devillecar_user');
+        isAdmin = false;
         currentUser = null;
-        userInfoDiv.style.display = 'none';
-        showRegisterModal();
     }
 
-    registerBtn.addEventListener('click', () => {
+    function loginAsUser() {
         const nick = registerNick.value.trim();
         if (nick.length < 2) {
             registerError.textContent = 'Ник должен содержать минимум 2 символа';
@@ -743,107 +771,30 @@
             return;
         }
         currentUser = nick;
+        isAdmin = false;
         localStorage.setItem('devillecar_user', currentUser);
+        localStorage.setItem('devillecar_isAdmin', 'false');
         showUserInterface();
-    });
-
-    registerNick.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            registerBtn.click();
-        }
-    });
-
-    logoutBtn.addEventListener('click', logout);
-
-    // ---- ОСТАЛЬНЫЕ МОДАЛКИ ----
-    const modalAnketa = document.getElementById('anketaModal');
-    const closeModalSpan = document.getElementById('closeModal');
-    const cancelModalBtn = document.getElementById('cancelModalBtn');
-    const form = document.getElementById('anketaForm');
-    const carBrandInput = document.getElementById('carBrand');
-    const carNumberInput = document.getElementById('carNumber');
-    let currentCarName = '', currentCarPlate = '';
-
-    function openAnketaModal(carName, carPlate) {
-        if (!currentUser) {
-            alert('Сначала авторизуйтесь!');
-            return;
-        }
-        currentCarName = carName; 
-        currentCarPlate = carPlate;
-        carBrandInput.value = carName; 
-        carNumberInput.value = carPlate;
-        document.getElementById('takeTime').value = ''; 
-        document.getElementById('reason').value = '';
-        const now = new Date(); 
-        const year = now.getFullYear(); 
-        const month = String(now.getMonth()+1).padStart(2,'0'); 
-        const day = String(now.getDate()).padStart(2,'0'); 
-        const hours = String(now.getHours()).padStart(2,'0'); 
-        const minutes = String(now.getMinutes()).padStart(2,'0');
-        document.getElementById('takeTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
-        modalAnketa.style.display = 'block';
     }
-    
-    function closeAnketaModal() { modalAnketa.style.display = 'none'; }
-    
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (!currentUser) {
-            alert('Авторизация не найдена. Пожалуйста, перезагрузите страницу.');
-            return;
-        }
-        const takeTime = document.getElementById('takeTime').value || 'не указано';
-        const carNumber = document.getElementById('carNumber').value.trim() || 'не указан';
-        const reason = document.getElementById('reason').value.trim() || 'не указана';
-        addApplication({ nickname: currentUser, takeTime, carBrand: currentCarName, carNumber, reason });
-        alert(`✅ Заявка принята и ожидает одобрения!\nТранспорт: ${currentCarName}\nНик: ${currentUser}\nВремя: ${takeTime}\nНомер: ${carNumber}`);
-        closeAnketaModal();
-    });
-    
-    closeModalSpan.onclick = closeAnketaModal;
-    cancelModalBtn.onclick = closeAnketaModal;
 
-    // ---- МОДАЛКА ЗАЯВОК ----
-    const modalApps = document.getElementById('applicationsModal');
-    const closeAppsSpan = document.getElementById('closeAppsModal');
-    const viewAppsBtn = document.getElementById('viewAppsBtn');
-    
-    function openApplicationsModal() { 
-        renderApplicationsList(); 
-        modalApps.style.display = 'block'; 
+    function loginAsAdmin() {
+        const password = prompt('Введите пароль администратора:');
+        if (password === 'Deville2024') {
+            currentUser = 'Администратор';
+            isAdmin = true;
+            localStorage.setItem('devillecar_user', currentUser);
+            localStorage.setItem('devillecar_isAdmin', 'true');
+            showUserInterface();
+            alert('✅ Вы вошли как администратор. Вам доступны одобрение/отклонение заявок, а также создание собственных заявок.');
+        } else if (password !== null) {
+            registerError.textContent = 'Неверный пароль администратора';
+        }
     }
-    function closeApplicationsModal() { modalApps.style.display = 'none'; }
-    
-    viewAppsBtn.addEventListener('click', openApplicationsModal);
-    closeAppsSpan.onclick = closeApplicationsModal;
-    window.onclick = function(event) { 
-        if(event.target == modalAnketa) closeAnketaModal(); 
-        if(event.target == modalApps) closeApplicationsModal(); 
-        if(event.target == registerModal && currentUser === null) {
-            // Не закрываем модалку регистрации по клику вне, только через кнопку
-        }
-    };
 
-    // ---- ОБРАБОТЧИКИ КНОПОК НА КАРТОЧКАХ ----
-    document.addEventListener('click', (e) => {
-        if(e.target.classList.contains('take-btn')) {
-            const carName = e.target.dataset.carName;
-            const carPlate = e.target.dataset.carPlate;
-            openAnketaModal(carName, carPlate);
-        }
-        if(e.target.classList.contains('return-card-btn')) {
-            const carName = e.target.dataset.carName;
-            const carPlate = e.target.dataset.carPlate;
-            if (returnVehicleByModelAndPlate(carName, carPlate)) {
-                renderApplicationsList();
-            }
-        }
-    });
-
-    // ---- ИНИЦИАЛИЗАЦИЯ ----
-    loadApplications();
-    checkAuth();
-</script>
-</body>
-</html>
+    function logout() {
+        localStorage.removeItem('devillecar_user');
+        localStorage.removeItem('devillecar_isAdmin');
+        currentUser = null;
+        isAdmin = false;
+        userInfoDiv.style.display = 'none';
+        showRegister
