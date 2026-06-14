@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>DevilleCar | Облачные заявки</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevilleCar</title>
     <style>
         * {
             margin: 0;
@@ -36,22 +36,9 @@
 
         .sub {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             color: #aaa;
             font-size: 0.9rem;
-        }
-
-        .sync-status {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            width: auto;
-            margin-left: auto;
-            margin-right: auto;
-            background: rgba(30,136,229,0.2);
         }
 
         .view-applications-btn {
@@ -115,6 +102,12 @@
         }
         .car-card:hover .car-image img {
             transform: scale(1.03);
+        }
+        .car-image .no-image {
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 20px;
         }
 
         .car-info {
@@ -271,11 +264,10 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 0.85rem;
         }
         .applications-table th, .applications-table td {
             border: 1px solid #445;
-            padding: 8px;
+            padding: 10px;
             text-align: left;
             vertical-align: top;
         }
@@ -286,15 +278,14 @@
         .status-buttons {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
         }
         .btn-approve, .btn-reject {
             border: none;
             color: white;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: bold;
         }
         .btn-approve {
@@ -320,11 +311,11 @@
         .btn-return, .btn-delete {
             border: none;
             color: white;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             cursor: pointer;
             margin-right: 5px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
         .btn-return {
             background: #3498db;
@@ -348,22 +339,13 @@
             gap: 6px;
             flex-wrap: wrap;
         }
-        @media (max-width: 700px) {
-            .applications-table th, .applications-table td {
-                padding: 5px;
-                font-size: 0.7rem;
-            }
-        }
     </style>
-    <link rel="icon" type="image/png" href="images/logo.png">
+     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
 <body>
 <div class="container">
-    <h1>DevilleCar</h1>
-    <div class="sub">Заявки синхронизируются между всеми устройствами</div>
-    <div style="text-align: center;">
-        <div class="sync-status" id="syncStatus">🔄 Загрузка...</div>
-    </div>
+      <h1>DevilleCar</h1>
+    <div class="sub">Заявки на взятие и возврат ТС</div>
     <div class="cars-grid" id="carsGrid"></div>
 </div>
 
@@ -407,17 +389,13 @@
 <div id="applicationsModal" class="modal">
     <div class="modal-content" style="max-width: 1200px;">
         <span class="close" id="closeAppsModal">&times;</span>
-        <h2>📋 Все заявки на транспорт (общие)</h2>
+        <h2>📋 Все заявки на транспорт</h2>
         <div id="applicationsList"></div>
     </div>
 </div>
 
 <script>
-    // ==================== ВАША ССЫЛКА НА GOOGLE APPS SCRIPT ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-dJT9jVJTSecL7aYu_dFFzkkPhkP98aLN3Z7REzVasH36To69aysKmWwm1VKXvPDl/exec';
-    // ==========================================================================
-
-    // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ (для фото) -----
+    // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ (русские буквы -> латиница) -----
     function transliterate(plate) {
         const map = {
             'А': 'A', 'В': 'B', 'Е': 'E', 'К': 'K', 'М': 'M',
@@ -429,7 +407,7 @@
         return plate.split('').map(char => map[char] || char).join('');
     }
 
-    // ----- СПИСОК ТРАНСПОРТА (с вашими новыми данными) -----
+    // ----- СПИСОК ТРАНСПОРТА -----
     const cars = [
         { name: "BMW X6 M (F86)", desc: "Спортивный кроссовер с twin-turbo V8, 575 л.с., полный привод M xDrive.", engine: "4.4 л V8 TwinPower Turbo", hp: 575, plate: "M666YP77" },
         { name: "Volvo XC90 T5", desc: "Роскошный 7-местный SUV с турбодвигателем и скандинавским дизайном.", engine: "2.0 л Drive-E Turbo", hp: 250, plate: "T550OK63" },
@@ -451,7 +429,7 @@
         { name: "Audi R8", desc: "Суперкар с двигателем V10 и полным приводом Quattro.", engine: "5.2 л V10", hp: 602, plate: "B546OK63" },
         { name: "Subaru WRX STI", desc: "Полноприводной седан с оппозитным турбо 2.5 л.", engine: "2.5 л Boxer Turbo", hp: 310, plate: "O403EB78" },
         { name: "BMW 535i (e34)", desc: "Классическая «пятёрка» с рядной шестёркой и драйвом.", engine: "3.5 л I6", hp: 211, plate: "O857KP63" },
-        { name: "Mercedes-Maybach S680 (W223)", desc: "Бизнес седан, хорошо управляемый и с хорошим разгоном", engine: "4.0 л", hp: 503, plate: "С303KP77" },
+        { name: "Mercedes-Maybach S680 (W223)", desc: "Бизнес сидан, хорошо управляемый и с хорошым разгоном", engine: "4.0 л", hp: 503, plate: "С303KP77" },
         { name: "Volvo FH", desc: "Магистральный тягач, экономичный дизель, автоматическая КПП.", engine: "12.8 л D13K", hp: 500, plate: "M888AA77" },
         { name: "Volvo FH", desc: "Магистральный тягач, кабина Globetrotter, мощный тормоз-замедлитель.", engine: "12.8 л D13K", hp: 500, plate: "P888MK77" },
         { name: "Volvo FH", desc: "Тягач для международных перевозок, низкий расход топлива.", engine: "12.8 л D13K", hp: 500, plate: "P888MK78" },
@@ -461,108 +439,45 @@
         { name: "Mercedes-Benz Sprinter", desc: "Универсальный коммерческий фургон, подходит для грузоперевозок.", engine: "3.0 л OM642", hp: 190, plate: "A942EB77" }
     ];
 
-    // ----- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ -----
+    // ----- ЗАЯВКИ И СТАТУСЫ -----
     let applications = [];
 
-    // ----- ФУНКЦИИ РАБОТЫ С GOOGLE SHEETS -----
-    async function fetchApplications() {
-        const response = await fetch(`${SCRIPT_URL}?action=get&t=${Date.now()}`);
-        return await response.json();
+    function loadApplications() {
+        const stored = localStorage.getItem('car_applications');
+        applications = stored ? JSON.parse(stored) : [];
     }
-
-    async function addApplicationToSheet(app) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'add', ...app })
-        });
+    function saveApplications() {
+        localStorage.setItem('car_applications', JSON.stringify(applications));
     }
-
-    async function updateStatusInSheet(id, status) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update', id, status })
-        });
+    function addApplication(app) {
+        app.id = Date.now();
+        app.createdAt = new Date().toLocaleString();
+        app.status = 'pending';
+        applications.push(app);
+        saveApplications();
     }
-
-    async function deleteFromSheet(id) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete', id })
-        });
-    }
-
-    // ----- ОСНОВНЫЕ ФУНКЦИИ -----
-    async function loadApplications(showStatus = true) {
-        const statusDiv = document.getElementById('syncStatus');
-        if (showStatus) statusDiv.innerHTML = '🔄 Синхронизация с облаком...';
-        try {
-            applications = await fetchApplications();
-            if (showStatus) {
-                statusDiv.innerHTML = '✅ Данные синхронизированы';
-                setTimeout(() => {
-                    if (statusDiv.innerHTML === '✅ Данные синхронизированы')
-                        statusDiv.innerHTML = '📡 Заявки в Google Sheets';
-                }, 2000);
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки:', error);
-            if (showStatus) statusDiv.innerHTML = '⚠️ Ошибка! Проверьте URL скрипта';
-            applications = [];
-        }
-        if (window.currentApplicationsModalOpen) {
-            renderApplicationsList();
+    function updateApplicationStatus(id, newStatus) {
+        const index = applications.findIndex(app => app.id === id);
+        if (index !== -1) { 
+            applications[index].status = newStatus; 
+            saveApplications(); 
         }
     }
-
-    async function addApplication(app) {
-        const newApp = {
-            id: Date.now().toString(),
-            nickname: app.nickname,
-            carBrand: app.carBrand,
-            carNumber: app.carNumber,
-            takeTime: app.takeTime,
-            reason: app.reason,
-            createdAt: new Date().toLocaleString(),
-            status: 'pending'
-        };
-        await addApplicationToSheet(newApp);
-        await loadApplications(true);
-        alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}\nОжидает одобрения.`);
+    function deleteApplication(id) {
+        applications = applications.filter(app => app.id !== id);
+        saveApplications();
     }
-
-    async function updateApplicationStatus(id, newStatus) {
-        await updateStatusInSheet(id, newStatus);
-        await loadApplications(false);
-        if (window.currentApplicationsModalOpen) renderApplicationsList();
-    }
-
-    async function deleteApplication(id) {
-        if (confirm('Удалить заявку без возможности восстановления?')) {
-            await deleteFromSheet(id);
-            await loadApplications(false);
-            if (window.currentApplicationsModalOpen) renderApplicationsList();
-        }
-    }
-
-    async function returnVehicleByModelAndPlate(modelName, plateNumber) {
+    // Возврат транспорта: удаляем ВСЕ одобренные заявки с указанной маркой и номером
+    function returnVehicleByModelAndPlate(modelName, plateNumber) {
         const toDelete = applications.filter(app => app.status === 'approved' && app.carBrand === modelName && app.carNumber === plateNumber);
         if (toDelete.length === 0) {
             alert(`❌ Нет одобренных заявок на ${modelName} (${plateNumber}). Возврат невозможен.`);
             return false;
         }
         if (confirm(`Возврат транспорта:\n${modelName} (${plateNumber})\nБудут удалены ${toDelete.length} одобренн${toDelete.length === 1 ? 'ая заявка' : 'ые заявки'}.\nПродолжить?`)) {
-            for (const app of toDelete) {
-                await deleteFromSheet(app.id);
-            }
-            await loadApplications(false);
-            alert(`✅ Транспорт "${modelName}" (${plateNumber}) возвращён.`);
-            if (window.currentApplicationsModalOpen) renderApplicationsList();
+            applications = applications.filter(app => !(app.status === 'approved' && app.carBrand === modelName && app.carNumber === plateNumber));
+            saveApplications();
+            alert(`✅ Транспорт "${modelName}" (${plateNumber}) возвращён. Все одобренные заявки по этому ТС закрыты.`);
             return true;
         }
         return false;
@@ -579,7 +494,7 @@
             <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th>
         </tr></thead><tbody>`;
         
-        for (const app of applications) {
+        applications.forEach(app => {
             html += `<tr>
                         <td>${escapeHtml(app.nickname)}</td>
                         <td>${escapeHtml(app.carBrand)}</td>
@@ -594,9 +509,11 @@
                             <button class="btn-approve" data-id="${app.id}">✔ Одобрить</button>
                             <button class="btn-reject" data-id="${app.id}">✖ Отказать</button>
                         </div>`;
-            } else if (app.status === 'approved') {
+            } 
+            else if (app.status === 'approved') {
                 html += `<span class="status-text-approved">✅ Одобрено</span>`;
-            } else if (app.status === 'rejected') {
+            } 
+            else if (app.status === 'rejected') {
                 html += `<span class="status-text-rejected">❌ Отказано</span>`;
             }
             
@@ -607,69 +524,89 @@
             }
             html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
             html += `</td></tr>`;
-        }
+        });
         
         html += `</tbody></table>`;
         container.innerHTML = html;
 
-        for (const btn of document.querySelectorAll('.btn-approve')) {
-            btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'approved'));
-        }
-        for (const btn of document.querySelectorAll('.btn-reject')) {
-            btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'rejected'));
-        }
-        for (const btn of document.querySelectorAll('.btn-delete')) {
-            btn.addEventListener('click', () => deleteApplication(btn.dataset.id));
-        }
-        for (const btn of document.querySelectorAll('.btn-return')) {
-            btn.addEventListener('click', () => {
-                returnVehicleByModelAndPlate(btn.dataset.brand, btn.dataset.plate);
+        document.querySelectorAll('.btn-approve').forEach(btn => {
+            btn.addEventListener('click', () => { 
+                updateApplicationStatus(parseInt(btn.dataset.id), 'approved'); 
+                renderApplicationsList(); 
             });
-        }
+        });
+        document.querySelectorAll('.btn-reject').forEach(btn => {
+            btn.addEventListener('click', () => { 
+                updateApplicationStatus(parseInt(btn.dataset.id), 'rejected'); 
+                renderApplicationsList(); 
+            });
+        });
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', () => { 
+                if(confirm('Удалить заявку?')) {
+                    deleteApplication(parseInt(btn.dataset.id)); 
+                    renderApplicationsList();
+                }
+            });
+        });
+        document.querySelectorAll('.btn-return').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const brand = btn.dataset.brand;
+                const plate = btn.dataset.plate;
+                if (returnVehicleByModelAndPlate(brand, plate)) {
+                    renderApplicationsList();
+                }
+            });
+        });
     }
 
     function escapeHtml(str) { 
-        if (!str) return ''; 
-        return str.replace(/[&<>]/g, function(m) { 
-            if (m === '&') return '&amp;'; 
-            if (m === '<') return '&lt;'; 
-            if (m === '>') return '&gt;'; 
+        if(!str) return ''; 
+        return str.replace(/[&<>]/g, function(m){ 
+            if(m==='&') return '&amp;'; 
+            if(m==='<') return '&lt;'; 
+            if(m==='>') return '&gt;'; 
             return m;
         }); 
     }
 
-    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (С ФОТО) ----
-    const grid = document.getElementById('carsGrid');
-    cars.forEach(car => {
-        const card = document.createElement('div');
-        card.className = 'car-card';
-        
-        let imageHtml = '';
-        if (car.plate !== "B_H") {
-            const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
-            const imagePath = `images/${imageFileName}.jpg`;
-            imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.style.display='none'">`;
-        } else {
-            imageHtml = `<div style="width:100%; height:100%; background:#1a1a2a;"></div>`;
-        }
-        
-        card.innerHTML = `
-            <div class="car-image">
-                ${imageHtml}
-            </div>
-            <div class="car-info">
-                <div class="car-name">${car.name}</div>
-                <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
-                <div class="car-spec">${car.engine || ''} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
-                <div class="car-plate">🚛 Госномер: ${car.plate}</div>
-            </div>
-            <div class="card-buttons">
-                <button class="take-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">📝 Взять в пользование</button>
-                <button class="return-card-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">↩ Вернуть транспорт</button>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
+  // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (С ФОТО, БЕЗ НАДПИСИ ПРИ ОШИБКЕ) ----
+const grid = document.getElementById('carsGrid');
+
+cars.forEach(car => {
+    const card = document.createElement('div');
+    card.className = 'car-card';
+    
+    // Формируем имя файла для фото
+    let imageHtml = '';
+    
+    if (car.plate !== "Б/Н") {
+        const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
+        const imagePath = `images/${imageFileName}.jpg`;
+        // При ошибке загрузки — показываем пустой блок (без текста)
+        imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.background='#1a1a2a'">`;
+    } else {
+        // Для машин без номера — просто тёмный фон, без надписи
+        imageHtml = `<div style="width:100%; height:100%; background:#1a1a2a;"></div>`;
+    }
+    
+    card.innerHTML = `
+        <div class="car-image">
+            ${imageHtml}
+        </div>
+        <div class="car-info">
+            <div class="car-name">${car.name}</div>
+            <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
+            <div class="car-spec">${car.engine || ''} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
+            <div class="car-plate">🚛 Госномер: ${car.plate}</div>
+        </div>
+        <div class="card-buttons">
+            <button class="take-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">📝 Взять в пользование</button>
+            <button class="return-card-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">↩ Вернуть транспорт</button>
+        </div>
+    `;
+    grid.appendChild(card);
+});
 
     // ---- МОДАЛКА АНКЕТЫ ----
     const modalAnketa = document.getElementById('anketaModal');
@@ -699,14 +636,15 @@
     }
     function closeAnketaModal() { modalAnketa.style.display = 'none'; }
     
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
         const nickname = document.getElementById('nickname').value.trim();
         if(!nickname) { alert('Укажите ник'); return; }
         const takeTime = document.getElementById('takeTime').value || 'не указано';
         const carNumber = document.getElementById('carNumber').value.trim() || 'не указан';
         const reason = document.getElementById('reason').value.trim() || 'не указана';
-        await addApplication({ nickname, takeTime, carBrand: currentCarName, carNumber, reason });
+        addApplication({ nickname, takeTime, carBrand: currentCarName, carNumber, reason });
+        alert(`✅ Заявка принята и ожидает одобрения!\nТранспорт: ${currentCarName}\nНик: ${nickname}\nВремя: ${takeTime}\nНомер: ${carNumber}`);
         closeAnketaModal();
     });
     
@@ -718,16 +656,11 @@
     const closeAppsSpan = document.getElementById('closeAppsModal');
     const viewAppsBtn = document.getElementById('viewAppsBtn');
     
-    async function openApplicationsModal() { 
-        window.currentApplicationsModalOpen = true;
-        await loadApplications();
+    function openApplicationsModal() { 
         renderApplicationsList(); 
         modalApps.style.display = 'block'; 
     }
-    function closeApplicationsModal() { 
-        window.currentApplicationsModalOpen = false;
-        modalApps.style.display = 'none'; 
-    }
+    function closeApplicationsModal() { modalApps.style.display = 'none'; }
     
     viewAppsBtn.addEventListener('click', openApplicationsModal);
     closeAppsSpan.onclick = closeApplicationsModal;
@@ -740,4 +673,24 @@
     document.addEventListener('click', (e) => {
         if(e.target.classList.contains('take-btn')) {
             const carName = e.target.dataset.carName;
-            const carPlate = e.target.dataset
+            const carPlate = e.target.dataset.carPlate;
+            openAnketaModal(carName, carPlate);
+        }
+        if(e.target.classList.contains('return-card-btn')) {
+            const carName = e.target.dataset.carName;
+            const carPlate = e.target.dataset.carPlate;
+            returnVehicleByModelAndPlate(carName, carPlate);
+            renderApplicationsList();
+        }
+    });
+
+    loadApplications();
+</script>
+</body>
+</html>
+    // ---- ЗАГРУЗКА ПРИ СТАРТЕ ----
+    loadApplications();
+</script>
+</body>
+</html>
+</html>
