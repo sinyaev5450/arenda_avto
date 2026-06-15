@@ -624,7 +624,7 @@
 
 <script>
     // ==================== ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpozYhSF3ZLw8p_EetSesN3uy-3hl4Z1YoZIPVJvQ5dBWf0tqSTbqQkn2TgHdf3ZZscA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhMc9e_BTNO2YDl___V04tK7G7v1HvCvCwa8vxr_CoafANcqSUwcGKJQ2WEtr5qQjsGw/exec';
     // ================================================================================
 
     // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
@@ -704,34 +704,44 @@
 
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
         // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
-            async function callScript(params) {
-    const isWriteOperation = params.action === 'add' || params.action === 'update' || params.action === 'updateReturn' || params.action === 'delete';
-    
-    if (isWriteOperation) {
-        try {
-            console.log('📤 POST Отправка:', params.action, params.type);
-            
-            const response = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'cors',  // <--- ИСПРАВИТЬ ЗДЕСЬ
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(params)
-});
-            
-            const text = await response.text();
-            console.log('📥 POST Ответ:', text.substring(0, 500));
-            
+                async function callScript(params) {
+        // Для добавления и обновления используем POST
+        const isWriteOperation = params.action === 'add' || params.action === 'update' || params.action === 'updateReturn' || params.action === 'delete';
+        
+        if (isWriteOperation) {
+            // POST запрос для изменения данных
             try {
-                return JSON.parse(text);
-            } catch(e) {
-                console.error('Ошибка парсинга JSON:', text);
-                return { success: true, result: { message: 'Заявка отправлена' } };
+                console.log('📤 POST Отправка:', params.action, params.type, params);
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',  // ВАЖНО: cors, НЕ no-cors!
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(params)
+                });
+                
+                if (!response.ok) {
+                    console.error(`HTTP ошибка: ${response.status}`);
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const text = await response.text();
+                console.log('📥 POST Ответ:', text.substring(0, 500));
+                
+                try {
+                    return JSON.parse(text);
+                } catch(e) {
+                    console.error('Ошибка парсинга JSON:', text);
+                    return { success: true, result: { message: 'Заявка отправлена (ответ не распознан)' } };
+                }
+            } catch (error) {
+                console.error('Ошибка POST запроса:', error);
+                alert('❌ Ошибка соединения с сервером. Проверьте интернет и повторите попытку.');
+                throw error;
             }
-        } catch (error) {
-            console.error('Ошибка POST запроса:', error);
-            return { success: true, result: { message: 'Заявка отправлена' } };
-        }
-    } else {
+        } else {
             // GET запрос для чтения данных
             const urlParams = new URLSearchParams();
             for (let key in params) {
