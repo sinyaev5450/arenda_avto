@@ -831,6 +831,18 @@
         }
     }
 
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ escapeHtml
+    function escapeHtml(str) {
+        if (str === undefined || str === null) return '';
+        if (typeof str !== 'string') str = String(str);
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
     // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ ----
     function renderApplicationsList() {
         const container = document.getElementById('applicationsList');
@@ -838,19 +850,21 @@
             container.innerHTML = '<div class="empty-apps">📭 Пока нет ни одной заявки на взятие.</div>';
             return;
         }
-        let html = `<table class="applications-table"><thead><tr>
-            <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th>
-        </tr></thead><tbody>`;
+        let html = `<table class="applications-table"><thead>
+            <tr>
+                <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th>
+            </tr>
+        </thead><tbody>`;
         
         applications.forEach(app => {
             html += `<tr>
-                        <td>${escapeHtml(app.nickname || '')}</td>
-                        <td>${escapeHtml(app.carBrand || '')}</td>
-                        <td>${escapeHtml(app.carNumber || '')}</td>
-                        <td>${escapeHtml(app.takeTime || '')}</td>
-                        <td>${escapeHtml(app.reason || '')}</td>
-                        <td>${escapeHtml(app.createdAt || '')}</td>
-                        <td>`;
+                <td>${escapeHtml(app.nickname)}</td>
+                <td>${escapeHtml(app.carBrand)}</td>
+                <td>${escapeHtml(app.carNumber)}</td>
+                <td>${escapeHtml(app.takeTime)}</td>
+                <td>${escapeHtml(app.reason)}</td>
+                <td>${escapeHtml(app.createdAt)}</td>
+                <td>`;
             
             if (app.status === 'pending') {
                 if (isAdmin) {
@@ -867,16 +881,17 @@
                 html += `<span class="status-text-rejected">❌ Отказано</span>`;
             }
             
-            html += `</td><td class="action-buttons">`;
+            html += `</td>
+                <td class="action-buttons">`;
             if (isAdmin) {
                 html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
             } else {
                 html += `—`;
             }
-            html += `</tr>`;
+            html += `</td></tr>`;
         });
         
-        html += `</tbody><table>`;
+        html += `</tbody></table>`;
         container.innerHTML = html;
 
         if (isAdmin) {
@@ -905,28 +920,30 @@
             container.innerHTML = '<div class="empty-apps">📭 Пока нет ни одной заявки на возврат.</div>';
             return;
         }
-        let html = `<table class="returns-table"><thead><tr>
-            <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время возврата</th><th>Пробег (км)</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Действия</th>
-        </tr></thead><tbody>`;
+        let html = `<table class="returns-table"><thead>
+            <tr>
+                <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время возврата</th><th>Пробег (км)</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Действия</th>
+            </tr>
+        </thead><tbody>`;
         
         returns.forEach(ret => {
             html += `<tr>
-                        <td>${escapeHtml(ret.nickname || '')}</td>
-                        <td>${escapeHtml(ret.carBrand || '')}</td>
-                        <td>${escapeHtml(ret.carNumber || '')}</td>
-                        <td>${escapeHtml(ret.returnTime || '')}</td>
-                        <td>${escapeHtml(ret.mileage || '')}</td>
-                        <td>${escapeHtml(ret.condition || '')}</td>
-                        <td>${escapeHtml(ret.servicePerformed || '')}</td>
-                        <td>${escapeHtml(ret.comment || '')}</td>
-                        <td>${escapeHtml(ret.createdAt || '')}</td>
-                        <td class="action-buttons">`;
+                <td>${escapeHtml(ret.nickname)}</td>
+                <td>${escapeHtml(ret.carBrand)}</td>
+                <td>${escapeHtml(ret.carNumber)}</td>
+                <td>${escapeHtml(ret.returnTime)}</td>
+                <td>${escapeHtml(ret.mileage)}</td>
+                <td>${escapeHtml(ret.condition)}</td>
+                <td>${escapeHtml(ret.servicePerformed)}</td>
+                <td>${escapeHtml(ret.comment)}</td>
+                <td>${escapeHtml(ret.createdAt)}</td>
+                <td class="action-buttons">`;
             if (isAdmin) {
                 html += `<button class="btn-delete-return" data-id="${ret.id}">🗑 Удалить</button>`;
             } else {
                 html += `—`;
             }
-            html += `</tr>`;
+            html += `</td></tr>`;
         });
         
         html += `</tbody></table>`;
@@ -939,16 +956,6 @@
                 });
             });
         }
-    }
-
-    function escapeHtml(str) { 
-        if(!str) return ''; 
-        return str.replace(/[&<>]/g, function(m){ 
-            if(m==='&') return '&amp;'; 
-            if(m==='<') return '&lt;'; 
-            if(m==='>') return '&gt;'; 
-            return m;
-        }); 
     }
 
     // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА ----
