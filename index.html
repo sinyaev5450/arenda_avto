@@ -604,40 +604,43 @@
 
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
     
+    // Универсальная функция отправки запросов
+    async function callScript(params) {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(params)
+            });
+            
+            const text = await response.text();
+            console.log('Ответ от скрипта:', text);
+            
+            try {
+                return JSON.parse(text);
+            } catch(e) {
+                console.error('Ошибка парсинга JSON:', text);
+                return { error: 'Неверный формат ответа от сервера' };
+            }
+        } catch (error) {
+            console.error('Ошибка запроса:', error);
+            throw error;
+        }
+    }
+    
     // Загрузка заявок на взятие
     async function loadApplicationsFromCloud() {
         try {
-            const response = await fetch(`${SCRIPT_URL}?action=get&type=take&t=${Date.now()}`, {
-                method: 'GET',
-                mode: 'cors'
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const text = await response.text();
-            console.log('Ответ от сервера (заявки):', text);
-            
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch(e) {
-                console.error('Ошибка парсинга JSON:', text);
-                return [];
-            }
-            
-            if (Array.isArray(data)) {
-                return data;
-            } else if (data && typeof data === 'object' && data.error) {
-                console.error('Ошибка от сервера:', data.error);
-                return [];
+            const result = await callScript({ action: 'get', type: 'take' });
+            if (Array.isArray(result)) {
+                return result;
             } else {
-                console.warn('Неожиданный формат данных:', data);
+                console.error('Неверный формат заявок:', result);
                 return [];
             }
         } catch (error) {
-            console.error('Ошибка загрузки заявок из облака:', error);
+            console.error('Ошибка загрузки заявок:', error);
             return [];
         }
     }
@@ -645,123 +648,52 @@
     // Загрузка заявок на возврат
     async function loadReturnsFromCloud() {
         try {
-            const response = await fetch(`${SCRIPT_URL}?action=get&type=return&t=${Date.now()}`, {
-                method: 'GET',
-                mode: 'cors'
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const text = await response.text();
-            console.log('Ответ от сервера (возвраты):', text);
-            
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch(e) {
-                console.error('Ошибка парсинга JSON:', text);
-                return [];
-            }
-            
-            if (Array.isArray(data)) {
-                return data;
-            } else if (data && typeof data === 'object' && data.error) {
-                console.error('Ошибка от сервера:', data.error);
-                return [];
+            const result = await callScript({ action: 'get', type: 'return' });
+            if (Array.isArray(result)) {
+                return result;
             } else {
-                console.warn('Неожиданный формат данных:', data);
+                console.error('Неверный формат возвратов:', result);
                 return [];
             }
         } catch (error) {
-            console.error('Ошибка загрузки возвратов из облака:', error);
+            console.error('Ошибка загрузки возвратов:', error);
             return [];
         }
     }
 
     // Добавление заявки на взятие
     async function addApplicationToCloud(app) {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'add', type: 'take', ...app })
-            });
-            const result = await response.json();
-            console.log('Результат добавления заявки:', result);
-            return result;
-        } catch (error) {
-            console.error('Ошибка добавления заявки:', error);
-            throw error;
-        }
+        const params = {
+            action: 'add',
+            type: 'take',
+            ...app
+        };
+        return await callScript(params);
     }
 
     // Добавление заявки на возврат
     async function addReturnToCloud(returnData) {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'add', type: 'return', ...returnData })
-            });
-            const result = await response.json();
-            console.log('Результат добавления возврата:', result);
-            return result;
-        } catch (error) {
-            console.error('Ошибка добавления возврата:', error);
-            throw error;
-        }
+        const params = {
+            action: 'add',
+            type: 'return',
+            ...returnData
+        };
+        return await callScript(params);
     }
 
     // Обновление статуса заявки на взятие
     async function updateStatusInCloud(id, status) {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'update', type: 'take', id, status })
-            });
-            return await response.json();
-        } catch (error) {
-            console.error('Ошибка обновления статуса:', error);
-            throw error;
-        }
+        return await callScript({ action: 'update', type: 'take', id, status });
     }
 
     // Удаление заявки на взятие
     async function deleteFromCloud(id) {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'delete', type: 'take', id })
-            });
-            return await response.json();
-        } catch (error) {
-            console.error('Ошибка удаления:', error);
-            throw error;
-        }
+        return await callScript({ action: 'delete', type: 'take', id });
     }
 
     // Удаление заявки на возврат
     async function deleteReturnFromCloud(id) {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'delete', type: 'return', id })
-            });
-            return await response.json();
-        } catch (error) {
-            console.error('Ошибка удаления возврата:', error);
-            throw error;
-        }
+        return await callScript({ action: 'delete', type: 'return', id });
     }
 
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
@@ -769,7 +701,6 @@
         const statusDiv = document.getElementById('syncStatus');
         if (showStatus) statusDiv.innerHTML = '🔄 Синхронизация с облаком...';
         try {
-            // Загружаем оба типа заявок параллельно
             const [loadedApplications, loadedReturns] = await Promise.all([
                 loadApplicationsFromCloud(),
                 loadReturnsFromCloud()
@@ -792,11 +723,8 @@
         } catch (error) {
             console.error('Ошибка загрузки:', error);
             if (showStatus) statusDiv.innerHTML = '⚠️ Ошибка! Проверьте URL скрипта';
-            applications = [];
-            returns = [];
         }
         
-        // Обновляем открытые модальные окна
         if (window.currentApplicationsModalOpen) {
             renderApplicationsList();
         }
@@ -816,9 +744,18 @@
             createdAt: new Date().toLocaleString(),
             status: 'pending'
         };
-        await addApplicationToCloud(newApp);
-        await loadAllData(true);
-        alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}\nОжидает одобрения.`);
+        
+        try {
+            const result = await addApplicationToCloud(newApp);
+            console.log('Результат добавления:', result);
+            await loadAllData(true);
+            alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}\nОжидает одобрения.`);
+            return true;
+        } catch (error) {
+            console.error('Ошибка при отправке заявки:', error);
+            alert('❌ Ошибка при отправке заявки. Проверьте консоль.');
+            return false;
+        }
     }
 
     async function addReturnApplication(returnData) {
@@ -830,13 +767,22 @@
             returnTime: returnData.returnTime,
             mileage: returnData.mileage,
             condition: returnData.condition,
-            servicePerformed: returnData.servicePerformed,
-            comment: returnData.comment,
+            servicePerformed: returnData.servicePerformed || '',
+            comment: returnData.comment || '',
             createdAt: new Date().toLocaleString()
         };
-        await addReturnToCloud(newReturn);
-        await loadAllData(true);
-        alert(`✅ Заявка на возврат отправлена!\nТранспорт: ${returnData.carBrand}\nНик: ${returnData.nickname}`);
+        
+        try {
+            const result = await addReturnToCloud(newReturn);
+            console.log('Результат добавления возврата:', result);
+            await loadAllData(true);
+            alert(`✅ Заявка на возврат отправлена!\nТранспорт: ${returnData.carBrand}\nНик: ${returnData.nickname}`);
+            return true;
+        } catch (error) {
+            console.error('Ошибка при отправке заявки на возврат:', error);
+            alert('❌ Ошибка при отправке заявки на возврат.');
+            return false;
+        }
     }
 
     async function updateApplicationStatus(id, newStatus) {
@@ -911,19 +857,16 @@
 
         if (isAdmin) {
             document.querySelectorAll('.btn-approve').forEach(btn => {
-                btn.removeEventListener('click', () => {});
                 btn.addEventListener('click', () => { 
                     updateApplicationStatus(btn.dataset.id, 'approved'); 
                 });
             });
             document.querySelectorAll('.btn-reject').forEach(btn => {
-                btn.removeEventListener('click', () => {});
                 btn.addEventListener('click', () => { 
                     updateApplicationStatus(btn.dataset.id, 'rejected'); 
                 });
             });
             document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.removeEventListener('click', () => {});
                 btn.addEventListener('click', () => { 
                     deleteApplication(btn.dataset.id); 
                 });
@@ -967,7 +910,6 @@
 
         if (isAdmin) {
             document.querySelectorAll('.btn-delete-return').forEach(btn => {
-                btn.removeEventListener('click', () => {});
                 btn.addEventListener('click', () => { 
                     deleteReturn(btn.dataset.id); 
                 });
