@@ -782,7 +782,33 @@
         }
     }
     // ==================== ПРОВЕРКА СТАТУСА БРОНИРОВАНИЯ ====================
-    
+        
+    // Функция для получения информации о том, кто забронировал
+    function getBookingInfo(carPlate) {
+        // Проверяем, есть ли одобренный возврат
+        const hasApprovedReturn = returns.some(ret => 
+            ret.carNumber === carPlate && 
+            ret.status === 'approved'
+        );
+        
+        if (hasApprovedReturn) {
+            return { isBooked: false };
+        }
+        
+        const booking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'approved'
+        );
+        
+        if (booking) {
+            return {
+                isBooked: true,
+                user: booking.nickname,
+                until: booking.takeTime || 'не указано'
+            };
+        }
+        return { isBooked: false };
+    }
         // Функция для проверки, забронирована ли машина
     function isCarBooked(carPlate) {
         // Проверяем заявки на взятие со статусом "approved" (одобренные)
