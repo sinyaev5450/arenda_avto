@@ -546,8 +546,8 @@
 </div>
 
 <script>
-    // ==================== ВАЖНО: ВСТАВЬТЕ ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzViuuLEEt_5-zBoGM3RCwDlmM0oDwnyvJxIYgzw4ncZcgHFlyk85YgNP790OMp__Py/exec';
+    // ==================== ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby1eqMPC-nknaDi5ovWr9rpFYu-Nwfc9x2exVdry2G7cPTss72XVc_iK-oqn8_T_mcI/exec';
     // ================================================================================
 
     // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
@@ -562,7 +562,7 @@
         return plate.split('').map(char => map[char] || char).join('');
     }
 
-    // ----- СПИСОК ТРАНСПОРТА -----
+    // ----- СПИСОК ТРАНСПОРТА (исправлен Jaguar F-Type) -----
     const cars = [
         { name: "BMW X6 M (F86)", desc: "Спортивный кроссовер с twin-turbo V8, 575 л.с., полный привод M xDrive.", engine: "4.4 л V8 TwinPower Turbo", hp: 575, plate: "M666YP77" },
         { name: "Volvo XC90 T5", desc: "Роскошный 7-местный SUV с турбодвигателем и скандинавским дизайном.", engine: "2.0 л Drive-E Turbo", hp: 250, plate: "T550OK63" },
@@ -601,38 +601,50 @@
     // ----- ЗАЯВКИ (ЗАГРУЖАЮТСЯ ИЗ ОБЛАКА) -----
     let applications = [];
 
-    // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
+    // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS (исправлен CORS) -----
     async function loadApplicationsFromCloud() {
-        const response = await fetch(`${SCRIPT_URL}?action=get&t=${Date.now()}`);
-        if (!response.ok) throw new Error('Ошибка загрузки');
-        return await response.json();
+        const response = await fetch(`${SCRIPT_URL}?action=get&t=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        if (!response.ok) throw new Error('Ошибка загрузки: ' + response.status);
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch(e) {
+            console.error('Ошибка парсинга JSON:', text);
+            return [];
+        }
     }
 
     async function addApplicationToCloud(app) {
-        await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'add', ...app })
         });
+        return await response.json();
     }
 
     async function updateStatusInCloud(id, status) {
-        await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'update', id, status })
         });
+        return await response.json();
     }
 
     async function deleteFromCloud(id) {
-        await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'delete', id })
         });
+        return await response.json();
     }
 
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
@@ -641,7 +653,7 @@
         if (showStatus) statusDiv.innerHTML = '🔄 Синхронизация с облаком...';
         try {
             applications = await loadApplicationsFromCloud();
-            console.log('Загружено заявок:', applications.length);
+            console.log('Загружено заявок:', applications.length, applications);
             if (showStatus) {
                 statusDiv.innerHTML = '✅ Данные синхронизированы';
                 setTimeout(() => {
@@ -766,7 +778,7 @@
         }); 
     }
 
-    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА ----
+    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА (исправлено для Jaguar) ----
     const grid = document.getElementById('carsGrid');
 
     cars.forEach(car => {
@@ -774,11 +786,13 @@
         card.className = 'car-card';
         
         let imageHtml = '';
+        // Список номеров без фото
         const noPhotoPlates = ["W000WW"];
         
         if (noPhotoPlates.includes(car.plate)) {
+            // Заглушка для машин без фото
             imageHtml = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);">
-                            <span style="font-size: 4rem;">🚗</span>
+                            <span style="font-size: 4rem;">🐆</span>
                          </div>`;
         } else {
             const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
@@ -860,7 +874,6 @@
             localStorage.setItem('devillecar_isAdmin', 'true');
             showUserInterface();
             alert('✅ Вы вошли как администратор. Нажмите "Заявки на взятие" для просмотра.');
-            // Принудительно обновляем список заявок
             loadAllData(true);
         } else if (password !== null) {
             registerError.textContent = 'Неверный пароль администратора';
