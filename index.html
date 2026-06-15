@@ -857,51 +857,55 @@
     // ==================== ПРОВЕРКА СТАТУСА БРОНИРОВАНИЯ ====================
         
     // Функция для получения информации о том, кто забронировал
-    function getBookingInfo(carPlate) {
-        // Проверяем, есть ли одобренный возврат
-        const hasApprovedReturn = returns.some(ret => 
-            ret.carNumber === carPlate && 
-            ret.status === 'approved'
-        );
-        
-        if (hasApprovedReturn) {
-            return { isBooked: false };
-        }
-        
-        const booking = applications.find(app => 
-            app.carNumber === carPlate && 
-            app.status === 'approved'
-        );
-        
-        if (booking) {
-            return {
-                isBooked: true,
-                user: booking.nickname,
-                until: booking.takeTime || 'не указано'
-            };
-        }
+function getBookingInfo(carPlate) {
+    // Проверяем, есть ли ОДОБРЕННЫЙ возврат для этой машины
+    const hasApprovedReturn = returns.some(ret => 
+        ret.carNumber === carPlate && 
+        ret.status === 'approved'
+    );
+    
+    // Если есть одобренный возврат - машина свободна
+    if (hasApprovedReturn) {
         return { isBooked: false };
     }
-        // Функция для проверки, забронирована ли машина
-    function isCarBooked(carPlate) {
-        // Проверяем заявки на взятие со статусом "approved" (одобренные)
-        // НО не учитываем машины, по которым уже одобрен возврат
-        const activeBooking = applications.find(app => 
-            app.carNumber === carPlate && 
-            app.status === 'approved'
-        );
-        
-        // Если есть активная заявка на взятие, проверяем нет ли одобренного возврата
-        if (activeBooking) {
-            const hasApprovedReturn = returns.some(ret => 
-                ret.carNumber === carPlate && 
-                ret.status === 'approved'
-            );
-            // Если есть одобренный возврат - машина свободна
-            return !hasApprovedReturn;
-        }
+    
+    // Ищем активную одобренную заявку на взятие
+    const booking = applications.find(app => 
+        app.carNumber === carPlate && 
+        app.status === 'approved'
+    );
+    
+    if (booking) {
+        return {
+            isBooked: true,
+            user: booking.nickname,
+            until: booking.takeTime || 'не указано'
+        };
+    }
+    return { isBooked: false };
+}
+
+// Функция для проверки, забронирована ли машина
+function isCarBooked(carPlate) {
+    // Проверяем, есть ли одобренный возврат
+    const hasApprovedReturn = returns.some(ret => 
+        ret.carNumber === carPlate && 
+        ret.status === 'approved'
+    );
+    
+    // Если есть одобренный возврат - машина свободна
+    if (hasApprovedReturn) {
         return false;
     }
+    
+    // Проверяем наличие активной одобренной заявки на взятие
+    const activeBooking = applications.find(app => 
+        app.carNumber === carPlate && 
+        app.status === 'approved'
+    );
+    
+    return !!activeBooking;
+}
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
     async function loadAllData(showStatus = true) {
         const statusDiv = document.getElementById('syncStatus');
