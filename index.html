@@ -703,6 +703,7 @@
     }
 
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
+        // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
     async function callScript(params) {
         const urlParams = new URLSearchParams();
         for (let key in params) {
@@ -716,31 +717,65 @@
         const url = `${SCRIPT_URL}?${urlParams.toString()}`;
         console.log('📤 Отправка:', url);
         
-        const response = await fetch(url, {
-            method: 'GET',
-            mode: 'cors',
-            headers: { 'Accept': 'application/json' }
-        });
-        
-        const text = await response.text();
-        console.log('📥 Ответ:', text);
-        
         try {
-            return JSON.parse(text);
-        } catch(e) {
-            console.error('Ошибка парсинга:', text);
-            return { error: 'Неверный формат ответа' };
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            if (!response.ok) {
+                console.error(`HTTP ошибка: ${response.status}`);
+                return { error: `HTTP ${response.status}` };
+            }
+            
+            const text = await response.text();
+            console.log('📥 Ответ:', text.substring(0, 500)); // Обрезаем длинные ответы
+            
+            try {
+                return JSON.parse(text);
+            } catch(e) {
+                console.error('Ошибка парсинга JSON:', text);
+                return { error: 'Неверный формат ответа' };
+            }
+        } catch (error) {
+            console.error('Ошибка запроса:', error);
+            // Возвращаем пустой массив вместо ошибки, чтобы не ломать приложение
+            return [];
         }
     }
     
-    async function loadApplicationsFromCloud() {
-        const result = await callScript({ action: 'get', type: 'take' });
-        return Array.isArray(result) ? result : [];
+        async function loadApplicationsFromCloud() {
+        try {
+            const result = await callScript({ action: 'get', type: 'take' });
+            // Если результат - массив, возвращаем его, иначе пустой массив
+            if (Array.isArray(result)) {
+                return result;
+            } else if (result && result.error) {
+                console.error('Ошибка загрузки заявок:', result.error);
+                return [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Ошибка загрузки заявок:', error);
+            return [];
+        }
     }
 
     async function loadReturnsFromCloud() {
-        const result = await callScript({ action: 'get', type: 'return' });
-        return Array.isArray(result) ? result : [];
+        try {
+            const result = await callScript({ action: 'get', type: 'return' });
+            if (Array.isArray(result)) {
+                return result;
+            } else if (result && result.error) {
+                console.error('Ошибка загрузки возвратов:', result.error);
+                return [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Ошибка загрузки возвратов:', error);
+            return [];
+        }
     }
 
     async function addApplicationToCloud(app) {
@@ -858,34 +893,51 @@
         return false;
     }
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
-    async function loadAllData(showStatus = true) {
+        async function loadAllData(showStatus = true) {
         const statusDiv = document.getElementById('syncStatus');
         if (showStatus) statusDiv.innerHTML = '🔄 Синхронизация...';
         
-        const [loadedApplications, loadedReturns] = await Promise.all([
-            loadApplicationsFromCloud(),
-            loadReturnsFromCloud()
-        ]);
-        
-        applications = loadedApplications;
-        returns = loadedReturns;
-        
-        console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
+        try {
+            const [loadedApplications, loadedReturns] = await Promise.allSettled([
+                loadApplicationsFromCloud(),
+                loadReturnsFromCloud()
+            ]);
+            
+            // Обрабатываем результаты
+            if (loadedApplications.status === 'fulfilled') {
+                applications = loadedApplications.value;
+            } else {
+                console.error('Ошибка загрузки заявок:', loadedApplications.reason);
+                applications = [];
+            }
+            
+            if (loadedReturns.status === 'fulfilled') {
+                returns = loadedReturns.value;
+            } else {
+                console.error('Ошибка загрузки возвратов:', loadedReturns.reason);
+                returns = [];
+            }
+            
+            console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
 
-                // Обновляем карточки автомобилей (обновляем статус бронирования)
-        renderCars();
-        
-        if (showStatus) {
-            statusDiv.innerHTML = `✅ Синхронизировано: ${applications.length} заявок, ${returns.length} возвратов`;
-            setTimeout(() => {
-                if (statusDiv.innerHTML.includes('✅')) {
-                    statusDiv.innerHTML = '📡 Данные в Google Sheets';
-                }
-            }, 3000);
+            // Обновляем карточки автомобилей
+            renderCars();
+            
+            if (showStatus) {
+                statusDiv.innerHTML = `✅ Синхронизировано: ${applications.length} заявок, ${returns.length} возвратов`;
+                setTimeout(() => {
+                    if (statusDiv.innerHTML.includes('✅')) {
+                        statusDiv.innerHTML = '📡 Данные в Google Sheets';
+                    }
+                }, 3000);
+            }
+            
+            if (window.currentApplicationsModalOpen) renderApplicationsList();
+            if (window.currentReturnsModalOpen) renderReturnsList();
+        } catch (error) {
+            console.error('Общая ошибка загрузки:', error);
+            if (showStatus) statusDiv.innerHTML = '⚠️ Ошибка синхронизации';
         }
-        
-        if (window.currentApplicationsModalOpen) renderApplicationsList();
-        if (window.currentReturnsModalOpen) renderReturnsList();
     }
 
     // ----- ОТРИСОВКА ТАБЛИЦ -----
@@ -1255,6 +1307,7 @@
 
     // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ ----
         // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ (с фильтрацией) ====================
+        // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ (с фильтрацией и скрытием закрытых) ====================
     function renderApplicationsList() {
         const container = document.getElementById('applicationsList');
         
@@ -1264,8 +1317,16 @@
             filteredApplications = applications.filter(app => app.nickname === currentUser);
         }
         
+        // Скрываем закрытые заявки (status = 'returned' или 'rejected')
+        // Для админа показываем всё, для пользователя - скрываем закрытые
+        if (!isAdmin) {
+            filteredApplications = filteredApplications.filter(app => 
+                app.status !== 'returned' && app.status !== 'rejected'
+            );
+        }
+        
         if (!filteredApplications.length) {
-            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на взятие.</div>';
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет активных заявок на взятие.</div>';
             return;
         }
         
@@ -1298,6 +1359,8 @@
                 html += `<span class="status-text-approved">✅ Одобрено</span>`;
             } else if (app.status === 'rejected') {
                 html += `<span class="status-text-rejected">❌ Отказано</span>`;
+            } else if (app.status === 'returned') {
+                html += `<span class="status-text-approved">✅ Возвращён</span>`;
             }
             
             html += `</td>
@@ -1310,7 +1373,7 @@
             html += `</td></tr>`;
         });
         
-        html += `</tbody></tr>`;
+        html += `</tbody></table>`;
         container.innerHTML = html;
 
         if (isAdmin) {
@@ -1329,6 +1392,7 @@
     // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ ----
         // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с фильтрацией) ====================
         // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с кнопками одобрения/отказа) ====================
+        // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с фильтрацией и скрытием закрытых) ====================
     function renderReturnsList() {
         const container = document.getElementById('returnsList');
         
@@ -1338,8 +1402,16 @@
             filteredReturns = returns.filter(ret => ret.nickname === currentUser);
         }
         
+        // Скрываем закрытые заявки (status = 'approved' или 'rejected')
+        // Для админа показываем всё, для пользователя - скрываем обработанные
+        if (!isAdmin) {
+            filteredReturns = filteredReturns.filter(ret => 
+                ret.status !== 'approved' && ret.status !== 'rejected'
+            );
+        }
+        
         if (!filteredReturns.length) {
-            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на возврат.</div>';
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет активных заявок на возврат.</div>';
             return;
         }
         
@@ -1388,7 +1460,7 @@
                 html += `—`;
             }
             
-            html += `</td></tr>`;
+            html += `</td></td>`;
         });
         
         html += `</tbody></table>`;
@@ -1446,12 +1518,14 @@
     // Вызовите эту функцию после showUserInterface()
     // Добавьте строку: updateFilterInfo();
     
-       // ==================== ГЕНЕРАЦИЯ КАРТОЧЕК СТАТУС БРОНИРОВАНИЯ ====================
+           // ==================== ГЕНЕРАЦИЯ КАРТОЧЕК СТАТУС БРОНИРОВАНИЯ ====================
     function renderCars() {
         const grid = document.getElementById('carsGrid');
+        if (!grid) return;
         grid.innerHTML = '';
         
         cars.forEach(car => {
+            // Получаем информацию о бронировании
             const bookingInfo = getBookingInfo(car.plate);
             const isBooked = bookingInfo.isBooked;
             
@@ -1466,7 +1540,7 @@
             
             let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
             
-            // Статус бронирования
+            // Статус бронирования (всегда показываем)
             let statusHtml = '';
             if (isBooked) {
                 statusHtml = `
@@ -1474,14 +1548,27 @@
                         🔒 ЗАНЯТА
                     </div>
                 `;
+            } else {
+                statusHtml = `
+                    <div style="position: absolute; top: 10px; right: 10px; background: rgba(46, 204, 113, 0.9); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; z-index: 10;">
+                        ✅ СВОБОДНА
+                    </div>
+                `;
             }
             
-            // Блок информации о бронировании (для залогиненных пользователей)
+            // Блок информации о бронировании (показываем всегда, но с разным содержимым)
             let bookingInfoHtml = '';
-            if (currentUser && isBooked) {
+            if (isBooked) {
+                const whoBooked = bookingInfo.user || 'неизвестно';
                 bookingInfoHtml = `
                     <div style="margin-top: 8px; padding: 6px 10px; background: rgba(230, 126, 34, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #e67e22;">
-                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span>
+                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(whoBooked)}</span>
+                    </div>
+                `;
+            } else {
+                bookingInfoHtml = `
+                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.1); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;">
+                        <span style="color: #6fcf97;">🚗 Доступна для бронирования</span>
                     </div>
                 `;
             }
@@ -1605,7 +1692,7 @@
     
     // Обновление при возврате на вкладку
     document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) loadAllData(false); });
-    function checkAuth() {
+        function checkAuth() {
         const savedUser = localStorage.getItem('devillecar_user');
         const savedAdmin = localStorage.getItem('devillecar_isAdmin');
         if (savedUser) {
@@ -1613,6 +1700,7 @@
             isAdmin = savedAdmin === 'true';
             showUserInterface();
             loadAllData(true);
+            renderCars(); // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
         } else {
             showRegisterModal();
         }
@@ -1802,8 +1890,60 @@
         }
     });
 
+        // ==================== ФУНКЦИЯ ДЛЯ АРХИВА ====================
+    let showArchived = false;
+    
+    function addArchiveFilter() {
+        // Добавляем чекбокс в модалку заявок на взятие
+        const appsContainer = document.querySelector('#applicationsModal .modal-content');
+        if (appsContainer && !document.getElementById('showArchivedAppsCheckbox')) {
+            const filterDiv = document.createElement('div');
+            filterDiv.style.cssText = 'margin-bottom: 10px; text-align: right;';
+            filterDiv.innerHTML = `
+                <label style="cursor: pointer; font-size: 0.8rem; color: #aaa;">
+                    <input type="checkbox" id="showArchivedAppsCheckbox"> 
+                    📂 Показать архивные заявки
+                </label>
+            `;
+            const title = appsContainer.querySelector('h2');
+            if (title) {
+                title.insertAdjacentElement('afterend', filterDiv);
+            }
+            
+            document.getElementById('showArchivedAppsCheckbox').addEventListener('change', (e) => {
+                showArchived = e.target.checked;
+                renderApplicationsList();
+                renderReturnsList();
+            });
+        }
+        
+        // Добавляем чекбокс в модалку заявок на возврат
+        const returnsContainer = document.querySelector('#returnsModal .modal-content');
+        if (returnsContainer && !document.getElementById('showArchivedReturnsCheckbox')) {
+            const filterDiv2 = document.createElement('div');
+            filterDiv2.style.cssText = 'margin-bottom: 10px; text-align: right;';
+            filterDiv2.innerHTML = `
+                <label style="cursor: pointer; font-size: 0.8rem; color: #aaa;">
+                    <input type="checkbox" id="showArchivedReturnsCheckbox"> 
+                    📂 Показать архивные заявки
+                </label>
+            `;
+            const title2 = returnsContainer.querySelector('h2');
+            if (title2) {
+                title2.insertAdjacentElement('afterend', filterDiv2);
+            }
+            
+            document.getElementById('showArchivedReturnsCheckbox').addEventListener('change', (e) => {
+                showArchived = e.target.checked;
+                renderApplicationsList();
+                renderReturnsList();
+            });
+        }
+    }
+    
     // ---- ИНИЦИАЛИЗАЦИЯ ----
     checkAuth();
+    addArchiveFilter();
 </script>
 </body>
 </html>
