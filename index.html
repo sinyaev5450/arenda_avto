@@ -786,8 +786,12 @@
         return await callScript({ action: 'add', type: 'return', ...returnData });
     }
 
-    async function updateStatusInCloud(id, status) {
-        return await callScript({ action: 'update', type: 'take', id, status });
+            async function updateStatusInCloud(id, status) {
+        const result = await callScript({ action: 'update', type: 'take', id, status });
+        // После обновления статуса принудительно перезагружаем данные
+        await loadAllData(true);
+        renderCars(); // Обновляем карточки
+        return result;
     }
 
     async function deleteFromCloud(id) {
@@ -804,7 +808,7 @@
         return await callScript({ action: 'updateReturn', type: 'return', id, status });
     }
     
-    // Одобрение возврата (освобождает машину)
+        // Одобрение возврата (освобождает машину)
     async function approveReturn(id, carNumber) {
         if (confirm('✅ Одобрить возврат? Машина снова станет доступной.')) {
             // Обновляем статус заявки на возврат
@@ -821,17 +825,19 @@
                 await updateStatusInCloud(activeTakeApplication.id, 'returned');
             }
             
-            // Перезагружаем данные
+            // Перезагружаем данные и обновляем карточки
             await loadAllData(true);
+            renderCars(); // Принудительно обновляем карточки
             alert('✅ Возврат одобрен! Машина снова доступна.');
         }
     }
     
-    // Отказ в возврате
+        // Отказ в возврате
     async function rejectReturn(id) {
         if (confirm('❌ Отказать в возврате?')) {
             await updateReturnStatusInCloud(id, 'rejected');
             await loadAllData(true);
+            renderCars(); // Принудительно обновляем карточки
             alert('❌ В возврате отказано.');
         }
     }
@@ -1045,7 +1051,7 @@
     }
 
     // Функции отправки заявок
-    async function addApplication(app) {
+       async function addApplication(app) {
         const newApp = {
             id: Date.now() + '_' + Math.random().toString(36).substr(2, 6),
             nickname: app.nickname,
@@ -1060,6 +1066,7 @@
         const result = await addApplicationToCloud(newApp);
         if (result?.success) {
             await loadAllData(true);
+            renderCars(); // Обновляем карточки
             alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}`);
             return true;
         } else {
@@ -1068,7 +1075,7 @@
         }
     }
 
-    async function addReturnApplication(returnData) {
+        async function addReturnApplication(returnData) {
         const newReturn = {
             id: Date.now() + '_' + Math.random().toString(36).substr(2, 6),
             nickname: returnData.nickname,
@@ -1085,6 +1092,7 @@
         const result = await addReturnToCloud(newReturn);
         if (result?.success) {
             await loadAllData(true);
+            renderCars(); // Обновляем карточки
             alert(`✅ Заявка на возврат отправлена!`);
             return true;
         } else {
@@ -1142,15 +1150,33 @@
         html += `</tbody></table>`;
         container.innerHTML = html;
 
-        if (isAdmin) {
+                if (isAdmin) {
             document.querySelectorAll('.btn-approve').forEach(btn => {
-                btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'approved'));
+                btn.onclick = async () => {
+                    await updateStatusInCloud(btn.dataset.id, 'approved');
+                    await loadAllData(false);
+                    renderCars(); // Обновляем карточки машин
+                    if (window.currentApplicationsModalOpen) renderApplicationsList();
+                };
             });
             document.querySelectorAll('.btn-reject').forEach(btn => {
-                btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'rejected'));
+                btn.onclick = async () => {
+                    await updateStatusInCloud(btn.dataset.id, 'rejected');
+                    await loadAllData(false);
+                    renderCars(); // Обновляем карточки машин
+                    if (window.currentApplicationsModalOpen) renderApplicationsList();
+                };
             });
             document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', () => deleteApplication(btn.dataset.id));
+                btn.onclick = () => { 
+                    if(confirm('Удалить заявку?')) {
+                        deleteFromCloud(btn.dataset.id).then(() => {
+                            loadAllData(false);
+                            renderCars(); // Обновляем карточки машин
+                            if (window.currentApplicationsModalOpen) renderApplicationsList();
+                        });
+                    }
+                };
             });
         }
     }
