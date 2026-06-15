@@ -703,6 +703,7 @@
     }
 
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
+        // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
     async function callScript(params) {
         const urlParams = new URLSearchParams();
         for (let key in params) {
@@ -716,31 +717,65 @@
         const url = `${SCRIPT_URL}?${urlParams.toString()}`;
         console.log('📤 Отправка:', url);
         
-        const response = await fetch(url, {
-            method: 'GET',
-            mode: 'cors',
-            headers: { 'Accept': 'application/json' }
-        });
-        
-        const text = await response.text();
-        console.log('📥 Ответ:', text);
-        
         try {
-            return JSON.parse(text);
-        } catch(e) {
-            console.error('Ошибка парсинга:', text);
-            return { error: 'Неверный формат ответа' };
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            if (!response.ok) {
+                console.error(`HTTP ошибка: ${response.status}`);
+                return { error: `HTTP ${response.status}` };
+            }
+            
+            const text = await response.text();
+            console.log('📥 Ответ:', text.substring(0, 500)); // Обрезаем длинные ответы
+            
+            try {
+                return JSON.parse(text);
+            } catch(e) {
+                console.error('Ошибка парсинга JSON:', text);
+                return { error: 'Неверный формат ответа' };
+            }
+        } catch (error) {
+            console.error('Ошибка запроса:', error);
+            // Возвращаем пустой массив вместо ошибки, чтобы не ломать приложение
+            return [];
         }
     }
     
-    async function loadApplicationsFromCloud() {
-        const result = await callScript({ action: 'get', type: 'take' });
-        return Array.isArray(result) ? result : [];
+        async function loadApplicationsFromCloud() {
+        try {
+            const result = await callScript({ action: 'get', type: 'take' });
+            // Если результат - массив, возвращаем его, иначе пустой массив
+            if (Array.isArray(result)) {
+                return result;
+            } else if (result && result.error) {
+                console.error('Ошибка загрузки заявок:', result.error);
+                return [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Ошибка загрузки заявок:', error);
+            return [];
+        }
     }
 
     async function loadReturnsFromCloud() {
-        const result = await callScript({ action: 'get', type: 'return' });
-        return Array.isArray(result) ? result : [];
+        try {
+            const result = await callScript({ action: 'get', type: 'return' });
+            if (Array.isArray(result)) {
+                return result;
+            } else if (result && result.error) {
+                console.error('Ошибка загрузки возвратов:', result.error);
+                return [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Ошибка загрузки возвратов:', error);
+            return [];
+        }
     }
 
     async function addApplicationToCloud(app) {
@@ -858,34 +893,51 @@
         return false;
     }
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
-    async function loadAllData(showStatus = true) {
+        async function loadAllData(showStatus = true) {
         const statusDiv = document.getElementById('syncStatus');
         if (showStatus) statusDiv.innerHTML = '🔄 Синхронизация...';
         
-        const [loadedApplications, loadedReturns] = await Promise.all([
-            loadApplicationsFromCloud(),
-            loadReturnsFromCloud()
-        ]);
-        
-        applications = loadedApplications;
-        returns = loadedReturns;
-        
-        console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
+        try {
+            const [loadedApplications, loadedReturns] = await Promise.allSettled([
+                loadApplicationsFromCloud(),
+                loadReturnsFromCloud()
+            ]);
+            
+            // Обрабатываем результаты
+            if (loadedApplications.status === 'fulfilled') {
+                applications = loadedApplications.value;
+            } else {
+                console.error('Ошибка загрузки заявок:', loadedApplications.reason);
+                applications = [];
+            }
+            
+            if (loadedReturns.status === 'fulfilled') {
+                returns = loadedReturns.value;
+            } else {
+                console.error('Ошибка загрузки возвратов:', loadedReturns.reason);
+                returns = [];
+            }
+            
+            console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
 
-                // Обновляем карточки автомобилей (обновляем статус бронирования)
-        renderCars();
-        
-        if (showStatus) {
-            statusDiv.innerHTML = `✅ Синхронизировано: ${applications.length} заявок, ${returns.length} возвратов`;
-            setTimeout(() => {
-                if (statusDiv.innerHTML.includes('✅')) {
-                    statusDiv.innerHTML = '📡 Данные в Google Sheets';
-                }
-            }, 3000);
+            // Обновляем карточки автомобилей
+            renderCars();
+            
+            if (showStatus) {
+                statusDiv.innerHTML = `✅ Синхронизировано: ${applications.length} заявок, ${returns.length} возвратов`;
+                setTimeout(() => {
+                    if (statusDiv.innerHTML.includes('✅')) {
+                        statusDiv.innerHTML = '📡 Данные в Google Sheets';
+                    }
+                }, 3000);
+            }
+            
+            if (window.currentApplicationsModalOpen) renderApplicationsList();
+            if (window.currentReturnsModalOpen) renderReturnsList();
+        } catch (error) {
+            console.error('Общая ошибка загрузки:', error);
+            if (showStatus) statusDiv.innerHTML = '⚠️ Ошибка синхронизации';
         }
-        
-        if (window.currentApplicationsModalOpen) renderApplicationsList();
-        if (window.currentReturnsModalOpen) renderReturnsList();
     }
 
     // ----- ОТРИСОВКА ТАБЛИЦ -----
