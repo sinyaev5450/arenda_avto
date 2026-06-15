@@ -1255,6 +1255,7 @@
 
     // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ ----
         // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ (с фильтрацией) ====================
+        // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ (с фильтрацией и скрытием закрытых) ====================
     function renderApplicationsList() {
         const container = document.getElementById('applicationsList');
         
@@ -1264,8 +1265,16 @@
             filteredApplications = applications.filter(app => app.nickname === currentUser);
         }
         
+        // Скрываем закрытые заявки (status = 'returned' или 'rejected')
+        // Для админа показываем всё, для пользователя - скрываем закрытые
+        if (!isAdmin) {
+            filteredApplications = filteredApplications.filter(app => 
+                app.status !== 'returned' && app.status !== 'rejected'
+            );
+        }
+        
         if (!filteredApplications.length) {
-            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на взятие.</div>';
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет активных заявок на взятие.</div>';
             return;
         }
         
@@ -1298,6 +1307,8 @@
                 html += `<span class="status-text-approved">✅ Одобрено</span>`;
             } else if (app.status === 'rejected') {
                 html += `<span class="status-text-rejected">❌ Отказано</span>`;
+            } else if (app.status === 'returned') {
+                html += `<span class="status-text-approved">✅ Возвращён</span>`;
             }
             
             html += `</td>
@@ -1310,7 +1321,7 @@
             html += `</td></tr>`;
         });
         
-        html += `</tbody></tr>`;
+        html += `</tbody></table>`;
         container.innerHTML = html;
 
         if (isAdmin) {
@@ -1329,6 +1340,7 @@
     // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ ----
         // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с фильтрацией) ====================
         // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с кнопками одобрения/отказа) ====================
+        // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с фильтрацией и скрытием закрытых) ====================
     function renderReturnsList() {
         const container = document.getElementById('returnsList');
         
@@ -1338,8 +1350,16 @@
             filteredReturns = returns.filter(ret => ret.nickname === currentUser);
         }
         
+        // Скрываем закрытые заявки (status = 'approved' или 'rejected')
+        // Для админа показываем всё, для пользователя - скрываем обработанные
+        if (!isAdmin) {
+            filteredReturns = filteredReturns.filter(ret => 
+                ret.status !== 'approved' && ret.status !== 'rejected'
+            );
+        }
+        
         if (!filteredReturns.length) {
-            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на возврат.</div>';
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет активных заявок на возврат.</div>';
             return;
         }
         
@@ -1388,7 +1408,7 @@
                 html += `—`;
             }
             
-            html += `</td></tr>`;
+            html += `</td></td>`;
         });
         
         html += `</tbody></table>`;
@@ -1802,8 +1822,60 @@
         }
     });
 
+        // ==================== ФУНКЦИЯ ДЛЯ АРХИВА ====================
+    let showArchived = false;
+    
+    function addArchiveFilter() {
+        // Добавляем чекбокс в модалку заявок на взятие
+        const appsContainer = document.querySelector('#applicationsModal .modal-content');
+        if (appsContainer && !document.getElementById('showArchivedAppsCheckbox')) {
+            const filterDiv = document.createElement('div');
+            filterDiv.style.cssText = 'margin-bottom: 10px; text-align: right;';
+            filterDiv.innerHTML = `
+                <label style="cursor: pointer; font-size: 0.8rem; color: #aaa;">
+                    <input type="checkbox" id="showArchivedAppsCheckbox"> 
+                    📂 Показать архивные заявки
+                </label>
+            `;
+            const title = appsContainer.querySelector('h2');
+            if (title) {
+                title.insertAdjacentElement('afterend', filterDiv);
+            }
+            
+            document.getElementById('showArchivedAppsCheckbox').addEventListener('change', (e) => {
+                showArchived = e.target.checked;
+                renderApplicationsList();
+                renderReturnsList();
+            });
+        }
+        
+        // Добавляем чекбокс в модалку заявок на возврат
+        const returnsContainer = document.querySelector('#returnsModal .modal-content');
+        if (returnsContainer && !document.getElementById('showArchivedReturnsCheckbox')) {
+            const filterDiv2 = document.createElement('div');
+            filterDiv2.style.cssText = 'margin-bottom: 10px; text-align: right;';
+            filterDiv2.innerHTML = `
+                <label style="cursor: pointer; font-size: 0.8rem; color: #aaa;">
+                    <input type="checkbox" id="showArchivedReturnsCheckbox"> 
+                    📂 Показать архивные заявки
+                </label>
+            `;
+            const title2 = returnsContainer.querySelector('h2');
+            if (title2) {
+                title2.insertAdjacentElement('afterend', filterDiv2);
+            }
+            
+            document.getElementById('showArchivedReturnsCheckbox').addEventListener('change', (e) => {
+                showArchived = e.target.checked;
+                renderApplicationsList();
+                renderReturnsList();
+            });
+        }
+    }
+    
     // ---- ИНИЦИАЛИЗАЦИЯ ----
     checkAuth();
+    addArchiveFilter();
 </script>
 </body>
 </html>
