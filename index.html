@@ -36,7 +36,7 @@
         .take-btn { background: #1e88e5; }
         .return-card-btn { background: #e67e22; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(4px); }
-        .modal-content { background: #1a1a2e; margin: 5% auto; padding: 24px; border-radius: 28px; width: 90%; max-width: 500px; border: 1px solid #88aaff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #eee; }
+        .modal-content { background: #1a1a2e; margin: 5% auto; padding: 24px; border-radius: 28px; width: 90%; max-width: 600px; border: 1px solid #88aaff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: #eee; }
         .modal-content h2 { margin-bottom: 20px; text-align: center; }
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #ccc; }
@@ -50,19 +50,23 @@
         .applications-table th, .applications-table td, .returns-table th, .returns-table td { border: 1px solid #445; padding: 8px; text-align: left; vertical-align: top; }
         .applications-table th, .returns-table th { background: #1e88e5; color: white; }
         .status-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-approve, .btn-reject { border: none; color: white; padding: 4px 10px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
+        .btn-approve, .btn-reject { border: none; color: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: bold; margin: 2px; }
         .btn-approve { background: #2ecc71; }
+        .btn-approve:hover { background: #27ae60; }
         .btn-reject { background: #e67e22; }
+        .btn-reject:hover { background: #d35400; }
         .status-text-approved { color: #6fcf97; font-weight: bold; }
         .status-text-rejected { color: #e74c3c; font-weight: bold; }
         .status-text-pending { color: #ffaa66; font-weight: bold; }
-        .btn-delete { border: none; color: white; padding: 4px 10px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; background: #d32f2f; }
+        .btn-delete { border: none; color: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; background: #d32f2f; margin: 2px; }
+        .btn-delete:hover { background: #b71c1c; }
         .empty-apps { text-align: center; padding: 30px; color: #aaa; }
         @media (max-width: 700px) {
             .applications-table th, .applications-table td,
             .returns-table th, .returns-table td { padding: 5px; font-size: 0.7rem; }
             .view-returns-btn { right: 160px; padding: 8px 12px; font-size: 0.8rem; }
             .view-applications-btn { padding: 8px 12px; font-size: 0.8rem; }
+            .modal-content { width: 95%; margin: 10% auto; }
         }
     </style>
 </head>
@@ -138,7 +142,7 @@
 
 <script>
     // ==================== ВАШ URL ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJFUA23k-SkBs_oQsqexkgiQmlLXRuiii65H_tj7aCdnaBrmrxVmlB0W39Gu3HmY48/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzP7T9iMi0zoVMhyZIIMi6UWoDMKXBsQMX--pLOTzj88jg4GG175NE74jQwWJeebI4B/exec';
     
     // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
     function transliterate(plate) {
@@ -180,7 +184,7 @@
 
     let currentUser = null, isAdmin = false, applications = [], returnRequests = [];
 
-    // ----- JSONP ЗАГРУЗКА (обходит CORS) -----
+    // ----- JSONP ЗАГРУЗКА -----
     function jsonpRequest(url, callbackName) {
         return new Promise((resolve, reject) => {
             const cbName = callbackName + '_' + Date.now();
@@ -204,79 +208,43 @@
         try {
             const data = await jsonpRequest(`${SCRIPT_URL}?action=get`, 'jsonp_apps');
             return Array.isArray(data) ? data : [];
-        } catch(e) {
-            console.error('Ошибка загрузки заявок:', e);
-            return [];
-        }
+        } catch(e) { console.error(e); return []; }
     }
 
     async function loadReturnsFromCloud() {
         try {
             const data = await jsonpRequest(`${SCRIPT_URL}?action=get_returns`, 'jsonp_returns');
             return Array.isArray(data) ? data : [];
-        } catch(e) {
-            console.error('Ошибка загрузки возвратов:', e);
-            return [];
-        }
+        } catch(e) { console.error(e); return []; }
     }
 
     async function addApplicationToCloud(app) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'add', ...app })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add', ...app }) });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function addReturnToCloud(returnReq) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'add_return', ...returnReq })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add_return', ...returnReq }) });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function updateStatusInCloud(id, status) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update', id, status })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update', id, status }) });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function updateReturnStatusInCloud(id, status) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update_return', id, status })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update_return', id, status }) });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function deleteFromCloud(id) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete', id })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', id }) });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function deleteReturnFromCloud(id) {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete_return', id })
-        });
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete_return', id }) });
         await new Promise(r => setTimeout(r, 500));
     }
 
@@ -287,13 +255,10 @@
             applications = await loadApplicationsFromCloud();
             returnRequests = await loadReturnsFromCloud();
             if (showStatus) {
-                statusDiv.innerHTML = '✅ Данные синхронизированы';
-                setTimeout(() => { if (statusDiv.innerHTML === '✅ Данные синхронизированы') statusDiv.innerHTML = '📡 Заявки в Google Sheets'; }, 2000);
+                statusDiv.innerHTML = `✅ Данные синхронизированы (заявок: ${applications.length})`;
+                setTimeout(() => { if (statusDiv.innerHTML.includes('✅')) statusDiv.innerHTML = '📡 Заявки в Google Sheets'; }, 3000);
             }
-        } catch(e) {
-            console.error(e);
-            if (showStatus) statusDiv.innerHTML = '⚠️ Ошибка!';
-        }
+        } catch(e) { console.error(e); if (showStatus) statusDiv.innerHTML = '⚠️ Ошибка!'; }
         if (window.currentApplicationsModalOpen) renderApplicationsList();
         if (window.currentReturnsModalOpen) renderReturnsList();
     }
@@ -305,7 +270,7 @@
             createdAt: new Date().toLocaleString(), status: 'pending'
         });
         await loadAllData(true);
-        alert(`✅ Заявка отправлена! Ожидает одобрения.`);
+        alert(`✅ Заявка отправлена!`);
     }
 
     async function addReturnRequest(returnReq) {
@@ -316,7 +281,7 @@
             comment: returnReq.comment, createdAt: new Date().toLocaleString(), status: 'pending'
         });
         await loadAllData(true);
-        alert(`✅ Заявка на возврат отправлена! Ожидает одобрения.`);
+        alert(`✅ Заявка на возврат отправлена!`);
     }
 
     async function updateApplicationStatus(id, newStatus) {
@@ -350,12 +315,22 @@
     function renderApplicationsList() {
         const container = document.getElementById('applicationsList');
         if (!applications.length) { container.innerHTML = '<div class="empty-apps">📭 Пока нет заявок.</div>'; return; }
-        let html = `<table class="applications-table"><thead><tr><th>Ник</th><th>Марка</th><th>Номер</th><th>Время</th><th>Причина</th><th>Дата</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
+        let html = `<table class="applications-table"><thead><tr><th>Ник</th><th>Марка</th><th>Номер</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
         applications.forEach(app => {
-            html += `<tr><td>${escapeHtml(app.nickname)}</td><td>${escapeHtml(app.carBrand)}</td><td>${escapeHtml(app.carNumber)}</td><td>${escapeHtml(app.takeTime)}</td><td>${escapeHtml(app.reason)}</td><td>${escapeHtml(app.createdAt)}</td><td>`;
+            html += `<tr>
+                <td>${escapeHtml(app.nickname)}</td>
+                <td>${escapeHtml(app.carBrand)}</td>
+                <td>${escapeHtml(app.carNumber)}</td>
+                <td>${escapeHtml(app.takeTime || '—')}</td>
+                <td>${escapeHtml(app.reason || '—')}</td>
+                <td>${escapeHtml(app.createdAt || '—')}</td>
+                <td>`;
             if (app.status === 'pending') {
-                if (isAdmin) html += `<div class="status-buttons"><button class="btn-approve" data-id="${app.id}">✔ Одобрить</button><button class="btn-reject" data-id="${app.id}">✖ Отказать</button></div>`;
-                else html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+                if (isAdmin) {
+                    html += `<div class="status-buttons"><button class="btn-approve" data-id="${app.id}">✔ Одобрить</button><button class="btn-reject" data-id="${app.id}">✖ Отказать</button></div>`;
+                } else {
+                    html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+                }
             } else if (app.status === 'approved') html += `<span class="status-text-approved">✅ Одобрено</span>`;
             else if (app.status === 'rejected') html += `<span class="status-text-rejected">❌ Отказано</span>`;
             html += `</td><td>`;
@@ -365,11 +340,17 @@
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
-        if (isAdmin) {
-            document.querySelectorAll('.btn-approve').forEach(btn => btn.onclick = () => updateApplicationStatus(btn.dataset.id, 'approved'));
-            document.querySelectorAll('.btn-reject').forEach(btn => btn.onclick = () => updateApplicationStatus(btn.dataset.id, 'rejected'));
-            document.querySelectorAll('.btn-delete[data-type="app"]').forEach(btn => btn.onclick = () => deleteApplication(btn.dataset.id));
-        }
+        
+        // Навешиваем обработчики
+        document.querySelectorAll('.btn-approve').forEach(btn => {
+            btn.onclick = () => updateApplicationStatus(btn.getAttribute('data-id'), 'approved');
+        });
+        document.querySelectorAll('.btn-reject').forEach(btn => {
+            btn.onclick = () => updateApplicationStatus(btn.getAttribute('data-id'), 'rejected');
+        });
+        document.querySelectorAll('.btn-delete[data-type="app"]').forEach(btn => {
+            btn.onclick = () => deleteApplication(btn.getAttribute('data-id'));
+        });
     }
 
     function renderReturnsList() {
@@ -377,7 +358,17 @@
         if (!returnRequests.length) { container.innerHTML = '<div class="empty-apps">🔄 Пока нет заявок на возврат.</div>'; return; }
         let html = `<table class="returns-table"><thead><tr><th>Ник</th><th>Марка</th><th>Номер</th><th>Дата возврата</th><th>Пробег</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
         returnRequests.forEach(req => {
-            html += `<tr><td>${escapeHtml(req.nickname)}</td><td>${escapeHtml(req.carBrand)}</td><td>${escapeHtml(req.carNumber)}</td><td>${escapeHtml(req.returnTime)}</td><td>${escapeHtml(req.mileage)} км</td><td>${escapeHtml(req.condition)}</td><td>${escapeHtml(req.servicePerformed || '—')}</td><td>${escapeHtml(req.comment || '—')}</td><td>${escapeHtml(req.createdAt)}</td><td>`;
+            html += `<tr>
+                <td>${escapeHtml(req.nickname)}</td>
+                <td>${escapeHtml(req.carBrand)}</td>
+                <td>${escapeHtml(req.carNumber)}</td>
+                <td>${escapeHtml(req.returnTime || '—')}</td>
+                <td>${escapeHtml(req.mileage || '—')} км</td>
+                <td>${escapeHtml(req.condition || '—')}</td>
+                <td>${escapeHtml(req.servicePerformed || '—')}</td>
+                <td>${escapeHtml(req.comment || '—')}</td>
+                <td>${escapeHtml(req.createdAt || '—')}</td>
+                <td>`;
             if (req.status === 'pending') {
                 if (isAdmin) html += `<div class="status-buttons"><button class="btn-approve-return" data-id="${req.id}">✔ Одобрить возврат</button><button class="btn-reject-return" data-id="${req.id}">✖ Отказать</button></div>`;
                 else html += `<span class="status-text-pending">⏳ Ожидает</span>`;
@@ -390,11 +381,16 @@
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
-        if (isAdmin) {
-            document.querySelectorAll('.btn-approve-return').forEach(btn => btn.onclick = () => updateReturnStatus(btn.dataset.id, 'approved'));
-            document.querySelectorAll('.btn-reject-return').forEach(btn => btn.onclick = () => updateReturnStatus(btn.dataset.id, 'rejected'));
-            document.querySelectorAll('.btn-delete-return').forEach(btn => btn.onclick = () => deleteReturn(btn.dataset.id));
-        }
+        
+        document.querySelectorAll('.btn-approve-return').forEach(btn => {
+            btn.onclick = () => updateReturnStatus(btn.getAttribute('data-id'), 'approved');
+        });
+        document.querySelectorAll('.btn-reject-return').forEach(btn => {
+            btn.onclick = () => updateReturnStatus(btn.getAttribute('data-id'), 'rejected');
+        });
+        document.querySelectorAll('.btn-delete-return').forEach(btn => {
+            btn.onclick = () => deleteReturn(btn.getAttribute('data-id'));
+        });
     }
 
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
