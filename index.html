@@ -704,44 +704,67 @@
 
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
         // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
-    async function callScript(params) {
-        const urlParams = new URLSearchParams();
-        for (let key in params) {
-            if (typeof params[key] === 'object') {
-                urlParams.append(key, JSON.stringify(params[key]));
-            } else {
-                urlParams.append(key, params[key]);
-            }
-        }
+        async function callScript(params) {
+        // Для добавления и обновления используем POST
+        const isWriteOperation = params.action === 'add' || params.action === 'update' || params.action === 'updateReturn' || params.action === 'delete';
         
-        const url = `${SCRIPT_URL}?${urlParams.toString()}`;
-        console.log('📤 Отправка:', url);
-        
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                mode: 'cors',
-                headers: { 'Accept': 'application/json' }
-            });
-            
-            if (!response.ok) {
-                console.error(`HTTP ошибка: ${response.status}`);
-                return { error: `HTTP ${response.status}` };
+        if (isWriteOperation) {
+            // POST запрос для изменения данных
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(params)
+                });
+                
+                const text = await response.text();
+                console.log('📥 POST Ответ:', text.substring(0, 500));
+                
+                try {
+                    return JSON.parse(text);
+                } catch(e) {
+                    console.error('Ошибка парсинга JSON:', text);
+                    return { error: 'Неверный формат ответа' };
+                }
+            } catch (error) {
+                console.error('Ошибка POST запроса:', error);
+                return { error: error.toString() };
+            }
+        } else {
+            // GET запрос для чтения данных
+            const urlParams = new URLSearchParams();
+            for (let key in params) {
+                if (typeof params[key] === 'object') {
+                    urlParams.append(key, JSON.stringify(params[key]));
+                } else {
+                    urlParams.append(key, params[key]);
+                }
             }
             
-            const text = await response.text();
-            console.log('📥 Ответ:', text.substring(0, 500)); // Обрезаем длинные ответы
+            const url = `${SCRIPT_URL}?${urlParams.toString()}`;
+            console.log('📤 GET Отправка:', url);
             
             try {
-                return JSON.parse(text);
-            } catch(e) {
-                console.error('Ошибка парсинга JSON:', text);
-                return { error: 'Неверный формат ответа' };
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                const text = await response.text();
+                console.log('📥 GET Ответ:', text.substring(0, 500));
+                
+                try {
+                    return JSON.parse(text);
+                } catch(e) {
+                    console.error('Ошибка парсинга JSON:', text);
+                    return { error: 'Неверный формат ответа' };
+                }
+            } catch (error) {
+                console.error('Ошибка GET запроса:', error);
+                return [];
             }
-        } catch (error) {
-            console.error('Ошибка запроса:', error);
-            // Возвращаем пустой массив вместо ошибки, чтобы не ломать приложение
-            return [];
         }
     }
     
