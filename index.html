@@ -602,6 +602,29 @@
     let applications = [];
     let returns = [];
 
+    // УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ДЛЯ БЕЗОПАСНОГО ОТОБРАЖЕНИЯ ТЕКСТА
+    function safeString(value) {
+        if (value === undefined || value === null) return '';
+        if (typeof value === 'object') {
+            try {
+                return JSON.stringify(value);
+            } catch(e) {
+                return '';
+            }
+        }
+        return String(value);
+    }
+
+    function escapeHtml(value) {
+        let str = safeString(value);
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
     
     // Универсальная функция отправки запросов (используем GET для обхода CORS)
@@ -831,18 +854,6 @@
         }
     }
 
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ escapeHtml
-    function escapeHtml(str) {
-        if (str === undefined || str === null) return '';
-        if (typeof str !== 'string') str = String(str);
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
     // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ ----
     function renderApplicationsList() {
         const container = document.getElementById('applicationsList');
@@ -977,14 +988,14 @@
                     ${imageHtml}
                 </div>
                 <div class="car-info">
-                    <div class="car-name">${car.name}</div>
-                    <div class="car-desc">${car.desc.substring(0, 80)}${car.desc.length > 80 ? '…' : ''}</div>
-                    <div class="car-spec">${car.engine || ''} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
-                    <div class="car-plate">🚛 Госномер: ${car.plate}</div>
+                    <div class="car-name">${escapeHtml(car.name)}</div>
+                    <div class="car-desc">${escapeHtml(car.desc.substring(0, 80))}${car.desc.length > 80 ? '…' : ''}</div>
+                    <div class="car-spec">${escapeHtml(car.engine || '')} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
+                    <div class="car-plate">🚛 Госномер: ${escapeHtml(car.plate)}</div>
                 </div>
                 <div class="card-buttons">
-                    <button class="take-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">📝 Взять в пользование</button>
-                    <button class="return-card-btn" data-car-name="${car.name}" data-car-plate="${car.plate}">🔄 Вернуть транспорт</button>
+                    <button class="take-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}">📝 Взять в пользование</button>
+                    <button class="return-card-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}">🔄 Вернуть транспорт</button>
                 </div>
             `;
             grid.appendChild(card);
