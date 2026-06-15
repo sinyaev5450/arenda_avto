@@ -705,39 +705,33 @@
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
         // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
             async function callScript(params) {
-        // Для добавления и обновления используем POST
-        const isWriteOperation = params.action === 'add' || params.action === 'update' || params.action === 'updateReturn' || params.action === 'delete';
-        
-        if (isWriteOperation) {
-            // POST запрос для изменения данных
+    const isWriteOperation = params.action === 'add' || params.action === 'update' || params.action === 'updateReturn' || params.action === 'delete';
+    
+    if (isWriteOperation) {
+        try {
+            console.log('📤 POST Отправка:', params.action, params.type);
+            
+            const response = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'cors',  // <--- ИСПРАВИТЬ ЗДЕСЬ
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params)
+});
+            
+            const text = await response.text();
+            console.log('📥 POST Ответ:', text.substring(0, 500));
+            
             try {
-                console.log('📤 POST Отправка:', params.action, params.type);
-                
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Временно меняем на no-cors для обхода CORS
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(params)
-                });
-                
-                // При режиме no-cors response.ok может быть недоступен
-                console.log('📥 POST Статус:', response.status);
-                
-                const text = await response.text();
-                console.log('📥 POST Ответ:', text.substring(0, 500));
-                
-                try {
-                    return JSON.parse(text);
-                } catch(e) {
-                    console.error('Ошибка парсинга JSON:', text);
-                    return { success: true, result: { message: 'Заявка отправлена' } };
-                }
-            } catch (error) {
-                console.error('Ошибка POST запроса:', error);
-                // Возвращаем успех, чтобы не блокировать интерфейс
+                return JSON.parse(text);
+            } catch(e) {
+                console.error('Ошибка парсинга JSON:', text);
                 return { success: true, result: { message: 'Заявка отправлена' } };
             }
-        } else {
+        } catch (error) {
+            console.error('Ошибка POST запроса:', error);
+            return { success: true, result: { message: 'Заявка отправлена' } };
+        }
+    } else {
             // GET запрос для чтения данных
             const urlParams = new URLSearchParams();
             for (let key in params) {
