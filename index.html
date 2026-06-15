@@ -407,6 +407,27 @@
                 font-size: 0.8rem;
             }
         }
+        /* Стили для забронированных автомобилей */
+        .car-card.booked {
+            opacity: 0.85;
+            border-color: #e67e22;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .car-card.booked:hover {
+            transform: translateY(-3px);
+            border-color: #e67e22;
+        }
+        
+        .car-card.booked .take-btn {
+            background: #555;
+            cursor: not-allowed;
+        }
+        
+        .car-card.booked .take-btn:hover {
+            background: #555;
+            transform: none;
+        }
     </style>
     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
@@ -685,7 +706,33 @@
     async function deleteReturnFromCloud(id) {
         return await callScript({ action: 'delete', type: 'return', id });
     }
-
+    // ==================== ПРОВЕРКА СТАТУСА БРОНИРОВАНИЯ ====================
+    
+    // Функция для проверки, забронирована ли машина
+    function isCarBooked(carPlate) {
+        // Проверяем заявки на взятие со статусом "approved" (одобренные)
+        const activeBooking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'approved'
+        );
+        return !!activeBooking;
+    }
+    
+    // Функция для получения информации о том, кто забронировал
+    function getBookingInfo(carPlate) {
+        const booking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'approved'
+        );
+        if (booking) {
+            return {
+                isBooked: true,
+                user: booking.nickname,
+                until: booking.takeTime || 'не указано'
+            };
+        }
+        return { isBooked: false };
+    }
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
     async function loadAllData(showStatus = true) {
         const statusDiv = document.getElementById('syncStatus');
@@ -700,6 +747,9 @@
         returns = loadedReturns;
         
         console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
+
+                // Обновляем карточки автомобилей (обновляем статус бронирования)
+        renderCars();
         
         if (showStatus) {
             statusDiv.innerHTML = `✅ Синхронизировано: ${applications.length} заявок, ${returns.length} возвратов`;
@@ -1234,22 +1284,49 @@
     // Вызовите эту функцию после showUserInterface()
     // Добавьте строку: updateFilterInfo();
     
-    // ---- ГЕНЕРАЦИЯ КАРТОЧЕК ТРАНСПОРТА ----
-    const grid = document.getElementById('carsGrid');
-    
+       // ==================== ГЕНЕРАЦИЯ КАРТОЧЕК СТАТУС БРОНИРОВАНИЯ ====================
     function renderCars() {
+        const grid = document.getElementById('carsGrid');
         grid.innerHTML = '';
+        
         cars.forEach(car => {
+            const bookingInfo = getBookingInfo(car.plate);
+            const isBooked = bookingInfo.isBooked;
+            
             const card = document.createElement('div');
             card.className = 'car-card';
+            if (isBooked) {
+                card.classList.add('booked');
+            }
             
             const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
             const imagePath = `images/${imageFileName}.jpg`;
             
             let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
             
+            // Статус бронирования
+            let statusHtml = '';
+            if (isBooked) {
+                statusHtml = `
+                    <div style="position: absolute; top: 10px; right: 10px; background: rgba(230, 126, 34, 0.9); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; z-index: 10;">
+                        🔒 ЗАНЯТА
+                    </div>
+                `;
+            }
+            
+            // Блок информации о бронировании (для залогиненных пользователей)
+            let bookingInfoHtml = '';
+            if (currentUser && isBooked) {
+                bookingInfoHtml = `
+                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(230, 126, 34, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #e67e22;">
+                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span>
+                    </div>
+                `;
+            }
+            
             card.innerHTML = `
-                <div class="car-image">
+                <div class="car-image" style="position: relative;">
+                    ${statusHtml}
                     ${imageHtml}
                 </div>
                 <div class="car-info">
@@ -1257,17 +1334,16 @@
                     <div class="car-desc">${escapeHtml(car.desc.substring(0, 80))}${car.desc.length > 80 ? '…' : ''}</div>
                     <div class="car-spec">${escapeHtml(car.engine || '')} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
                     <div class="car-plate">🚛 Госномер: ${escapeHtml(car.plate)}</div>
+                    ${bookingInfoHtml}
                 </div>
                 <div class="card-buttons">
-                    <button class="take-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}">📝 Взять в пользование</button>
+                    <button class="take-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}" ${isBooked ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>📝 Взять в пользование</button>
                     <button class="return-card-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}">🔄 Вернуть транспорт</button>
                 </div>
             `;
             grid.appendChild(card);
         });
     }
-    
-    renderCars();
 
     // ---- СИСТЕМА РЕГИСТРАЦИИ ----
     const registerModal = document.getElementById('registerModal');
@@ -1291,6 +1367,7 @@
         }
         document.getElementById('nickname').value = currentUser;
         document.getElementById('returnNickname').value = currentUser;
+        updateFilterInfo(); // <--- ДОБАВЬТЕ ЭТУ СТРОКУ
     }
 
     function showRegisterModal() {
