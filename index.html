@@ -518,7 +518,40 @@
         </div>
     </div>
 </div>
-
+    
+<!-- Модалка анкеты взятия -->
+<div id="anketaModal" class="modal modal-anketa">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>📋 Анкета взятия транспорта</h2>
+        <form id="anketaForm">
+            <div class="form-group">
+                <label>1. Ваш ник *</label>
+                <input type="text" id="nickname" readonly style="background:#333; cursor:default;">
+            </div>
+            <div class="form-group">
+                <label>2. Время взятия</label>
+                <input type="datetime-local" id="takeTime">
+            </div>
+            <div class="form-group">
+                <label>3. Марка / модель</label>
+                <input type="text" id="carBrand" readonly style="background:#333; cursor:default;">
+            </div>
+            <div class="form-group">
+                <label>4. Номер ТС</label>
+                <input type="text" id="carNumber" placeholder="например: А123ВС77">
+            </div>
+            <div class="form-group">
+                <label>5. Причина взятия</label>
+                <textarea id="reason" rows="3" placeholder="Для перевозки, тест-драйв, работа..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="cancelModalBtn">Отмена</button>
+                <button type="submit" class="submit-btn">Отправить заявку</button>
+            </div>
+        </form>
+    </div>
+</div>
 <!-- Модалка анкеты возврата -->
 <div id="returnModal" class="modal modal-return">
     <div class="modal-content">
