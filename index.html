@@ -1466,12 +1466,14 @@
     // Вызовите эту функцию после showUserInterface()
     // Добавьте строку: updateFilterInfo();
     
-       // ==================== ГЕНЕРАЦИЯ КАРТОЧЕК СТАТУС БРОНИРОВАНИЯ ====================
+           // ==================== ГЕНЕРАЦИЯ КАРТОЧЕК СТАТУС БРОНИРОВАНИЯ ====================
     function renderCars() {
         const grid = document.getElementById('carsGrid');
+        if (!grid) return;
         grid.innerHTML = '';
         
         cars.forEach(car => {
+            // Получаем информацию о бронировании
             const bookingInfo = getBookingInfo(car.plate);
             const isBooked = bookingInfo.isBooked;
             
@@ -1486,7 +1488,7 @@
             
             let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
             
-            // Статус бронирования
+            // Статус бронирования (всегда показываем)
             let statusHtml = '';
             if (isBooked) {
                 statusHtml = `
@@ -1494,14 +1496,27 @@
                         🔒 ЗАНЯТА
                     </div>
                 `;
+            } else {
+                statusHtml = `
+                    <div style="position: absolute; top: 10px; right: 10px; background: rgba(46, 204, 113, 0.9); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; z-index: 10;">
+                        ✅ СВОБОДНА
+                    </div>
+                `;
             }
             
-            // Блок информации о бронировании (для залогиненных пользователей)
+            // Блок информации о бронировании (показываем всегда, но с разным содержимым)
             let bookingInfoHtml = '';
-            if (currentUser && isBooked) {
+            if (isBooked) {
+                const whoBooked = bookingInfo.user || 'неизвестно';
                 bookingInfoHtml = `
                     <div style="margin-top: 8px; padding: 6px 10px; background: rgba(230, 126, 34, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #e67e22;">
-                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span>
+                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(whoBooked)}</span>
+                    </div>
+                `;
+            } else {
+                bookingInfoHtml = `
+                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.1); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;">
+                        <span style="color: #6fcf97;">🚗 Доступна для бронирования</span>
                     </div>
                 `;
             }
@@ -1625,7 +1640,7 @@
     
     // Обновление при возврате на вкладку
     document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) loadAllData(false); });
-    function checkAuth() {
+        function checkAuth() {
         const savedUser = localStorage.getItem('devillecar_user');
         const savedAdmin = localStorage.getItem('devillecar_isAdmin');
         if (savedUser) {
@@ -1633,6 +1648,7 @@
             isAdmin = savedAdmin === 'true';
             showUserInterface();
             loadAllData(true);
+            renderCars(); // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
         } else {
             showRegisterModal();
         }
