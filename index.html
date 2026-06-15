@@ -480,48 +480,42 @@
 
 <!-- Модалка регистрации -->
 <div id="registerModal" class="modal">
-    <div class="modal-content">
-        <h2>🔐 Добро пожаловать в DevilleCar</h2>
-        <p style="margin-bottom: 10px;">Введите ваш никнейм для входа</p>
-        <input type="text" id="registerNick" placeholder="Ваш никнейм" maxlength="30">
-        <button id="registerBtn">Войти как пользователь</button>
-        <button id="adminLoginBtn" class="admin-login-btn">👑 Войти как администратор</button>
-        <div id="registerError" class="error-msg"></div>
-        <div class="info-text">Администратор может одобрять/отклонять заявки</div>
-    </div>
-</div>
-
-<!-- Модалка анкеты взятия -->
-<div id="anketaModal" class="modal modal-anketa">
-    <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <h2>📋 Анкета взятия транспорта</h2>
-        <form id="anketaForm">
-            <div class="form-group">
-                <label>1. Ваш ник *</label>
-                <input type="text" id="nickname" readonly style="background:#333; cursor:default;">
+    <div class="modal-content" style="max-width: 450px;">
+        <h2 style="text-align: center; margin-bottom: 25px;">
+            <span style="background: linear-gradient(135deg, #ffffff, #88aaff); -webkit-background-clip: text; background-clip: text; color: transparent;">🚗 DevilleCar</span>
+        </h2>
+        
+        <div style="text-align: center; margin-bottom: 10px;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 15px; background: linear-gradient(135deg, #1e88e5, #0d5b9e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px;">
+                🔑
             </div>
-            <div class="form-group">
-                <label>2. Время взятия</label>
-                <input type="datetime-local" id="takeTime">
+        </div>
+        
+        <p style="text-align: center; color: #ccc; margin-bottom: 20px; font-size: 0.95rem;">
+            Введите ваш никнейм для входа в систему
+        </p>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="color: #aaa; font-size: 0.85rem;">👤 Ваш никнейм</label>
+            <input type="text" id="registerNick" placeholder="Введите никнейм" maxlength="30" style="background: #2a2a3a; border: 1px solid #445; border-radius: 16px; padding: 12px 15px; width: 100%; color: white; font-size: 1rem;">
+        </div>
+        
+        <button id="registerBtn" style="width: 100%; background: linear-gradient(135deg, #1e88e5, #0d5b9e); color: white; border: none; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 12px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span>🚪</span> Войти как пользователь
+        </button>
+        
+        <button id="adminLoginBtn" style="width: 100%; background: linear-gradient(135deg, #e67e22, #b45f1b); color: white; border: none; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 20px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span>👑</span> Войти как администратор
+        </button>
+        
+        <div id="registerError" class="error-msg" style="color: #e74c3c; text-align: center; margin-bottom: 15px; font-size: 0.85rem;"></div>
+        
+        <div style="background: rgba(30,136,229,0.1); border-left: 3px solid #1e88e5; padding: 12px; border-radius: 12px; margin-top: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">ℹ️</span>
+                <span style="color: #aaa; font-size: 0.75rem;">Администратор может одобрять/отклонять заявки</span>
             </div>
-            <div class="form-group">
-                <label>3. Марка / модель</label>
-                <input type="text" id="carBrand" readonly style="background:#333; cursor:default;">
-            </div>
-            <div class="form-group">
-                <label>4. Номер ТС</label>
-                <input type="text" id="carNumber" placeholder="например: А123ВС77">
-            </div>
-            <div class="form-group">
-                <label>5. Причина взятия</label>
-                <textarea id="reason" rows="3" placeholder="Для перевозки, тест-драйв, работа..."></textarea>
-            </div>
-            <div class="modal-buttons">
-                <button type="button" class="cancel-btn" id="cancelModalBtn">Отмена</button>
-                <button type="submit" class="submit-btn">Отправить заявку</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
