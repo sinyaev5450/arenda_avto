@@ -606,37 +606,48 @@
     let returnRequests = [];
 
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
-    async function loadApplicationsFromCloud() {
+  async function loadApplicationsFromCloud() {
+    try {
+        // Пробуем CORS-запрос
+        const response = await fetch(`${SCRIPT_URL}?action=get&t=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        console.log('Ответ CORS:', text.substring(0, 200));
+        let data = JSON.parse(text);
+        return Array.isArray(data) ? data : [];
+    } catch (corsError) {
+        console.warn('CORS не сработал, пробуем no-cors:', corsError);
+        // Пробуем no-cors режим
         try {
             const response = await fetch(`${SCRIPT_URL}?action=get&t=${Date.now()}`, {
                 method: 'GET',
-                mode: 'cors'
+                mode: 'no-cors'
             });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const text = await response.text();
-            let data = JSON.parse(text);
-            return Array.isArray(data) ? data : [];
+            // В no-cors режиме нельзя прочитать ответ, поэтому используем JSONP-подход
+            // Создаём временный скрипт для загрузки
+            return await new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_callback_' + Date.now();
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    resolve(Array.isArray(data) ? data : []);
+                };
+                const script = document.createElement('script');
+                script.src = `${SCRIPT_URL}?action=get&callback=${callbackName}&t=${Date.now()}`;
+                script.onerror = () => {
+                    delete window[callbackName];
+                    reject(new Error('JSONP запрос не удался'));
+                };
+                document.head.appendChild(script);
+            });
         } catch (error) {
-            console.error('Ошибка загрузки заявок:', error);
+            console.error('Все способы загрузки не удались:', error);
             return [];
         }
     }
-    
-    async function loadReturnsFromCloud() {
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=get_returns&t=${Date.now()}`, {
-                method: 'GET',
-                mode: 'cors'
-            });
-            if (!response.ok) return [];
-            const text = await response.text();
-            let data = JSON.parse(text);
-            return Array.isArray(data) ? data : [];
-        } catch (error) {
-            console.error('Ошибка загрузки возвратов:', error);
-            return [];
-        }
-    }
+}
 
     async function addApplicationToCloud(app) {
         const response = await fetch(SCRIPT_URL, {
