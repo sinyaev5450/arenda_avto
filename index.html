@@ -184,67 +184,96 @@
 
     let currentUser = null, isAdmin = false, applications = [], returnRequests = [];
 
-    // ----- JSONP ЗАГРУЗКА -----
-    function jsonpRequest(url, callbackName) {
-        return new Promise((resolve, reject) => {
-            const cbName = callbackName + '_' + Date.now();
-            window[cbName] = (data) => {
-                delete window[cbName];
-                document.head.removeChild(script);
-                resolve(data);
-            };
-            const script = document.createElement('script');
-            script.src = `${url}&callback=${cbName}&t=${Date.now()}`;
-            script.onerror = () => {
-                delete window[cbName];
-                document.head.removeChild(script);
-                reject(new Error('JSONP failed'));
-            };
-            document.head.appendChild(script);
-        });
-    }
-
+    // ----- ПРЯМЫЕ FETCH ЗАПРОСЫ (без JSONP) -----
     async function loadApplicationsFromCloud() {
         try {
-            const data = await jsonpRequest(`${SCRIPT_URL}?action=get`, 'jsonp_apps');
+            const response = await fetch(`${SCRIPT_URL}?action=get&t=${Date.now()}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
             return Array.isArray(data) ? data : [];
-        } catch(e) { console.error(e); return []; }
+        } catch(e) {
+            console.error('Ошибка загрузки заявок:', e);
+            return [];
+        }
     }
 
     async function loadReturnsFromCloud() {
         try {
-            const data = await jsonpRequest(`${SCRIPT_URL}?action=get_returns`, 'jsonp_returns');
+            const response = await fetch(`${SCRIPT_URL}?action=get_returns&t=${Date.now()}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
             return Array.isArray(data) ? data : [];
-        } catch(e) { console.error(e); return []; }
+        } catch(e) {
+            console.error('Ошибка загрузки возвратов:', e);
+            return [];
+        }
     }
 
     async function addApplicationToCloud(app) {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add', ...app }) });
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'add', ...app })
+        });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function addReturnToCloud(returnReq) {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add_return', ...returnReq }) });
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'add_return', ...returnReq })
+        });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function updateStatusInCloud(id, status) {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update', id, status }) });
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update', id, status })
+        });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function updateReturnStatusInCloud(id, status) {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update_return', id, status }) });
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update_return', id, status })
+        });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function deleteFromCloud(id) {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', id }) });
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'delete', id })
+        });
         await new Promise(r => setTimeout(r, 500));
     }
 
     async function deleteReturnFromCloud(id) {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete_return', id }) });
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'delete_return', id })
+        });
         await new Promise(r => setTimeout(r, 500));
     }
 
@@ -336,12 +365,11 @@
             html += `</td><td>`;
             if (isAdmin) html += `<button class="btn-delete" data-id="${app.id}" data-type="app">🗑 Удалить</button>`;
             else html += `—`;
-            html += `</td></tr>`;
+            html += `NonNullable`;
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
         
-        // Навешиваем обработчики
         document.querySelectorAll('.btn-approve').forEach(btn => {
             btn.onclick = () => updateApplicationStatus(btn.getAttribute('data-id'), 'approved');
         });
@@ -377,7 +405,7 @@
             html += `</td><td>`;
             if (isAdmin) html += `<button class="btn-delete-return" data-id="${req.id}">🗑 Удалить</button>`;
             else html += `—`;
-            html += `</td></tr>`;
+            html += `</tr>`;
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
