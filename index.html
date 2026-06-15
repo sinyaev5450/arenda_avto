@@ -547,7 +547,7 @@
 
 <script>
     // ==================== ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8Z_k4i3bcEZPL3T5o3CQoPv6HC3xgXBDwk7vB3uGjdDwc_f45JJ7WhWKTSCcqEL3pZw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxwbOrLIURSQGdW7jcwy6LEsCVxWo6WIHGULA4gkTazEXlooz5asw7TRlVT6ks8irjCg/exec';
     // ================================================================================
 
     // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
@@ -604,14 +604,28 @@
 
     // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
     
-    // Универсальная функция отправки запросов
+    // Универсальная функция отправки запросов (используем GET для обхода CORS)
     async function callScript(params) {
+        // Создаем URL с параметрами для GET запроса
+        const urlParams = new URLSearchParams();
+        for (let key in params) {
+            if (typeof params[key] === 'object') {
+                urlParams.append(key, JSON.stringify(params[key]));
+            } else {
+                urlParams.append(key, params[key]);
+            }
+        }
+        
+        const url = `${SCRIPT_URL}?${urlParams.toString()}`;
+        console.log('Отправка запроса:', url);
+        
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: 'GET',
                 mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(params)
+                headers: {
+                    'Accept': 'application/json'
+                }
             });
             
             const text = await response.text();
@@ -748,9 +762,14 @@
         try {
             const result = await addApplicationToCloud(newApp);
             console.log('Результат добавления:', result);
-            await loadAllData(true);
-            alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}\nОжидает одобрения.`);
-            return true;
+            if (result && result.success) {
+                await loadAllData(true);
+                alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}\nОжидает одобрения.`);
+                return true;
+            } else {
+                alert('❌ Ошибка при отправке заявки: ' + (result?.error || 'Неизвестная ошибка'));
+                return false;
+            }
         } catch (error) {
             console.error('Ошибка при отправке заявки:', error);
             alert('❌ Ошибка при отправке заявки. Проверьте консоль.');
@@ -775,9 +794,14 @@
         try {
             const result = await addReturnToCloud(newReturn);
             console.log('Результат добавления возврата:', result);
-            await loadAllData(true);
-            alert(`✅ Заявка на возврат отправлена!\nТранспорт: ${returnData.carBrand}\nНик: ${returnData.nickname}`);
-            return true;
+            if (result && result.success) {
+                await loadAllData(true);
+                alert(`✅ Заявка на возврат отправлена!\nТранспорт: ${returnData.carBrand}\nНик: ${returnData.nickname}`);
+                return true;
+            } else {
+                alert('❌ Ошибка при отправке заявки на возврат: ' + (result?.error || 'Неизвестная ошибка'));
+                return false;
+            }
         } catch (error) {
             console.error('Ошибка при отправке заявки на возврат:', error);
             alert('❌ Ошибка при отправке заявки на возврат.');
@@ -849,10 +873,10 @@
             } else {
                 html += `—`;
             }
-            html += `</td></tr>`;
+            html += `</tr>`;
         });
         
-        html += `</tbody></table>`;
+        html += `</tbody><table>`;
         container.innerHTML = html;
 
         if (isAdmin) {
@@ -902,7 +926,7 @@
             } else {
                 html += `—`;
             }
-            html += `</td></tr>`;
+            html += `</tr>`;
         });
         
         html += `</tbody></table>`;
