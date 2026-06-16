@@ -121,6 +121,245 @@
             background: #b45f1b;
         }
 
+        /* ============ НАВИГАЦИОННЫЕ ВКЛАДКИ ============ */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .nav-tab {
+            background: rgba(30,136,229,0.2);
+            border: 2px solid transparent;
+            color: #aaa;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(4px);
+        }
+        .nav-tab:hover {
+            background: rgba(30,136,229,0.4);
+            color: white;
+        }
+        .nav-tab.active {
+            background: rgba(30,136,229,0.4);
+            border-color: #1e88e5;
+            color: white;
+            box-shadow: 0 0 20px rgba(30,136,229,0.3);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============ СТИЛИ ДЛЯ ВКЛАДКИ УЧАСТНИКИ ============ */
+        .members-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .members-section {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .members-section h3 {
+            color: #88aaff;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        .members-section h3 .crown {
+            color: #f1c40f;
+        }
+        .members-list {
+            list-style: none;
+            padding: 0;
+        }
+        .members-list li {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #ddd;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+        .members-list li:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .members-list li .rank {
+            color: #88aaff;
+            font-weight: bold;
+            font-size: 0.8rem;
+            min-width: 30px;
+        }
+        .members-list li .badge-leader {
+            background: #f1c40f;
+            color: #333;
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+        .members-list li .badge-deputy {
+            background: #9b59b6;
+            color: white;
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+        .members-list li .badge-member {
+            background: #1e88e5;
+            color: white;
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: bold;
+        }
+        .members-stats {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+        .members-stats span {
+            color: #88aaff;
+            font-weight: bold;
+        }
+
+        /* ============ СТИЛИ ДЛЯ ВКЛАДКИ ПРАВИЛА ============ */
+        .rules-container {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .rules-container h2 {
+            text-align: center;
+            color: #88aaff;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+        .rules-container h3 {
+            color: #f1c40f;
+            font-size: 1.1rem;
+            margin: 20px 0 12px 0;
+            padding-left: 10px;
+            border-left: 3px solid #f1c40f;
+            padding: 8px 15px;
+            background: rgba(241, 196, 15, 0.1);
+            border-radius: 8px;
+        }
+        .rules-container .rule-item {
+            padding: 6px 15px;
+            margin: 4px 0;
+            color: #ddd;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+        }
+        .rules-container .rule-item .num {
+            color: #88aaff;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .rules-container .rule-item .punishment {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .rules-container .rule-item .sub-item {
+            padding-left: 25px;
+            color: #bbb;
+            font-size: 0.85rem;
+            margin: 3px 0;
+        }
+        .rules-container .rule-item .sub-item .letter {
+            color: #88aaff;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .rules-container .rule-highlight {
+            background: rgba(231, 76, 60, 0.15);
+            border-left: 3px solid #e74c3c;
+            padding: 6px 15px;
+            margin: 4px 0;
+            border-radius: 0 6px 6px 0;
+            color: #ddd;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .rules-container .rule-highlight .num {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .rules-container .rule-highlight .punishment {
+            color: #f1c40f;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .rules-container .role-item {
+            padding: 8px 15px;
+            margin: 4px 0;
+            color: #ddd;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            background: rgba(30,136,229,0.08);
+            border-radius: 6px;
+            border-left: 3px solid #1e88e5;
+        }
+        .rules-container .role-item .role-name {
+            color: #88aaff;
+            font-weight: bold;
+        }
+        .rules-container .credit-example {
+            background: rgba(46, 204, 113, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            font-family: monospace;
+            color: #6fcf97;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        .rules-container .credit-example .label {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+
         .cars-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -407,6 +646,20 @@
                 padding: 8px 12px;
                 font-size: 0.8rem;
             }
+            .members-container {
+                grid-template-columns: 1fr;
+            }
+            .nav-tab {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+            .rules-container {
+                padding: 15px;
+            }
+            .rules-container .credit-example {
+                font-size: 0.7rem;
+                padding: 10px;
+            }
         }
         
         /* ============ СТИЛИ ДЛЯ СТАТУСОВ КАРТОЧЕК ============ */
@@ -533,7 +786,28 @@
     <div style="text-align: center;">
         <div class="sync-status" id="syncStatus">🔄 Загрузка...</div>
     </div>
-    <div class="cars-grid" id="carsGrid"></div>
+
+    <!-- ============ НАВИГАЦИОННЫЕ ВКЛАДКИ ============ -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="cars">🚗 Автомобили</button>
+        <button class="nav-tab" data-tab="members">👥 Участники</button>
+        <button class="nav-tab" data-tab="rules">📜 Правила</button>
+    </div>
+
+    <!-- Вкладка: Автомобили -->
+    <div class="tab-content active" id="tab-cars">
+        <div class="cars-grid" id="carsGrid"></div>
+    </div>
+
+    <!-- Вкладка: Участники -->
+    <div class="tab-content" id="tab-members">
+        <div class="members-container" id="membersContainer"></div>
+    </div>
+
+    <!-- Вкладка: Правила -->
+    <div class="tab-content" id="tab-rules">
+        <div class="rules-container" id="rulesContainer"></div>
+    </div>
 </div>
 
 <div class="user-info" id="userInfo" style="display: none;">
@@ -679,6 +953,152 @@
     // ==================== ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpozYhSF3ZLw8p_EetSesN3uy-3hl4Z1YoZIPVJvQ5dBWf0tqSTbqQkn2TgHdf3ZZscA/exec';
     // ================================================================================
+
+    // ==================== ДАННЫЕ УЧАСТНИКОВ ====================
+    const membersData = {
+        leaders: [
+            "Adeline Deville",
+            "Anastasia Deville",
+            "James Deville"
+        ],
+        deputies: [
+            "Aleks_Deville"
+        ],
+        members: [
+            "Alexander Deville",
+            "Daniel Deville",
+            "Artem Deville",
+            "Alex Deville",
+            "Alexsey Deville",
+            "Konstantin_Deville",
+            "Elizaveta Deville",
+            "Ignat Deville",
+            "Di Deville",
+            "Mike Deville",
+            "Maks Deville",
+            "Reinhard_Deville",
+            "Nikita Deville",
+            "Pablo Deville",
+            "Stanislav Deville",
+            "Tayler Deville",
+            "Viktor Deville",
+            "Renat Deville",
+            "Roman Deville",
+            "Kirill Deville"
+        ]
+    };
+
+    // ==================== ПРАВИЛА ====================
+    function renderRules() {
+        const container = document.getElementById('rulesContainer');
+        container.innerHTML = `
+            <h2>📜 Правила семьи DEVILLE</h2>
+
+            <h3>1. Поведение в семье</h3>
+            <div class="rule-item"><span class="num">1.1</span> Запрещено оскорблять участников семьи на сервере и в каких либо беседах <span class="punishment">Наказание: предупреждение; повторное - 3 выговора</span></div>
+            <div class="rule-item"><span class="num">1.2</span> Запрещено выводить на конфликты участников семьи на сервере и в каких либо беседах <span class="punishment">Наказание: предупреждение; повторное - 3 выговора</span></div>
+            <div class="rule-item"><span class="num">1.3</span> Запрещено неадекватно себя вести на мероприятиях (драться и так далее) <span class="punishment">Наказание: 3 выговора; повторное - 6 выговоров</span></div>
+            <div class="rule-highlight"><span class="num">1.4</span> Запрещено затрагивать родственников и нацию участников семьи <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
+            <div class="rule-item"><span class="num">1.5</span> Игнорировать просьбы СС и не предупреждать об отсутствии <span class="punishment">Наказание: 3 выговора; повторное - 6 выговоров</span></div>
+
+            <h3>2. Правила семьи</h3>
+            <div class="rule-item"><span class="num">2.1</span> Знать внутренние правила сервера (DM, DB, MG, TK, SK, PG, RK, BH, WH, ЕПП, ЕПТ, ЕПР) <span class="punishment">Наказание: предупреждение; повторное - 2 выговора</span></div>
+            <div class="rule-item"><span class="num">2.2</span> Знать RP-отыгровки ( /me; /do; /s; /b; /w; /try; /todo) <span class="punishment">Наказание: предупреждение; повторное - 2 выговора</span></div>
+            <div class="rule-item"><span class="num">2.3</span> Запрещено намеренно оскорблять/таранить/избивать каких-либо игроков <span class="punishment">Наказание: 2 выговора; повторное - 4 выговора</span></div>
+            <div class="rule-item"><span class="num">2.4</span> Запрещено провоцировать на конфликты каких-либо игроков <span class="punishment">Наказание: 2 выговора; повторное - 4 выговора</span></div>
+            <div class="rule-item"><span class="num">2.5</span> Запрещено провоцировать фракции: ГУВД, ГИБДД, МО, ОПГ, МЗ <span class="punishment">Наказание: 2 выговора; повторное - 4 выговора</span></div>
+            <div class="rule-item"><span class="num">2.6</span> Запрещено вмешиваться в RP-процесс (увозить игрока с места оформления сотрудниками полиции не из нашей семьи) <span class="punishment">Наказание: предупреждение; повторное - 2 выговора</span></div>
+            <div class="rule-item"><span class="num">2.7</span> Запрещено играть в азартные игры (монетка) <span class="punishment">Наказание: 3 выговора; повторное - 5 выговоров (а так же запрещается выдача кредитов. Срок запрета на кредит назначает лидер.)</span></div>
+            <div class="rule-highlight"><span class="num">2.8</span> Запрещено затрагивать нацию, родственников <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
+            <div class="rule-highlight"><span class="num">2.9</span> Запрещено сливать внутреннюю информацию семьи <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
+            <div class="rule-highlight"><span class="num">2.10</span> Запрещено состоять с твинков в других семьях <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
+
+            <h3>3. Организация</h3>
+            <div class="rule-item"><span class="num">3.1</span> Каждый участник семьи должен находиться в организации! <span class="punishment">Наказание: игрок не допускается в семью</span></div>
+            <div class="rule-item"><span class="num">3.2</span> Запрещено самовольно без объяснений покидать организацию <span class="punishment">Наказание: автоматическое исключение из семьи</span></div>
+            
+            <div class="rule-item" style="margin-top:10px;"><span class="num">3.3</span> Роли:</div>
+            <div class="role-item"><span class="role-name">А) Лидер:</span> следит за порядком семьи, рассматривает жалобы на форуме, принимает новых участников, урегулирует конфликты, выдает наказания, организует мероприятия, рассматривает заявки на взятие кредита, принимает отработку предов.</div>
+            <div class="role-item"><span class="role-name">Б) Заместитель:</span> докладывает о нарушениях, заполняет список об активности, помогает в организации мероприятий, принимает отработку предов.</div>
+            <div class="role-item"><span class="role-name">В) Основной состав:</span> участники семьи, которые должны знать и соблюдать правила семьи, докладывать о конфликтных ситуациях, вести запись игрового процесса, приходить на мероприятия.</div>
+            <div class="role-item"><span class="role-name">Г) Следящие за Транспортом:</span> участники которые проверяют транспорт, докладывают о том кто не починил/не заправил, так же должны вести видеофиксацию, приходить на различные мероприятия.</div>
+            <div class="role-item"><span class="role-name">Д) Повар:</span> участник который готовит еду в офисе, так же должны вести видеофиксацию, приходить на различные мероприятия.</div>
+            <div class="role-item"><span class="role-name">Е) Неактивные:</span> участники, которые пропали без предупреждения и от них ждут ответа</div>
+            <div class="role-item"><span class="role-name">Ё) На вылет:</span> участники, которые не выходят долгое время из отпуска или пропали и ответа от них нету</div>
+            <div class="role-item"><span class="role-name">Ж) Отпускные:</span> участники которые написали заявление на отпуск и отдыхают от игры или занимаются своими делами</div>
+            <div class="role-item"><span class="role-name">З) Тестовые:</span> участники которые на пробном периоде в семье, после сдачи правил они повышаются до "основного состава"</div>
+
+            <div class="rule-item" style="margin-top:10px;"><span class="num">3.4</span> Транспорт</div>
+            <div class="rule-item"><span class="num">1)</span> При взятии Т/С пишется отчет (см. пример в беседе "Транспорт/Объявления") <span class="punishment">Наказание: предупреждение; повторное - 2 выговора и понижение на роль ниже</span></div>
+            <div class="rule-item"><span class="num">2)</span> При возврате Т/С участник чинит, заправляет и ставит на место <span class="punishment">Наказание: предупреждение; повторное - 2 выговора и понижение на роль ниже</span></div>
+            <div class="rule-item"><span class="num">3)</span> Когда берете Т/С ставить аварийный знак <span class="punishment">Наказание: предупреждение</span></div>
+            <div class="rule-item"><span class="num">4)</span> Транспорт организации не может находиться во владении участника семьи более двух суток. Исключение транспорт из офиса. <span class="punishment">Наказание: предупреждение; повторное - 2 выговора.</span></div>
+
+            <h3>4. Семейный Бюджет</h3>
+            <div class="rule-item"><span class="num">4.1</span> Каждую неделю, каждый участник семьи переводит в организацию от 50к до 100к <span class="punishment">Наказание: предупреждение; повторное - приз на мероприятиях в случае выигрыша уменьшается на 50% а так же отказ в выдаче кредитов</span></div>
+            <div class="rule-item"><span class="num">4.2</span> Участник семьи может взять кредит, но:</div>
+            <div class="sub-item"><span class="letter">а)</span> Если Вас замечали в участии азартных игр и Вам выдавались преды за это - кредит не выдается</div>
+            <div class="sub-item"><span class="letter">б)</span> Если Вы редко играете и по большей части числитесь в списке "неактивных" - кредит не выдается</div>
+            <div class="sub-item"><span class="letter">в)</span> Если Вы часто попадаете в бан из-за нарушения ВПС - выдается на малые суммы (от 50к до 300к)</div>
+            <div class="sub-item"><span class="letter">г)</span> Если участник семьи не вносит каждую неделю положенную сумму - кредит не выдается</div>
+
+            <div class="credit-example">
+                <span class="label">📝 Пример кредитного договора:</span>
+Я Aliya Deville ознакомлена с правилами и условиями пользования банка семьи.
+Подпись: LiDV
+Я Aliya Deville в настоящий момент 10.10.25 прошу выдать мне 100.000 провинциальных рублей на покупку машины "Москвич-2140", и обязуюсь вернуть данную сумму 100.000 провинциальных рублей в период с 10.10.25 по 20.10.25, а также в случае задержки выплаты кредита готов выплатить штрафные санкции в "nn" количестве от общей суммы кредита.
+Дата: 10.10.25
+Подпись: LilDV
+            </div>
+
+            <div class="rule-item"><span class="num">4.3</span> Штрафные санкции:</div>
+            <div class="rule-item"><span class="num">а)</span> Если Вас забанили по жалобе на форуме и идет просрочка возвращения кредита:</div>
+            <div class="sub-item">1) 1-10 дней - 10%</div>
+            <div class="sub-item">2) 1-20 дней - 20%</div>
+            <div class="sub-item">3) 1-30 дней - 30%</div>
+            <div class="rule-item"><span class="num">б)</span> Если участник намеренно не работает и не фармит и идет просрочка кредита штрафные санкции будут в размере 40%</div>
+            <div class="rule-item"><span class="num">в)</span> Если участник взял кредит и ушел в АФК без предупреждения СС и идет просрочка кредита штрафные санкции будут в размере 70%</div>
+        `;
+    }
+
+    // ==================== ОТРИСОВКА УЧАСТНИКОВ ====================
+    function renderMembers() {
+        const container = document.getElementById('membersContainer');
+        
+        let leadersHtml = '';
+        membersData.leaders.forEach((name, index) => {
+            leadersHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-leader">👑 Лидер</span></li>`;
+        });
+
+        let deputiesHtml = '';
+        membersData.deputies.forEach((name, index) => {
+            deputiesHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-deputy">⭐ Зам</span></li>`;
+        });
+
+        let membersHtml = '';
+        membersData.members.forEach((name, index) => {
+            membersHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-member">Участник</span></li>`;
+        });
+
+        container.innerHTML = `
+            <div class="members-section">
+                <h3><span class="crown">👑</span> Лидеры</h3>
+                <ul class="members-list">${leadersHtml}</ul>
+            </div>
+            <div class="members-section">
+                <h3>⭐ Замы</h3>
+                <ul class="members-list">${deputiesHtml}</ul>
+            </div>
+            <div class="members-section">
+                <h3>👥 Участники</h3>
+                <ul class="members-list">${membersHtml}</ul>
+                <div class="members-stats">
+                    Всего участников: <span>${membersData.leaders.length + membersData.deputies.length + membersData.members.length}</span>
+                    (Лидеров: <span>${membersData.leaders.length}</span>, Замов: <span>${membersData.deputies.length}</span>, Участников: <span>${membersData.members.length}</span>)
+                </div>
+            </div>
+        `;
+    }
 
     // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
     function transliterate(plate) {
@@ -1232,6 +1652,32 @@
         document.body.appendChild(refreshBtn);
     }
 
+    // ============ НАВИГАЦИЯ ВКЛАДОК ============
+    function setupTabs() {
+        const tabs = document.querySelectorAll('.nav-tab');
+        const contents = {
+            'cars': document.getElementById('tab-cars'),
+            'members': document.getElementById('tab-members'),
+            'rules': document.getElementById('tab-rules')
+        };
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                Object.keys(contents).forEach(key => {
+                    contents[key].classList.remove('active');
+                });
+                
+                const tabId = this.dataset.tab;
+                if (contents[tabId]) {
+                    contents[tabId].classList.add('active');
+                }
+            });
+        });
+    }
+
     // ============ ИНИЦИАЛИЗАЦИЯ ============
     function checkAuth() {
         const savedUser = localStorage.getItem('devillecar_user');
@@ -1241,8 +1687,12 @@
             isAdmin = savedAdmin === 'true';
             showUserInterface();
             loadAllData(true);
+            renderMembers();
+            renderRules();
         } else {
             showRegisterModal();
+            renderMembers();
+            renderRules();
         }
     }
 
@@ -1350,6 +1800,9 @@
     });
 
     addRefreshButton();
+    setupTabs();
+    renderMembers();
+    renderRules();
     setInterval(() => { if (currentUser) loadAllData(false); }, 30000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) loadAllData(false); });
     checkAuth();
