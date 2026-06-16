@@ -662,6 +662,7 @@
             }
         }
 
+        /* ============ СТИЛИ ДЛЯ СТАТУСОВ КАРТОЧЕК ============ */
         .car-card.booked {
             opacity: 0.85;
             border-color: #e67e22;
@@ -686,6 +687,20 @@
         }
         .car-card.available:hover {
             border-color: #27ae60;
+        }
+
+        .car-card.pending {
+            opacity: 0.85;
+            border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
+        }
+        .car-card.pending:hover {
+            transform: translateY(-3px);
+            border-color: #f1c40f;
+        }
+        .car-card.pending .take-btn {
+            background: #555;
+            cursor: not-allowed;
         }
 
         .btn-approve-return {
@@ -779,9 +794,7 @@
 
     <!-- Вкладка: Правила -->
     <div class="tab-content" id="tab-rules">
-        <div class="rules-container" id="rulesContainer">
-            <!-- Правила будут вставлены через JavaScript -->
-        </div>
+        <div class="rules-container" id="rulesContainer"></div>
     </div>
 </div>
 
@@ -1170,13 +1183,47 @@
 
     // ==================== ПРОВЕРКА СТАТУСА БРОНИРОВАНИЯ ====================
     function getBookingInfo(carPlate) {
-        const hasApprovedReturn = returns.some(ret => ret.carNumber === carPlate && ret.status === 'approved');
-        if (hasApprovedReturn) return { isBooked: false };
+        // Проверяем, есть ли ОДОБРЕННЫЙ возврат для этой машины
+        const hasApprovedReturn = returns.some(ret => 
+            ret.carNumber === carPlate && 
+            ret.status === 'approved'
+        );
         
-        const booking = applications.find(app => app.carNumber === carPlate && app.status === 'approved');
-        if (booking) {
-            return { isBooked: true, user: booking.nickname, until: booking.takeTime || 'не указано' };
+        // Если есть одобренный возврат - машина свободна
+        if (hasApprovedReturn) {
+            return { isBooked: false };
         }
+        
+        // Сначала ищем ОДОБРЕННУЮ заявку (активное бронирование)
+        const approvedBooking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'approved'
+        );
+        
+        if (approvedBooking) {
+            return {
+                isBooked: true,
+                user: approvedBooking.nickname,
+                until: approvedBooking.takeTime || 'не указано',
+                status: 'approved'
+            };
+        }
+        
+        // Затем ищем ОЖИДАЮЩУЮ заявку (pending)
+        const pendingBooking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'pending'
+        );
+        
+        if (pendingBooking) {
+            return {
+                isBooked: true,
+                user: pendingBooking.nickname,
+                until: pendingBooking.takeTime || 'не указано',
+                status: 'pending'
+            };
+        }
+        
         return { isBooked: false };
     }
 
@@ -1381,13 +1428,20 @@
     function renderCars() {
         const grid = document.getElementById('carsGrid');
         grid.innerHTML = '';
+        
         cars.forEach(car => {
             const bookingInfo = getBookingInfo(car.plate);
             const isBooked = bookingInfo.isBooked;
+            const bookingStatus = bookingInfo.status; // 'approved' или 'pending'
+            
             const card = document.createElement('div');
             card.className = 'car-card';
             if (isBooked) {
-                card.classList.add('booked');
+                if (bookingStatus === 'pending') {
+                    card.classList.add('pending');
+                } else {
+                    card.classList.add('booked');
+                }
             } else {
                 card.classList.add('available');
             }
@@ -1396,25 +1450,59 @@
             const imagePath = `images/${imageFileName}.jpg`;
             let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
             
+            // Статус на карточке (с учётом pending)
             let statusHtml = '';
             if (isBooked) {
-                statusHtml = `<div class="status-booked">🔒 ЗАНЯТА</div>`;
+                if (bookingStatus === 'pending') {
+                    statusHtml = `
+                        <div style="position: absolute; top: 10px; right: 10px; background: rgba(241, 196, 15, 0.9); color: #333; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; z-index: 10;">
+                            ⏳ ОЖИДАЕТ ОДОБРЕНИЯ
+                        </div>
+                    `;
+                } else {
+                    statusHtml = `
+                        <div class="status-booked">
+                            🔒 ЗАНЯТА
+                        </div>
+                    `;
+                }
             } else {
-                statusHtml = `<div class="status-free">✅ СВОБОДНА</div>`;
+                statusHtml = `
+                    <div class="status-free">
+                        ✅ СВОБОДНА
+                    </div>
+                `;
             }
             
+            // Блок информации о бронировании
             let bookingInfoHtml = '';
             if (currentUser && isBooked) {
-                bookingInfoHtml = `<div style="margin-top: 8px; padding: 6px 10px; background: rgba(230, 126, 34, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #e67e22;"><span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span></div>`;
+                let statusText = bookingStatus === 'pending' ? '⏳ Ожидает одобрения' : '✅ Активно';
+                let statusColor = bookingStatus === 'pending' ? '#f1c40f' : '#e67e22';
+                bookingInfoHtml = `
+                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(${bookingStatus === 'pending' ? '241, 196, 15' : '230, 126, 34'}, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid ${statusColor};">
+                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span>
+                        <span style="color: ${statusColor}; margin-left: 8px;">${statusText}</span>
+                    </div>
+                `;
             } else if (currentUser && !isBooked) {
-                bookingInfoHtml = `<div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.15); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;"><span style="color: #6fcf97;">✅ Доступна для заказа</span></div>`;
+                bookingInfoHtml = `
+                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.15); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;">
+                        <span style="color: #6fcf97;">✅ Доступна для заказа</span>
+                    </div>
+                `;
             }
             
+            // Кнопка "Взять" - блокируется если есть pending ИЛИ approved
             const isButtonDisabled = isBooked;
+            
             card.innerHTML = `
                 <div class="car-image" style="position: relative;">${statusHtml}${imageHtml}</div>
                 <div class="car-info">
-                    <div class="car-name">${escapeHtml(car.name)}${!isBooked ? '<span class="status-free-badge">📋 ДОСТУПНА</span>' : ''}</div>
+                    <div class="car-name">
+                        ${escapeHtml(car.name)}
+                        ${!isBooked ? '<span class="status-free-badge">📋 ДОСТУПНА</span>' : ''}
+                    </div>
                     <div class="car-desc">${escapeHtml(car.desc.substring(0, 80))}${car.desc.length > 80 ? '…' : ''}</div>
                     <div class="car-spec">${escapeHtml(car.engine || '')} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
                     <div class="car-plate">🚛 Госномер: ${escapeHtml(car.plate)}</div>
