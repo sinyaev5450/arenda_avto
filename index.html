@@ -2,7 +2,1882 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewpo<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevilleCar | Облачные заявки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: url('images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #eee;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff, #88aaff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sub {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .sync-status {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            background: rgba(30,136,229,0.2);
+        }
+
+        .user-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(30,136,229,0.3);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 20;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .user-info span {
+            color: #ffaa66;
+            font-weight: bold;
+        }
+        .admin-badge {
+            background: #e67e22;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #ffaa66;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+        .logout-btn:hover {
+            color: #ff8844;
+        }
+
+        .view-applications-btn, .view-returns-btn {
+            position: fixed;
+            top: 20px;
+            background: #1e88e5;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: background 0.2s;
+        }
+        .view-applications-btn {
+            right: 20px;
+        }
+        .view-returns-btn {
+            right: 180px;
+            background: #e67e22;
+        }
+        .view-applications-btn:hover {
+            background: #0d5b9e;
+        }
+        .view-returns-btn:hover {
+            background: #b45f1b;
+        }
+
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .car-card {
+            background: rgba(216, 216, 216, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .car-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 30px rgba(0,0,0,0.4);
+            border-color: #1e88e5;
+        }
+
+        .car-image {
+            height: 200px;
+            background: #1a1a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .car-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .car-card:hover .car-image img {
+            transform: scale(1.03);
+        }
+
+        .car-info {
+            padding: 18px;
+            flex: 1;
+        }
+
+        .car-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .car-desc {
+            font-size: 0.85rem;
+            color: #bbb;
+            line-height: 1.4;
+        }
+
+        .car-spec {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: #88aaff;
+            font-family: monospace;
+        }
+
+        .car-plate {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            background: #2a2a3a;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: #ffaa66;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 12px 18px 18px 18px;
+        }
+        .take-btn, .return-card-btn {
+            flex: 1;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .take-btn {
+            background: #1e88e5;
+        }
+        .take-btn:hover {
+            background: #0d5b9e;
+        }
+        .return-card-btn {
+            background: #e67e22;
+        }
+        .return-card-btn:hover {
+            background: #b45f1b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: #1a1a2e;
+            margin: 5% auto;
+            padding: 24px;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #88aaff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            color: #eee;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #ccc;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #2a2a3a;
+            border: 1px solid #445;
+            border-radius: 16px;
+            color: white;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 40px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .submit-btn {
+            background: #1e88e5;
+            color: white;
+        }
+        .cancel-btn {
+            background: #444;
+            color: white;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .close:hover {
+            color: white;
+        }
+
+        .applications-table, .returns-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+        .applications-table th, .applications-table td,
+        .returns-table th, .returns-table td {
+            border: 1px solid #445;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .applications-table th, .returns-table th {
+            background: #1e88e5;
+            color: white;
+        }
+        .status-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn-approve, .btn-reject {
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .btn-approve {
+            background: #2ecc71;
+        }
+        .btn-approve:hover {
+            background: #27ae60;
+        }
+        .btn-reject {
+            background: #e67e22;
+        }
+        .btn-reject:hover {
+            background: #d35400;
+        }
+        .status-text-approved {
+            color: #6fcf97;
+            font-weight: bold;
+        }
+        .status-text-rejected {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .status-text-pending {
+            color: #ffaa66;
+            font-weight: bold;
+        }
+        .btn-delete, .btn-delete-return {
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            background: #d32f2f;
+        }
+        .btn-delete:hover, .btn-delete-return:hover {
+            background: #b71c1c;
+        }
+        .empty-apps {
+            text-align: center;
+            padding: 30px;
+            color: #aaa;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 700px) {
+            .applications-table th, .applications-table td,
+            .returns-table th, .returns-table td {
+                padding: 5px;
+                font-size: 0.7rem;
+            }
+            .view-returns-btn {
+                right: 160px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            .view-applications-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+        }
+        /* Стили для забронированных автомобилей */
+        .car-card.booked {
+            opacity: 0.85;
+            border-color: #e67e22;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .car-card.booked:hover {
+            transform: translateY(-3px);
+            border-color: #e67e22;
+        }
+        
+        .car-card.booked .take-btn {
+            background: #555;
+            cursor: not-allowed;
+        }
+        
+        .car-card.booked .take-btn:hover {
+            background: #555;
+            transform: none;
+        }
+                /* Стили для кнопок возврата */
+        .btn-approve-return {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .btn-approve-return:hover {
+            background: #27ae60;
+        }
+        
+        .btn-reject-return {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .btn-reject-return:hover {
+            background: #d35400;
+        }
+        /* Стили для статуса "Свободна" */
+.car-card.available {
+    border-color: #2ffffff;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+}
+
+.car-card.available:hover {
+    border-color: #40086e;
+}
+
+.status-free {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(46, 204, 113, 0.9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.status-free-badge {
+    display: inline-block;
+    background: #2ecc71;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    margin-left: 8px;
+}
+        .status-booked {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(230, 126, 34, 0.9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    z-index: 10;
+}
+    </style>
+    <link rel="icon" type="image/png" href="images/logo.png">
+</head>
+<body>
+<div class="container">
+    <h1>DevilleCar</h1>
+    <div class="sub">Заявки синхронизируются между всеми устройствами</div>
+    <div style="text-align: center;">
+        <div class="sync-status" id="syncStatus">🔄 Загрузка...</div>
+    </div>
+    <div class="cars-grid" id="carsGrid"></div>
+</div>
+
+<div class="user-info" id="userInfo" style="display: none;">
+    👤 Вы вошли как: <span id="currentUserNick"></span><span id="adminBadge" class="admin-badge" style="display: none;">Админ</span>
+    <button class="logout-btn" id="logoutBtn">🚪 Выйти</button>
+</div>
+
+<button class="view-applications-btn" id="viewAppsBtn">📋 Заявки на взятие</button>
+<button class="view-returns-btn" id="viewReturnsBtn">🔄 Заявки на возврат</button>
+
+<!-- Модалка регистрации -->
+<div id="registerModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <h2 style="text-align: center; margin-bottom: 25px;">
+            <span style="background: linear-gradient(135deg, #ffffff, #88aaff); -webkit-background-clip: text; background-clip: text; color: transparent;">🚗 DevilleCar</span>
+        </h2>
+        
+        <div style="text-align: center; margin-bottom: 10px;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 15px; background: linear-gradient(135deg, #1e88e5, #0d5b9e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px;">
+                🔑
+            </div>
+        </div>
+        
+        <p style="text-align: center; color: #ccc; margin-bottom: 20px; font-size: 0.95rem;">
+            Введите ваш никнейм для входа в систему
+        </p>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="color: #aaa; font-size: 0.85rem;">👤 Ваш никнейм</label>
+            <input type="text" id="registerNick" placeholder="Введите никнейм" maxlength="30" style="background: #2a2a3a; border: 1px solid #445; border-radius: 16px; padding: 12px 15px; width: 100%; color: white; font-size: 1rem;">
+        </div>
+        
+        <button id="registerBtn" style="width: 100%; background: linear-gradient(135deg, #1e88e5, #0d5b9e); color: white; border: none; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 12px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span>🚪</span> Войти как пользователь
+        </button>
+        
+        <button id="adminLoginBtn" style="width: 100%; background: linear-gradient(135deg, #e67e22, #b45f1b); color: white; border: none; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 20px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span>👑</span> Войти как администратор
+        </button>
+        
+        <div id="registerError" class="error-msg" style="color: #e74c3c; text-align: center; margin-bottom: 15px; font-size: 0.85rem;"></div>
+        
+        <div style="background: rgba(30,136,229,0.1); border-left: 3px solid #1e88e5; padding: 12px; border-radius: 12px; margin-top: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">ℹ️</span>
+                <span style="color: #aaa; font-size: 0.75rem;">Администратор может одобрять/отклонять заявки</span>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<!-- Модалка анкеты взятия -->
+<div id="anketaModal" class="modal modal-anketa">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>📋 Анкета взятия транспорта</h2>
+        <form id="anketaForm">
+            <div class="form-group">
+                <label>1. Ваш ник *</label>
+                <input type="text" id="nickname" readonly style="background:#333; cursor:default;">
+            </div>
+            <div class="form-group">
+                <label>2. Время взятия</label>
+                <input type="datetime-local" id="takeTime">
+            </div>
+            <div class="form-group">
+                <label>3. Марка / модель</label>
+                <input type="text" id="carBrand" readonly style="background:#333; cursor:default;">
+            </div>
+            <div class="form-group">
+                <label>4. Номер ТС</label>
+                <input type="text" id="carNumber" placeholder="например: А123ВС77">
+            </div>
+            <div class="form-group">
+                <label>5. Причина взятия</label>
+                <textarea id="reason" rows="3" placeholder="Для перевозки, тест-драйв, работа..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="cancelModalBtn">Отмена</button>
+                <button type="submit" class="submit-btn">Отправить заявку</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Модалка анкеты возврата -->
+<div id="returnModal" class="modal modal-return">
+    <div class="modal-content">
+        <span class="close" id="closeReturnModal">&times;</span>
+        <h2>🔄 Анкета возврата транспорта</h2>
+        <form id="returnForm">
+            <div class="form-group">
+                <label>Ваш ник *</label>
+                <input type="text" id="returnNickname" readonly style="background:#333; cursor:default;">
+            </div>
+            <div class="form-group">
+                <label>Марка / модель</label>
+                <input type="text" id="returnCarBrand" readonly style="background:#333; cursor:default;">
+            </div>
+            <div class="form-group">
+                <label>Номер ТС</label>
+                <input type="text" id="returnCarNumber" readonly style="background:#333; cursor:default;">
+            </div>
+            <div class="form-group">
+                <label>Дата и время возврата *</label>
+                <input type="datetime-local" id="returnTime" required>
+            </div>
+            <div class="form-group">
+                <label>Пробег (км) *</label>
+                <input type="number" id="mileage" placeholder="Введите пробег" required>
+            </div>
+            <div class="form-group">
+                <label>Состояние транспорта *</label>
+                <select id="condition" required>
+                    <option value="">Выберите состояние</option>
+                    <option value="Чистый, без повреждений">Чистый, без повреждений</option>
+                    <option value="Грязный">Грязный</option>
+                    <option value="Есть небольшие повреждения">Есть небольшие повреждения</option>
+                    <option value="Требуется ремонт">Требуется ремонт</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Что сделано/обслужено?</label>
+                <textarea id="servicePerformed" rows="3" placeholder="Например: замена масла, мойка, заправка..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Комментарий</label>
+                <textarea id="returnComment" rows="2" placeholder="Дополнительная информация"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="cancelReturnBtn">Отмена</button>
+                <button type="submit" class="submit-btn">Отправить заявку на возврат</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модалка со списком заявок на взятие -->
+<div id="applicationsModal" class="modal modal-apps">
+    <div class="modal-content" style="max-width: 1200px;">
+        <span class="close" id="closeAppsModal">&times;</span>
+        <h2>📋 Заявки на взятие транспорта</h2>
+        <div id="applicationsList"></div>
+    </div>
+</div>
+
+<!-- Модалка со списком заявок на возврат -->
+<div id="returnsModal" class="modal modal-returns">
+    <div class="modal-content" style="max-width: 1200px;">
+        <span class="close" id="closeReturnsModal">&times;</span>
+        <h2>🔄 Заявки на возврат транспорта</h2>
+        <div id="returnsList"></div>
+    </div>
+</div>
+
+<script>
+    // ==================== ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpozYhSF3ZLw8p_EetSesN3uy-3hl4Z1YoZIPVJvQ5dBWf0tqSTbqQkn2TgHdf3ZZscA/exec';
+    // ================================================================================
+
+    // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
+    function transliterate(plate) {
+        const map = {
+            'А': 'A', 'В': 'B', 'Е': 'E', 'К': 'K', 'М': 'M',
+            'Н': 'H', 'О': 'O', 'Р': 'P', 'С': 'C', 'Т': 'T',
+            'У': 'U', 'Х': 'X', 'а': 'a', 'в': 'b', 'е': 'e',
+            'к': 'k', 'м': 'm', 'н': 'h', 'о': 'o', 'р': 'p',
+            'с': 'c', 'т': 't', 'у': 'u', 'х': 'x'
+        };
+        return plate.split('').map(char => map[char] || char).join('');
+    }
+
+    // ----- СПИСОК ТРАНСПОРТА -----
+    const cars = [
+        { name: "BMW X6 M (F86)", desc: "Спортивный кроссовер с twin-turbo V8, 575 л.с., полный привод M xDrive.", engine: "4.4 л V8 TwinPower Turbo", hp: 575, plate: "M666YP77" },
+        { name: "Volvo XC90 T5", desc: "Роскошный 7-местный SUV с турбодвигателем и скандинавским дизайном.", engine: "2.0 л Drive-E Turbo", hp: 250, plate: "T550OK63" },
+        { name: "Volvo V60 Polestar", desc: "Заряженный универсал с подвеской Öhlins, карбоновыми деталями.", engine: "2.0 л Twin Charged", hp: 367, plate: "E200TM78" },
+        { name: "Volvo 850 R", desc: "Классический «кирпич» с 5-цилиндровым турбо, икона 90-х.", engine: "2.3 л R5 Turbo", hp: 250, plate: "T499MK78" },
+        { name: "McLaren 720S Spyder", desc: "Суперкар с откидным верхом, карбоновый монокок, 710 л.с.", engine: "4.0 л V8 Twin-Turbo", hp: 710, plate: "M720AK78" },
+        { name: "Porsche 911 Carrera (993) RWB <Slimer>", desc: "Легендарный RWB от Накаи-сан, широкие арки, аэродинамика.", engine: "3.6 л оппозитный 6", hp: 285, plate: "O993OO78" },
+        { name: "Audi Rs7 (C8)", desc: "Быстрый лифтбек с 600-сильным V8 и полным приводом.", engine: "4.0 л V8 TFSI", hp: 600, plate: "T077YT77" },
+        { name: "Jaguar F-Type", desc: "Британский спорткар с мощным V8 и элегантным звуком.", engine: "5.0 л V8 Supercharged", hp: 575, plate: "W000WW" },
+        { name: "Jaguar F-Type (на виниле)", desc: "Кастомная версия с ярким плёночным покрытием.", engine: "5.0 л V8", hp: 575, custom: "винил", plate: "M078YP78" },
+        { name: "Mazda RX-8", desc: "Роторно-поршневой двигатель RENESIS, 1.3 л, 4-дверный купе.", engine: "1.3 л роторный", hp: 231, plate: "P008OO78" },
+        { name: "Nissan Skyline GT-R V-specR34", desc: "Культовый Godzilla, ATTESA E-TS Pro, RB26DETT.", engine: "2.6 л Twin-Turbo I6", hp: 330, plate: "C888BB77" },
+        { name: "Suzuki GSX 1300 R", desc: "Мотоцикл Hayabusa — легенда скорости, 1340 см³.", engine: "1340 cc", hp: 197, plate: "7777AE77" },
+        { name: "BMW M760Li xDrive G12", desc: "Роскошный седан с V12 6.6 л, 610 л.с., потолок из алькантары.", engine: "6.6 л V12 Twin-Turbo", hp: 610, plate: "M760KA78" },
+        { name: "Chevrolet Camaro ZL1", desc: "Американский мускул-кар с компрессорным V8.", engine: "6.2 л V8 Supercharged", hp: 650, plate: "B070OY77" },
+        { name: "BMW X5 M", desc: "Высокопроизводительный SUV, M TwinPower V8, 600 л.с.", engine: "4.4 л V8 Twin-Turbo", hp: 600, plate: "A555OA77" },
+        { name: "BMW S1000 RR", desc: "Спортбайк с рядной четвёркой, 205 л.с., электроника.", engine: "999 cc", hp: 205, plate: "0035MK63" },
+        { name: "Volkswagen Touareg V8 TDI", desc: "Мощный дизельный внедорожник, 4.0 л V8, 421 л.с.", engine: "4.0 л V8 TDI", hp: 421, plate: "K657PY63" },
+        { name: "Audi R8", desc: "Суперкар с двигателем V10 и полным приводом Quattro.", engine: "5.2 л V10", hp: 602, plate: "B546OK63" },
+        { name: "Subaru WRX STI", desc: "Полноприводной седан с оппозитным турбо 2.5 л.", engine: "2.5 л Boxer Turbo", hp: 310, plate: "O403EB78" },
+        { name: "BMW 535i (e34)", desc: "Классическая «пятёрка» с рядной шестёркой и драйвом.", engine: "3.5 л I6", hp: 211, plate: "O857KP63" },
+        { name: "Mercedes-Maybach S680 (W223)", desc: "Бизнес седан, хорошо управляемый и с хорошим разгоном", engine: "4.0 л", hp: 503, plate: "С303KP77" },
+        { name: "Volvo FH", desc: "Магистральный тягач, экономичный дизель, автоматическая КПП.", engine: "12.8 л D13K", hp: 500, plate: "M888AA77" },
+        { name: "Volvo FH", desc: "Магистральный тягач, кабина Globetrotter, мощный тормоз-замедлитель.", engine: "12.8 л D13K", hp: 500, plate: "P888MK77" },
+        { name: "Volvo FH", desc: "Тягач для международных перевозок, низкий расход топлива.", engine: "12.8 л D13K", hp: 500, plate: "P888MK78" },
+        { name: "Volvo FH", desc: "Тягач с улучшенной аэродинамикой и системой I-See.", engine: "12.8 л D13K", hp: 500, plate: "Y716TH63" },
+        { name: "Volvo VNL", desc: "Американский дальнемагистральный тягач с высокой кабиной.", engine: "12.8 л D13", hp: 455, plate: "P479MK77" },
+        { name: "Renault Magnum", desc: "Культовый «квадратный» тягач с просторной кабиной.", engine: "12.0 л DXi12", hp: 480, plate: "T562OE63" },
+        { name: "Mercedes-Benz Sprinter", desc: "Универсальный коммерческий фургон, подходит для грузоперевозок.", engine: "3.0 л OM642", hp: 190, plate: "A942EB77" }
+    ];
+
+  // ----- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ -----
+    let currentUser = null;
+    let isAdmin = false;
+    let applications = [];
+    let returns = [];
+
+    // ============ БЕЗОПАСНЫЙ ВЫВОД ДАННЫХ ============
+    function safeOutput(value) {
+        if (value === undefined || value === null) return '';
+        if (typeof value === 'number') return value.toString();
+        if (typeof value === 'boolean') return value ? 'Да' : 'Нет';
+        if (typeof value === 'object') {
+            try {
+                return JSON.stringify(value);
+            } catch(e) {
+                return '';
+            }
+        }
+        return String(value);
+    }
+
+    function escapeHtml(value) {
+        const str = safeOutput(value);
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ----- ФУНКЦИИ ДЛЯ РАБОТЫ С GOOGLE SHEETS -----
+    async function callScript(params) {
+        const urlParams = new URLSearchParams();
+        for (let key in params) {
+            if (typeof params[key] === 'object') {
+                urlParams.append(key, JSON.stringify(params[key]));
+            } else {
+                urlParams.append(key, params[key]);
+            }
+        }
+        
+        const url = `${SCRIPT_URL}?${urlParams.toString()}`;
+        console.log('📤 Отправка:', url);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            headers: { 'Accept': 'application/json' }
+        });
+        
+        const text = await response.text();
+        console.log('📥 Ответ:', text);
+        
+        try {
+            return JSON.parse(text);
+        } catch(e) {
+            console.error('Ошибка парсинга:', text);
+            return { error: 'Неверный формат ответа' };
+        }
+    }
+    
+    async function loadApplicationsFromCloud() {
+        const result = await callScript({ action: 'get', type: 'take' });
+        return Array.isArray(result) ? result : [];
+    }
+
+    async function loadReturnsFromCloud() {
+        const result = await callScript({ action: 'get', type: 'return' });
+        return Array.isArray(result) ? result : [];
+    }
+
+    async function addApplicationToCloud(app) {
+        return await callScript({ action: 'add', type: 'take', ...app });
+    }
+
+    async function addReturnToCloud(returnData) {
+        return await callScript({ action: 'add', type: 'return', ...returnData });
+    }
+
+    async function updateStatusInCloud(id, status) {
+        return await callScript({ action: 'update', type: 'take', id, status });
+    }
+
+    async function deleteFromCloud(id) {
+        return await callScript({ action: 'delete', type: 'take', id });
+    }
+
+    async function deleteReturnFromCloud(id) {
+        return await callScript({ action: 'delete', type: 'return', id });
+    }
+        // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С ЗАЯВКАМИ НА ВОЗВРАТ ====================
+    
+    // Обновление статуса заявки на возврат
+    async function updateReturnStatusInCloud(id, status) {
+        return await callScript({ action: 'updateReturn', type: 'return', id, status });
+    }
+    
+    // Одобрение возврата (освобождает машину)
+    async function approveReturn(id, carNumber) {
+        if (confirm('✅ Одобрить возврат? Машина снова станет доступной.')) {
+            // Обновляем статус заявки на возврат
+            await updateReturnStatusInCloud(id, 'approved');
+            
+            // Находим и отменяем/закрываем активную заявку на взятие этой машины
+            const activeTakeApplication = applications.find(app => 
+                app.carNumber === carNumber && 
+                app.status === 'approved'
+            );
+            
+            if (activeTakeApplication) {
+                // Закрываем заявку на взятие (меняем статус на returned)
+                await updateStatusInCloud(activeTakeApplication.id, 'returned');
+            }
+            
+            // Перезагружаем данные
+            await loadAllData(true);
+            alert('✅ Возврат одобрен! Машина снова доступна.');
+        }
+    }
+    
+    // Отказ в возврате
+    async function rejectReturn(id) {
+        if (confirm('❌ Отказать в возврате?')) {
+            await updateReturnStatusInCloud(id, 'rejected');
+            await loadAllData(true);
+            alert('❌ В возврате отказано.');
+        }
+    }
+    
+    // Удаление заявки на возврат
+    async function deleteReturnApplication(id) {
+        if (confirm('🗑 Удалить заявку на возврат?')) {
+            await deleteReturnFromCloud(id);
+            await loadAllData(false);
+            if (window.currentReturnsModalOpen) renderReturnsList();
+        }
+    }
+    // ==================== ПРОВЕРКА СТАТУСА БРОНИРОВАНИЯ ====================
+        
+    // Функция для получения информации о том, кто забронировал
+function getBookingInfo(carPlate) {
+    // Проверяем, есть ли ОДОБРЕННЫЙ возврат для этой машины
+    const hasApprovedReturn = returns.some(ret => 
+        ret.carNumber === carPlate && 
+        ret.status === 'approved'
+    );
+    
+    // Если есть одобренный возврат - машина свободна
+    if (hasApprovedReturn) {
+        return { isBooked: false };
+    }
+    
+    // Ищем активную одобренную заявку на взятие
+    const booking = applications.find(app => 
+        app.carNumber === carPlate && 
+        app.status === 'approved'
+    );
+    
+    if (booking) {
+        return {
+            isBooked: true,
+            user: booking.nickname,
+            until: booking.takeTime || 'не указано'
+        };
+    }
+    return { isBooked: false };
+}
+
+// Функция для проверки, забронирована ли машина
+function isCarBooked(carPlate) {
+    // Проверяем, есть ли одобренный возврат
+    const hasApprovedReturn = returns.some(ret => 
+        ret.carNumber === carPlate && 
+        ret.status === 'approved'
+    );
+    
+    // Если есть одобренный возврат - машина свободна
+    if (hasApprovedReturn) {
+        return false;
+    }
+    
+    // Проверяем наличие активной одобренной заявки на взятие
+    const activeBooking = applications.find(app => 
+        app.carNumber === carPlate && 
+        app.status === 'approved'
+    );
+    
+    return !!activeBooking;
+}
+    // ----- ОСНОВНЫЕ ФУНКЦИИ -----
+    async function loadAllData(showStatus = true) {
+        const statusDiv = document.getElementById('syncStatus');
+        if (showStatus) statusDiv.innerHTML = '🔄 Синхронизация...';
+        
+        const [loadedApplications, loadedReturns] = await Promise.all([
+            loadApplicationsFromCloud(),
+            loadReturnsFromCloud()
+        ]);
+        
+        applications = loadedApplications;
+        returns = loadedReturns;
+        
+        console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
+
+                // Обновляем карточки автомобилей (обновляем статус бронирования)
+        renderCars();
+        
+        if (showStatus) {
+            statusDiv.innerHTML = `✅ Синхронизировано: ${applications.length} заявок, ${returns.length} возвратов`;
+            setTimeout(() => {
+                if (statusDiv.innerHTML.includes('✅')) {
+                    statusDiv.innerHTML = '📡 Данные в Google Sheets';
+                }
+            }, 3000);
+        }
+        
+        if (window.currentApplicationsModalOpen) renderApplicationsList();
+        if (window.currentReturnsModalOpen) renderReturnsList();
+    }
+
+    // ----- ОТРИСОВКА ТАБЛИЦ -----
+    function renderApplicationsList() {
+        const container = document.getElementById('applicationsList');
+        if (!applications.length) {
+            container.innerHTML = '<div class="empty-apps">📭 Нет заявок на взятие</div>';
+            return;
+        }
+        
+        let html = `<table class="applications-table"><thead><tr>
+            <th>Ник</th><th>Марка</th><th>Номер</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th>
+        </tr></thead><tbody>`;
+        
+        applications.forEach(app => {
+            html += `<tr>
+                <td>${escapeHtml(app.nickname)}</td>
+                <td>${escapeHtml(app.carBrand)}</td>
+                <td>${escapeHtml(app.carNumber)}</td>
+                <td>${escapeHtml(app.takeTime)}</td>
+                <td>${escapeHtml(app.reason)}</td>
+                <td>${escapeHtml(app.createdAt)}</td>
+                <td>`;
+            
+            if (app.status === 'pending') {
+                if (isAdmin) {
+                    html += `<div class="status-buttons">
+                        <button class="btn-approve" data-id="${app.id}">✔ Одобрить</button>
+                        <button class="btn-reject" data-id="${app.id}">✖ Отказать</button>
+                    </div>`;
+                } else {
+                    html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+                }
+            } else if (app.status === 'approved') {
+                html += `<span class="status-text-approved">✅ Одобрено</span>`;
+            } else if (app.status === 'rejected') {
+                html += `<span class="status-text-rejected">❌ Отказано</span>`;
+            }
+            
+            html += `</td>
+                <td class="action-buttons">`;
+            if (isAdmin) {
+                html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            html += `</td></tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+        if (isAdmin) {
+            document.querySelectorAll('.btn-approve').forEach(btn => {
+                btn.onclick = () => updateStatusInCloud(btn.dataset.id, 'approved').then(() => loadAllData(false));
+            });
+            document.querySelectorAll('.btn-reject').forEach(btn => {
+                btn.onclick = () => updateStatusInCloud(btn.dataset.id, 'rejected').then(() => loadAllData(false));
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.onclick = () => { if(confirm('Удалить?')) deleteFromCloud(btn.dataset.id).then(() => loadAllData(false)); };
+            });
+        }
+    }
+
+    function renderReturnsList() {
+        const container = document.getElementById('returnsList');
+        if (!returns.length) {
+            container.innerHTML = '<div class="empty-apps">📭 Нет заявок на возврат</div>';
+            return;
+        }
+        
+        let html = `<table class="returns-table"><thead><tr>
+            <th>Ник</th><th>Марка</th><th>Номер</th><th>Время возврата</th><th>Пробег</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Действия</th>
+        </tr></thead><tbody>`;
+        
+        returns.forEach(ret => {
+            html += `<tr>
+                <td>${escapeHtml(ret.nickname)}</td>
+                <td>${escapeHtml(ret.carBrand)}</td>
+                <td>${escapeHtml(ret.carNumber)}</td>
+                <td>${escapeHtml(ret.returnTime)}</td>
+                <td>${escapeHtml(ret.mileage)}</td>
+                <td>${escapeHtml(ret.condition)}</td>
+                <td>${escapeHtml(ret.servicePerformed)}</td>
+                <td>${escapeHtml(ret.comment)}</td>
+                <td>${escapeHtml(ret.createdAt)}</td>
+                <td class="action-buttons">`;
+            if (isAdmin) {
+                html += `<button class="btn-delete-return" data-id="${ret.id}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            html += `</td></tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+        if (isAdmin) {
+            document.querySelectorAll('.btn-delete-return').forEach(btn => {
+                btn.onclick = () => { if(confirm('Удалить заявку на возврат?')) deleteReturnFromCloud(btn.dataset.id).then(() => loadAllData(false)); };
+            });
+        }
+    }
+
+    // Функции отправки заявок
+    async function addApplication(app) {
+        const newApp = {
+            id: Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+            nickname: app.nickname,
+            carBrand: app.carBrand,
+            carNumber: app.carNumber,
+            takeTime: app.takeTime,
+            reason: app.reason,
+            createdAt: new Date().toLocaleString(),
+            status: 'pending'
+        };
+        
+        const result = await addApplicationToCloud(newApp);
+        if (result?.success) {
+            await loadAllData(true);
+            alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}`);
+            return true;
+        } else {
+            alert('❌ Ошибка: ' + (result?.error || 'Неизвестная ошибка'));
+            return false;
+        }
+    }
+
+    async function addReturnApplication(returnData) {
+        const newReturn = {
+            id: Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+            nickname: returnData.nickname,
+            carBrand: returnData.carBrand,
+            carNumber: returnData.carNumber,
+            returnTime: returnData.returnTime,
+            mileage: returnData.mileage,
+            condition: returnData.condition,
+            servicePerformed: returnData.servicePerformed || '',
+            comment: returnData.comment || '',
+            createdAt: new Date().toLocaleString()
+        };
+        
+        const result = await addReturnToCloud(newReturn);
+        if (result?.success) {
+            await loadAllData(true);
+            alert(`✅ Заявка на возврат отправлена!`);
+            return true;
+        } else {
+            alert('❌ Ошибка: ' + (result?.error || 'Неизвестная ошибка'));
+            return false;
+        }
+    }
+
+    // ============ ОТРИСОВКА ТАБЛИЦ С ИСПОЛЬЗОВАНИЕМ escapeHtml ============
+    function renderApplicationsList() {
+        const container = document.getElementById('applicationsList');
+        if (!applications || applications.length === 0) {
+            container.innerHTML = '<div class="empty-apps">📭 Пока нет ни одной заявки на взятие.</div>';
+            return;
+        }
+        
+        let html = `<table class="applications-table"><thead><tr>
+            <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th>
+        </tr></thead><tbody>`;
+        
+        applications.forEach(app => {
+            html += `<tr>
+                <td>${escapeHtml(app.nickname)}</td>
+                <td>${escapeHtml(app.carBrand)}</td>
+                <td>${escapeHtml(app.carNumber)}</td>
+                <td>${escapeHtml(app.takeTime)}</td>
+                <td>${escapeHtml(app.reason)}</td>
+                <td>${escapeHtml(app.createdAt)}</td>
+                <td>`;
+            
+            if (app.status === 'pending') {
+                if (isAdmin) {
+                    html += `<div class="status-buttons">
+                        <button class="btn-approve" data-id="${escapeHtml(app.id)}">✔ Одобрить</button>
+                        <button class="btn-reject" data-id="${escapeHtml(app.id)}">✖ Отказать</button>
+                    </div>`;
+                } else {
+                    html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+                }
+            } else if (app.status === 'approved') {
+                html += `<span class="status-text-approved">✅ Одобрено</span>`;
+            } else if (app.status === 'rejected') {
+                html += `<span class="status-text-rejected">❌ Отказано</span>`;
+            }
+            
+            html += `</td><td class="action-buttons">`;
+            if (isAdmin) {
+                html += `<button class="btn-delete" data-id="${escapeHtml(app.id)}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            html += `</td></tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+        if (isAdmin) {
+            document.querySelectorAll('.btn-approve').forEach(btn => {
+                btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'approved'));
+            });
+            document.querySelectorAll('.btn-reject').forEach(btn => {
+                btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'rejected'));
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => deleteApplication(btn.dataset.id));
+            });
+        }
+    }
+
+    // ИСПРАВЛЕННАЯ функция отображения возвратов (с поддержкой чисел)
+    function renderReturnsList() {
+        const container = document.getElementById('returnsList');
+        if (!returns || returns.length === 0) {
+            container.innerHTML = '<div class="empty-apps">📭 Пока нет ни одной заявки на возврат.</div>';
+            return;
+        }
+        
+        let html = `<table class="returns-table"><thead><tr>
+            <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время возврата</th><th>Пробег (км)</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Действия</th>
+        </tr></thead><tbody>`;
+        
+        returns.forEach(ret => {
+            // Явно преобразуем числа в строки через safeOutput
+            html += `<tr>
+                <td>${escapeHtml(ret.nickname)}</td>
+                <td>${escapeHtml(ret.carBrand)}</td>
+                <td>${escapeHtml(ret.carNumber)}</td>
+                <td>${escapeHtml(ret.returnTime)}</td>
+                <td>${escapeHtml(ret.mileage)}</td>
+                <td>${escapeHtml(ret.condition)}</td>
+                <td>${escapeHtml(ret.servicePerformed)}</td>
+                <td>${escapeHtml(ret.comment)}</td>
+                <td>${escapeHtml(ret.createdAt)}</td>
+                <td class="action-buttons">`;
+            if (isAdmin) {
+                html += `<button class="btn-delete-return" data-id="${escapeHtml(ret.id)}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            html += `</td></tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+        if (isAdmin) {
+            document.querySelectorAll('.btn-delete-return').forEach(btn => {
+                btn.addEventListener('click', () => deleteReturn(btn.dataset.id));
+            });
+        }
+    }
+
+    // Обертки для асинхронных вызовов
+    async function updateApplicationStatus(id, newStatus) {
+        await updateStatusInCloud(id, newStatus);
+        await loadAllData(false);
+        if (window.currentApplicationsModalOpen) renderApplicationsList();
+    }
+
+    async function deleteApplication(id) {
+        if (confirm('Удалить заявку на взятие?')) {
+            await deleteFromCloud(id);
+            await loadAllData(false);
+            if (window.currentApplicationsModalOpen) renderApplicationsList();
+        }
+    }
+
+    async function deleteReturn(id) {
+        if (confirm('Удалить заявку на возврат?')) {
+            await deleteReturnFromCloud(id);
+            await loadAllData(false);
+            if (window.currentReturnsModalOpen) renderReturnsList();
+        }
+    }
+
+    async function addApplication(app) {
+        const newApp = {
+            id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 6),
+            nickname: app.nickname,
+            carBrand: app.carBrand,
+            carNumber: app.carNumber,
+            takeTime: app.takeTime,
+            reason: app.reason,
+            createdAt: new Date().toLocaleString(),
+            status: 'pending'
+        };
+        
+        try {
+            const result = await addApplicationToCloud(newApp);
+            console.log('Результат добавления:', result);
+            if (result && result.success) {
+                await loadAllData(true);
+                alert(`✅ Заявка отправлена!\nТранспорт: ${app.carBrand}\nНик: ${app.nickname}\nОжидает одобрения.`);
+                return true;
+            } else {
+                alert('❌ Ошибка при отправке заявки: ' + (result?.error || 'Неизвестная ошибка'));
+                return false;
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке заявки:', error);
+            alert('❌ Ошибка при отправке заявки. Проверьте консоль.');
+            return false;
+        }
+    }
+
+    async function addReturnApplication(returnData) {
+        const newReturn = {
+            id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 6),
+            nickname: returnData.nickname,
+            carBrand: returnData.carBrand,
+            carNumber: returnData.carNumber,
+            returnTime: returnData.returnTime,
+            mileage: returnData.mileage,
+            condition: returnData.condition,
+            servicePerformed: returnData.servicePerformed || '',
+            comment: returnData.comment || '',
+            createdAt: new Date().toLocaleString()
+        };
+        
+        try {
+            const result = await addReturnToCloud(newReturn);
+            console.log('Результат добавления возврата:', result);
+            if (result && result.success) {
+                await loadAllData(true);
+                alert(`✅ Заявка на возврат отправлена!\nТранспорт: ${returnData.carBrand}\nНик: ${returnData.nickname}`);
+                return true;
+            } else {
+                alert('❌ Ошибка при отправке заявки на возврат: ' + (result?.error || 'Неизвестная ошибка'));
+                return false;
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке заявки на возврат:', error);
+            alert('❌ Ошибка при отправке заявки на возврат.');
+            return false;
+        }
+    }
+
+    async function updateApplicationStatus(id, newStatus) {
+        await updateStatusInCloud(id, newStatus);
+        await loadAllData(false);
+        if (window.currentApplicationsModalOpen) renderApplicationsList();
+    }
+
+    async function deleteApplication(id) {
+        if (confirm('Удалить заявку на взятие?')) {
+            await deleteFromCloud(id);
+            await loadAllData(false);
+            if (window.currentApplicationsModalOpen) renderApplicationsList();
+        }
+    }
+
+    async function deleteReturn(id) {
+        if (confirm('Удалить заявку на возврат?')) {
+            await deleteReturnFromCloud(id);
+            await loadAllData(false);
+            if (window.currentReturnsModalOpen) renderReturnsList();
+        }
+    }
+
+    // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ ----
+        // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВЗЯТИЕ (с фильтрацией) ====================
+    function renderApplicationsList() {
+        const container = document.getElementById('applicationsList');
+        
+        // Фильтруем заявки: админ видит все, пользователь - только свои
+        let filteredApplications = applications;
+        if (!isAdmin) {
+            filteredApplications = applications.filter(app => app.nickname === currentUser);
+        }
+        
+        if (!filteredApplications.length) {
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на взятие.</div>';
+            return;
+        }
+        
+        let html = `<table class="applications-table"><thead>
+            <tr>
+                <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th>
+            </tr>
+        </thead><tbody>`;
+        
+        filteredApplications.forEach(app => {
+            html += `<tr>
+                <td>${escapeHtml(app.nickname)}</td>
+                <td>${escapeHtml(app.carBrand)}</td>
+                <td>${escapeHtml(app.carNumber)}</td>
+                <td>${escapeHtml(app.takeTime)}</td>
+                <td>${escapeHtml(app.reason)}</td>
+                <td>${escapeHtml(app.createdAt)}</td>
+                <td>`;
+            
+            if (app.status === 'pending') {
+                if (isAdmin) {
+                    html += `<div class="status-buttons">
+                                <button class="btn-approve" data-id="${escapeHtml(app.id)}">✔ Одобрить</button>
+                                <button class="btn-reject" data-id="${escapeHtml(app.id)}">✖ Отказать</button>
+                            </div>`;
+                } else {
+                    html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+                }
+            } else if (app.status === 'approved') {
+                html += `<span class="status-text-approved">✅ Одобрено</span>`;
+            } else if (app.status === 'rejected') {
+                html += `<span class="status-text-rejected">❌ Отказано</span>`;
+            }
+            
+            html += `</td>
+                <td class="action-buttons">`;
+            if (isAdmin) {
+                html += `<button class="btn-delete" data-id="${escapeHtml(app.id)}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            html += `</td></tr>`;
+        });
+        
+        html += `</tbody></tr>`;
+        container.innerHTML = html;
+
+        if (isAdmin) {
+            document.querySelectorAll('.btn-approve').forEach(btn => {
+                btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'approved'));
+            });
+            document.querySelectorAll('.btn-reject').forEach(btn => {
+                btn.addEventListener('click', () => updateApplicationStatus(btn.dataset.id, 'rejected'));
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => deleteApplication(btn.dataset.id));
+            });
+        }
+    }
+
+    // ---- ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ ----
+        // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с фильтрацией) ====================
+        // ==================== ОТРИСОВКА ТАБЛИЦЫ ЗАЯВОК НА ВОЗВРАТ (с кнопками одобрения/отказа) ====================
+    function renderReturnsList() {
+        const container = document.getElementById('returnsList');
+        
+        // Фильтруем заявки: админ видит все, пользователь - только свои
+        let filteredReturns = returns;
+        if (!isAdmin) {
+            filteredReturns = returns.filter(ret => ret.nickname === currentUser);
+        }
+        
+        if (!filteredReturns.length) {
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на возврат.</div>';
+            return;
+        }
+        
+        let html = `<table class="returns-table"><thead>
+            <tr>
+                <th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время возврата</th><th>Пробег (км)</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Статус</th><th>Действия</th>
+            </tr>
+        </thead><tbody>`;
+        
+        filteredReturns.forEach(ret => {
+            // Определяем статус заявки на возврат
+            let returnStatus = ret.status || 'pending';
+            let statusHtml = '';
+            
+            if (returnStatus === 'pending') {
+                statusHtml = `<span class="status-text-pending">⏳ Ожидает</span>`;
+            } else if (returnStatus === 'approved') {
+                statusHtml = `<span class="status-text-approved">✅ Одобрен</span>`;
+            } else if (returnStatus === 'rejected') {
+                statusHtml = `<span class="status-text-rejected">❌ Отказан</span>`;
+            }
+            
+            html += `<tr>
+                <td>${escapeHtml(ret.nickname)}</td>
+                <td>${escapeHtml(ret.carBrand)}</td>
+                <td>${escapeHtml(ret.carNumber)}</td>
+                <td>${escapeHtml(ret.returnTime)}</td>
+                <td>${escapeHtml(ret.mileage)}</td>
+                <td>${escapeHtml(ret.condition)}</td>
+                <td>${escapeHtml(ret.servicePerformed)}</td>
+                <td>${escapeHtml(ret.comment)}</td>
+                <td>${escapeHtml(ret.createdAt)}</td>
+                <td>${statusHtml}</td>
+                <td class="action-buttons">`;
+            
+            // Кнопки действий (только для админа и только для заявок со статусом pending)
+            if (isAdmin && returnStatus === 'pending') {
+                html += `
+                    <button class="btn-approve-return" data-id="${escapeHtml(ret.id)}" data-car="${escapeHtml(ret.carNumber)}">✅ Одобрить возврат</button>
+                    <button class="btn-reject-return" data-id="${escapeHtml(ret.id)}">❌ Отказать</button>
+                    <button class="btn-delete-return" data-id="${escapeHtml(ret.id)}">🗑 Удалить</button>
+                `;
+            } else if (isAdmin) {
+                html += `<button class="btn-delete-return" data-id="${escapeHtml(ret.id)}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            
+            html += `</td></tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+
+        if (isAdmin) {
+            // Кнопки одобрения возврата
+            document.querySelectorAll('.btn-approve-return').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    approveReturn(btn.dataset.id, btn.dataset.car);
+                });
+            });
+            // Кнопки отказа в возврате
+            document.querySelectorAll('.btn-reject-return').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    rejectReturn(btn.dataset.id);
+                });
+            });
+            // Кнопки удаления
+            document.querySelectorAll('.btn-delete-return').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    deleteReturnApplication(btn.dataset.id);
+                });
+            });
+        }
+    }
+
+        // Добавьте эту функцию для отображения информации о фильтрации
+    function updateFilterInfo() {
+        const appsModal = document.getElementById('applicationsModal');
+        const returnsModal = document.getElementById('returnsModal');
+        
+        if (!isAdmin && currentUser) {
+            // Добавляем пояснение для пользователя
+            const appsTitle = document.querySelector('#applicationsModal h2');
+            if (appsTitle && !appsTitle.querySelector('.filter-info')) {
+                const filterInfo = document.createElement('span');
+                filterInfo.className = 'filter-info';
+                filterInfo.style.cssText = 'font-size: 0.8rem; color: #ffaa66; margin-left: 10px;';
+                filterInfo.innerHTML = ` (только ваши заявки: ${escapeHtml(currentUser)})`;
+                appsTitle.appendChild(filterInfo);
+            }
+            
+            const returnsTitle = document.querySelector('#returnsModal h2');
+            if (returnsTitle && !returnsTitle.querySelector('.filter-info')) {
+                const filterInfo = document.createElement('span');
+                filterInfo.className = 'filter-info';
+                filterInfo.style.cssText = 'font-size: 0.8rem; color: #ffaa66; margin-left: 10px;';
+                filterInfo.innerHTML = ` (только ваши заявки: ${escapeHtml(currentUser)})`;
+                returnsTitle.appendChild(filterInfo);
+            }
+        }
+    }
+    
+    // Вызовите эту функцию после showUserInterface()
+    // Добавьте строку: updateFilterInfo();
+    
+       // ==================== ГЕНЕРАЦИЯ КАРТОЧЕК СТАТУС БРОНИРОВАНИЯ ====================
+    function renderCars() {
+    const grid = document.getElementById('carsGrid');
+    grid.innerHTML = '';
+    
+    cars.forEach(car => {
+        const bookingInfo = getBookingInfo(car.plate);
+        const isBooked = bookingInfo.isBooked;
+        
+        const card = document.createElement('div');
+        // Добавляем класс available для свободных машин
+        card.className = 'car-card';
+        if (isBooked) {
+            card.classList.add('booked');
+        } else {
+            card.classList.add('available');
+        }
+        
+        const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
+        const imagePath = `images/${imageFileName}.jpg`;
+        
+        let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
+        
+        // Статус на карточке
+        let statusHtml = '';
+        if (isBooked) {
+            statusHtml = `
+                <div class="status-booked">
+                    🔒 ЗАНЯТА
+                </div>
+            `;
+        } else {
+            statusHtml = `
+                <div class="status-free">
+                    ✅ СВОБОДНА
+                </div>
+            `;
+        }
+        
+        // Блок информации о бронировании (для залогиненных пользователей)
+        let bookingInfoHtml = '';
+        if (currentUser && isBooked) {
+            bookingInfoHtml = `
+                <div style="margin-top: 8px; padding: 6px 10px; background: rgba(230, 126, 34, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #e67e22;">
+                    <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span>
+                </div>
+            `;
+        } else if (currentUser && !isBooked) {
+            bookingInfoHtml = `
+                <div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.15); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;">
+                    <span style="color: #6fcf97;">✅ Доступна для заказа</span>
+                </div>
+            `;
+        }
+        
+        card.innerHTML = `
+            <div class="car-image" style="position: relative;">
+                ${statusHtml}
+                ${imageHtml}
+            </div>
+            <div class="car-info">
+                <div class="car-name">
+                    ${escapeHtml(car.name)}
+                    ${!isBooked ? '<span class="status-free-badge">📋 ДОСТУПНА</span>' : ''}
+                </div>
+                <div class="car-desc">${escapeHtml(car.desc.substring(0, 80))}${car.desc.length > 80 ? '…' : ''}</div>
+                <div class="car-spec">${escapeHtml(car.engine || '')} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
+                <div class="car-plate">🚛 Госномер: ${escapeHtml(car.plate)}</div>
+                ${bookingInfoHtml}
+            </div>
+            <div class="card-buttons">
+                <button class="take-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}" ${isBooked ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>📝 Взять в пользование</button>
+                <button class="return-card-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}">🔄 Вернуть транспорт</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+    // ---- СИСТЕМА РЕГИСТРАЦИИ ----
+    const registerModal = document.getElementById('registerModal');
+    const registerNick = document.getElementById('registerNick');
+    const registerBtn = document.getElementById('registerBtn');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const registerError = document.getElementById('registerError');
+    const userInfoDiv = document.getElementById('userInfo');
+    const currentUserSpan = document.getElementById('currentUserNick');
+    const adminBadge = document.getElementById('adminBadge');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function showUserInterface() {
+        registerModal.style.display = 'none';
+        userInfoDiv.style.display = 'block';
+        currentUserSpan.textContent = currentUser;
+        if (isAdmin) {
+            adminBadge.style.display = 'inline-block';
+        } else {
+            adminBadge.style.display = 'none';
+        }
+        document.getElementById('nickname').value = currentUser;
+        document.getElementById('returnNickname').value = currentUser;
+        updateFilterInfo(); // <--- ДОБАВЬТЕ ЭТУ СТРОКУ
+    }
+
+    function showRegisterModal() {
+        registerModal.style.display = 'block';
+        registerNick.value = '';
+        registerError.textContent = '';
+    }
+
+    function loginAsUser() {
+        const nick = registerNick.value.trim();
+        if (nick.length < 2) {
+            registerError.textContent = 'Ник должен содержать минимум 2 символа';
+            return;
+        }
+        if (nick.length > 30) {
+            registerError.textContent = 'Ник не должен превышать 30 символов';
+            return;
+        }
+        currentUser = nick;
+        isAdmin = false;
+        localStorage.setItem('devillecar_user', currentUser);
+        localStorage.setItem('devillecar_isAdmin', 'false');
+        showUserInterface();
+        loadAllData(true);
+    }
+
+    function loginAsAdmin() {
+        const password = prompt('Введите пароль администратора:');
+        if (password === 'Deville2024') {
+            currentUser = 'Администратор';
+            isAdmin = true;
+            localStorage.setItem('devillecar_user', currentUser);
+            localStorage.setItem('devillecar_isAdmin', 'true');
+            showUserInterface();
+            alert('✅ Вы вошли как администратор. Нажмите "Заявки на взятие" для просмотра.');
+            loadAllData(true);
+        } else if (password !== null) {
+            registerError.textContent = 'Неверный пароль администратора';
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('devillecar_user');
+        localStorage.removeItem('devillecar_isAdmin');
+        currentUser = null;
+        isAdmin = false;
+        userInfoDiv.style.display = 'none';
+        showRegisterModal();
+    }
+    // ==================== КНОПКА ОБНОВЛЕНИЯ ====================
+    function addRefreshButton() {
+        if (document.getElementById('refreshBtn')) return;
+        const refreshBtn = document.createElement('button');
+        refreshBtn.id = 'refreshBtn';
+        refreshBtn.innerHTML = '🔄 Обновить';
+        refreshBtn.style.cssText = `position:fixed;bottom:20px;right:20px;background:#1e88e5;color:white;border:none;padding:10px 20px;border-radius:40px;font-weight:bold;cursor:pointer;z-index:20;font-size:0.9rem;box-shadow:0 2px 8px rgba(0,0,0,0.3);transition:background 0.2s;`;
+        refreshBtn.onmouseover = () => refreshBtn.style.background = '#0d5b9e';
+        refreshBtn.onmouseout = () => refreshBtn.style.background = '#1e88e5';
+        refreshBtn.onclick = async () => {
+            refreshBtn.innerHTML = '🔄 ...';
+            refreshBtn.disabled = true;
+            await loadAllData(true);
+            refreshBtn.innerHTML = '🔄 Обновить';
+            refreshBtn.disabled = false;
+        };
+        document.body.appendChild(refreshBtn);
+    }
+    
+    addRefreshButton();
+    
+    // Обновление каждые 30 секунд
+    setInterval(() => { if (currentUser) loadAllData(false); }, 30000);
+    
+    // Обновление при возврате на вкладку
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) loadAllData(false); });
+    function checkAuth() {
+        const savedUser = localStorage.getItem('devillecar_user');
+        const savedAdmin = localStorage.getItem('devillecar_isAdmin');
+        if (savedUser) {
+            currentUser = savedUser;
+            isAdmin = savedAdmin === 'true';
+            showUserInterface();
+            loadAllData(true);
+        } else {
+            showRegisterModal();
+        }
+    }
+
+    registerBtn.addEventListener('click', loginAsUser);
+    adminLoginBtn.addEventListener('click', loginAsAdmin);
+    registerNick.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            loginAsUser();
+        }
+    });
+    logoutBtn.addEventListener('click', logout);
+
+    // ---- МОДАЛКА АНКЕТЫ ВЗЯТИЯ ----
+    const modalAnketa = document.getElementById('anketaModal');
+    const closeModalSpan = document.getElementById('closeModal');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    const form = document.getElementById('anketaForm');
+    const carBrandInput = document.getElementById('carBrand');
+    const carNumberInput = document.getElementById('carNumber');
+    let currentCarName = '', currentCarPlate = '';
+
+    function openAnketaModal(carName, carPlate) {
+        if (!currentUser) {
+            alert('Сначала авторизуйтесь!');
+            return;
+        }
+        if (isAdmin) {
+            alert('Администратор не может оформлять заявки на взятие. Войдите как обычный пользователь.');
+            return;
+        }
+        currentCarName = carName; 
+        currentCarPlate = carPlate;
+        carBrandInput.value = carName; 
+        carNumberInput.value = carPlate;
+        document.getElementById('takeTime').value = ''; 
+        document.getElementById('reason').value = '';
+        const now = new Date(); 
+        const year = now.getFullYear(); 
+        const month = String(now.getMonth()+1).padStart(2,'0'); 
+        const day = String(now.getDate()).padStart(2,'0'); 
+        const hours = String(now.getHours()).padStart(2,'0'); 
+        const minutes = String(now.getMinutes()).padStart(2,'0');
+        document.getElementById('takeTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        modalAnketa.style.display = 'block';
+    }
+    
+    function closeAnketaModal() { modalAnketa.style.display = 'none'; }
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUser || isAdmin) {
+            alert('Только обычные пользователи могут оформлять заявки.');
+            return;
+        }
+        const takeTime = document.getElementById('takeTime').value || 'не указано';
+        const carNumber = document.getElementById('carNumber').value.trim() || 'не указан';
+        const reason = document.getElementById('reason').value.trim() || 'не указана';
+        await addApplication({ nickname: currentUser, takeTime, carBrand: currentCarName, carNumber, reason });
+        closeAnketaModal();
+    });
+    
+    closeModalSpan.onclick = closeAnketaModal;
+    cancelModalBtn.onclick = closeAnketaModal;
+
+    // ---- МОДАЛКА АНКЕТЫ ВОЗВРАТА ----
+    const returnModal = document.getElementById('returnModal');
+    const closeReturnSpan = document.getElementById('closeReturnModal');
+    const cancelReturnBtn = document.getElementById('cancelReturnBtn');
+    const returnForm = document.getElementById('returnForm');
+    const returnCarBrandInput = document.getElementById('returnCarBrand');
+    const returnCarNumberInput = document.getElementById('returnCarNumber');
+    let currentReturnCarName = '', currentReturnCarPlate = '';
+
+    function openReturnModal(carName, carPlate) {
+        if (!currentUser) {
+            alert('Сначала авторизуйтесь!');
+            return;
+        }
+        currentReturnCarName = carName; 
+        currentReturnCarPlate = carPlate;
+        returnCarBrandInput.value = carName; 
+        returnCarNumberInput.value = carPlate;
+        document.getElementById('returnTime').value = '';
+        document.getElementById('mileage').value = '';
+        document.getElementById('condition').value = '';
+        document.getElementById('servicePerformed').value = '';
+        document.getElementById('returnComment').value = '';
+        const now = new Date(); 
+        const year = now.getFullYear(); 
+        const month = String(now.getMonth()+1).padStart(2,'0'); 
+        const day = String(now.getDate()).padStart(2,'0'); 
+        const hours = String(now.getHours()).padStart(2,'0'); 
+        const minutes = String(now.getMinutes()).padStart(2,'0');
+        document.getElementById('returnTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        returnModal.style.display = 'block';
+    }
+    
+    function closeReturnModal() { returnModal.style.display = 'none'; }
+    
+    returnForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUser) {
+            alert('Авторизация не найдена.');
+            return;
+        }
+        const returnTime = document.getElementById('returnTime').value;
+        const mileage = document.getElementById('mileage').value;
+        const condition = document.getElementById('condition').value;
+        const servicePerformed = document.getElementById('servicePerformed').value.trim();
+        const comment = document.getElementById('returnComment').value.trim();
+        
+        if (!returnTime) { alert('Укажите дату и время возврата'); return; }
+        if (!mileage) { alert('Укажите пробег'); return; }
+        if (!condition) { alert('Укажите состояние транспорта'); return; }
+        
+        await addReturnApplication({
+            nickname: currentUser,
+            carBrand: currentReturnCarName,
+            carNumber: currentReturnCarPlate,
+            returnTime: returnTime,
+            mileage: mileage,
+            condition: condition,
+            servicePerformed: servicePerformed,
+            comment: comment
+        });
+        closeReturnModal();
+    });
+    
+    closeReturnSpan.onclick = closeReturnModal;
+    cancelReturnBtn.onclick = closeReturnModal;
+
+    // ---- МОДАЛКИ ЗАЯВОК ----
+    const modalApps = document.getElementById('applicationsModal');
+    const closeAppsSpan = document.getElementById('closeAppsModal');
+    const viewAppsBtn = document.getElementById('viewAppsBtn');
+    
+    function openApplicationsModal() { 
+        window.currentApplicationsModalOpen = true;
+        renderApplicationsList(); 
+        modalApps.style.display = 'block'; 
+    }
+    function closeApplicationsModal() { 
+        window.currentApplicationsModalOpen = false;
+        modalApps.style.display = 'none'; 
+    }
+    
+    const modalReturns = document.getElementById('returnsModal');
+    const closeReturnsSpan = document.getElementById('closeReturnsModal');
+    const viewReturnsBtn = document.getElementById('viewReturnsBtn');
+    
+    function openReturnsModal() { 
+        window.currentReturnsModalOpen = true;
+        renderReturnsList(); 
+        modalReturns.style.display = 'block'; 
+    }
+    function closeReturnsModal() { 
+        window.currentReturnsModalOpen = false;
+        modalReturns.style.display = 'none'; 
+    }
+    
+    viewAppsBtn.addEventListener('click', openApplicationsModal);
+    closeAppsSpan.onclick = closeApplicationsModal;
+    
+    viewReturnsBtn.addEventListener('click', openReturnsModal);
+    closeReturnsSpan.onclick = closeReturnsModal;
+    
+    window.onclick = function(event) { 
+        if(event.target == modalAnketa) closeAnketaModal(); 
+        if(event.target == returnModal) closeReturnModal();
+        if(event.target == modalApps) closeApplicationsModal(); 
+        if(event.target == modalReturns) closeReturnsModal();
+    };
+
+    // ---- ОБРАБОТЧИКИ КНОПОК НА КАРТОЧКАХ ----
+    document.addEventListener('click', (e) => {
+        if(e.target.classList.contains('take-btn')) {
+            const carName = e.target.dataset.carName;
+            const carPlate = e.target.dataset.carPlate;
+            openAnketaModal(carName, carPlate);
+        }
+        if(e.target.classList.contains('return-card-btn')) {
+            const carName = e.target.dataset.carName;
+            const carPlate = e.target.dataset.carPlate;
+            openReturnModal(carName, carPlate);
+        }
+    });
+
+    // ---- ИНИЦИАЛИЗАЦИЯ ----
+    checkAuth();
+</script>
+</body>
+</html>rt" content="width=device-width, initial-scale=1.0">
     <title>DevilleCar <!DOCTYPE html>
 <html lang="ru">
 <head>
