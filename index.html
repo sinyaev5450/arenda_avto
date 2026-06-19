@@ -300,6 +300,7 @@
             color: white;
             padding: 10px 12px;
             text-align: left;
+            white-space: nowrap;
         }
         .members-table td {
             padding: 8px 12px;
@@ -354,6 +355,53 @@
         }
         .members-table .btn-delete-member:hover {
             background: #b71c1c;
+        }
+        .members-table .btn-warning {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin: 0 3px;
+            transition: background 0.2s;
+        }
+        .members-table .btn-warning:hover {
+            background: #d35400;
+        }
+        .members-table .btn-warning-minus {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin: 0 3px;
+            transition: background 0.2s;
+        }
+        .members-table .btn-warning-minus:hover {
+            background: #2980b9;
+        }
+        .members-table .warning-count {
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-width: 30px;
+            display: inline-block;
+            text-align: center;
+            color: #ffaa66;
+        }
+        .warning-high {
+            color: #e74c3c !important;
+        }
+        .warning-medium {
+            color: #f1c40f !important;
+        }
+        .warning-low {
+            color: #2ecc71 !important;
         }
         .members-stats {
             text-align: center;
@@ -833,6 +881,7 @@
                     <option value="admin">Админ</option>
                     <option value="leader">Лидер</option>
                 </select>
+                <input type="number" id="newMemberWarnings" placeholder="Выговоры" min="0" value="0" style="width:120px;">
                 <button class="btn-add-member" id="addMemberBtn">➕ Добавить</button>
             </div>
             
@@ -843,6 +892,7 @@
                             <th>#</th>
                             <th>Имя</th>
                             <th>Роль</th>
+                            <th>Выговоры</th>
                             <th id="actionsHeader" style="display:none;">Действия</th>
                         </tr>
                     </thead>
@@ -1018,6 +1068,10 @@
                     <option value="leader">Лидер</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label>Выговоры</label>
+                <input type="number" id="editMemberWarnings" min="0" value="0">
+            </div>
             <div class="modal-buttons">
                 <button type="button" class="cancel-btn" id="cancelEditBtn">Отмена</button>
                 <button type="submit" class="submit-btn">Сохранить</button>
@@ -1141,7 +1195,8 @@
             "Renat Deville",
             "Roman Deville",
             "Kirill Deville"
-        ]
+        ],
+        warnings: {}
     };
 
     // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С УЧАСТНИКАМИ ====================
@@ -1152,6 +1207,7 @@
                 const parsed = JSON.parse(stored);
                 if (parsed.leaders && parsed.deputies && parsed.admins && parsed.members) {
                     membersData = parsed;
+                    if (!membersData.warnings) membersData.warnings = {};
                 }
             } catch(e) {
                 console.log('Ошибка загрузки участников, используем данные по умолчанию');
@@ -1173,7 +1229,29 @@
         return all;
     }
 
-    function addMember(name, role) {
+    function getWarnings(name) {
+        return membersData.warnings[name] || 0;
+    }
+
+    function setWarnings(name, count) {
+        if (count < 0) count = 0;
+        membersData.warnings[name] = count;
+        saveMembersToStorage();
+    }
+
+    function addWarning(name) {
+        const current = getWarnings(name);
+        setWarnings(name, current + 1);
+    }
+
+    function removeWarning(name) {
+        const current = getWarnings(name);
+        if (current > 0) {
+            setWarnings(name, current - 1);
+        }
+    }
+
+    function addMember(name, role, warnings = 0) {
         if (!name || name.trim() === '') return false;
         name = name.trim();
         const all = getAllMembers();
@@ -1186,6 +1264,9 @@
             case 'admin': membersData.admins.push(name); break;
             default: membersData.members.push(name);
         }
+        if (warnings > 0) {
+            setWarnings(name, warnings);
+        }
         saveMembersToStorage();
         return true;
     }
@@ -1195,13 +1276,14 @@
         membersData.deputies = membersData.deputies.filter(m => m !== name);
         membersData.admins = membersData.admins.filter(m => m !== name);
         membersData.members = membersData.members.filter(m => m !== name);
+        delete membersData.warnings[name];
         saveMembersToStorage();
         return true;
     }
 
-    function updateMember(oldName, newName, newRole) {
+    function updateMember(oldName, newName, newRole, warnings) {
         removeMember(oldName);
-        return addMember(newName, newRole);
+        return addMember(newName, newRole, warnings);
     }
 
     // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
@@ -1217,7 +1299,7 @@
         const all = getAllMembers();
         
         if (!all.length) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
             stats.innerHTML = 'Всего участников: <span>0</span>';
             return;
         }
@@ -1231,12 +1313,24 @@
                 member: '<span class="role-badge member">Участник</span>'
             };
             
+            const warnings = getWarnings(member.name);
+            let warningClass = 'warning-low';
+            if (warnings >= 6) warningClass = 'warning-high';
+            else if (warnings >= 3) warningClass = 'warning-medium';
+            
             html += `<tr>
                 <td>${index + 1}</td>
                 <td>${escapeHtml(member.name)}</td>
                 <td>${roleLabels[member.role] || roleLabels.member}</td>
+                <td>
+                    <span class="warning-count ${warningClass}">${warnings}</span>
+                    ${isAdmin ? `
+                        <button class="btn-warning" data-name="${escapeHtml(member.name)}" title="+1 выговор">➕</button>
+                        <button class="btn-warning-minus" data-name="${escapeHtml(member.name)}" title="-1 выговор" ${warnings <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>➖</button>
+                    ` : ''}
+                </td>
                 <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
-                    <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}">✏️</button>
+                    <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}" data-warnings="${warnings}">✏️</button>
                     <button class="btn-delete-member" data-name="${escapeHtml(member.name)}">🗑</button>
                 </td>
             </tr>`;
@@ -1244,20 +1338,24 @@
         tbody.innerHTML = html;
         
         const total = all.length;
+        const totalWarnings = Object.values(membersData.warnings).reduce((a, b) => a + b, 0);
         stats.innerHTML = `
             Всего участников: <span>${total}</span>
             (Лидеров: <span>${membersData.leaders.length}</span>, 
             Замов: <span>${membersData.deputies.length}</span>, 
             Админов: <span>${membersData.admins.length}</span>, 
             Участников: <span>${membersData.members.length}</span>)
+            | Всего выговоров: <span>${totalWarnings}</span>
         `;
         
         if (isAdmin) {
+            // Кнопки редактирования
             document.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    openEditModal(btn.dataset.name, btn.dataset.role);
+                    openEditModal(btn.dataset.name, btn.dataset.role, parseInt(btn.dataset.warnings));
                 });
             });
+            // Кнопки удаления
             document.querySelectorAll('.btn-delete-member').forEach(btn => {
                 btn.addEventListener('click', () => {
                     if (confirm(`Удалить участника "${btn.dataset.name}"?`)) {
@@ -1266,16 +1364,32 @@
                     }
                 });
             });
+            // Кнопки добавления выговора
+            document.querySelectorAll('.btn-warning').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    addWarning(btn.dataset.name);
+                    renderMembers();
+                });
+            });
+            // Кнопки удаления выговора
+            document.querySelectorAll('.btn-warning-minus').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.disabled) return;
+                    removeWarning(btn.dataset.name);
+                    renderMembers();
+                });
+            });
         }
     }
 
     // ==================== РЕДАКТИРОВАНИЕ УЧАСТНИКА ====================
     let editOldName = '';
 
-    function openEditModal(name, role) {
+    function openEditModal(name, role, warnings) {
         editOldName = name;
         document.getElementById('editMemberName').value = name;
         document.getElementById('editMemberRole').value = role;
+        document.getElementById('editMemberWarnings').value = warnings;
         document.getElementById('editMemberModal').style.display = 'block';
     }
 
@@ -1289,8 +1403,9 @@
         e.preventDefault();
         const newName = document.getElementById('editMemberName').value.trim();
         const newRole = document.getElementById('editMemberRole').value;
+        const warnings = parseInt(document.getElementById('editMemberWarnings').value) || 0;
         if (!newName) { alert('Введите имя'); return; }
-        if (updateMember(editOldName, newName, newRole)) {
+        if (updateMember(editOldName, newName, newRole, warnings)) {
             renderMembers();
             document.getElementById('editMemberModal').style.display = 'none';
             alert('✅ Участник обновлён!');
@@ -1303,9 +1418,11 @@
     document.getElementById('addMemberBtn').addEventListener('click', () => {
         const name = document.getElementById('newMemberName').value.trim();
         const role = document.getElementById('newMemberRole').value;
+        const warnings = parseInt(document.getElementById('newMemberWarnings').value) || 0;
         if (!name) { alert('Введите имя участника'); return; }
-        if (addMember(name, role)) {
+        if (addMember(name, role, warnings)) {
             document.getElementById('newMemberName').value = '';
+            document.getElementById('newMemberWarnings').value = '0';
             renderMembers();
             alert('✅ Участник добавлен!');
         } else {
