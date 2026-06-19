@@ -1199,101 +1199,13 @@
         warnings: {}
     };
 
-    // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С УЧАСТНИКАМИ ====================
-    function loadMembersFromStorage() {
-        const stored = localStorage.getItem('devillecar_members');
-        if (stored) {
-            try {
-                const parsed = JSON.parse(stored);
-                if (parsed.leaders && parsed.deputies && parsed.admins && parsed.members) {
-                    membersData = parsed;
-                    if (!membersData.warnings) membersData.warnings = {};
-                }
-            } catch(e) {
-                console.log('Ошибка загрузки участников, используем данные по умолчанию');
-            }
-        }
-        saveMembersToStorage();
-    }
-
-    function saveMembersToStorage() {
-        localStorage.setItem('devillecar_members', JSON.stringify(membersData));
-    }
-
-    function getAllMembers() {
-        const all = [];
-        membersData.leaders.forEach(name => all.push({ name, role: 'leader' }));
-        membersData.deputies.forEach(name => all.push({ name, role: 'deputy' }));
-        membersData.admins.forEach(name => all.push({ name, role: 'admin' }));
-        membersData.members.forEach(name => all.push({ name, role: 'member' }));
-        return all;
-    }
-
-    function getWarnings(name) {
-        return membersData.warnings[name] || 0;
-    }
-
-    function setWarnings(name, count) {
-        if (count < 0) count = 0;
-        membersData.warnings[name] = count;
-        saveMembersToStorage();
-    }
-
-    function addWarning(name) {
-        const current = getWarnings(name);
-        setWarnings(name, current + 1);
-    }
-
-    function removeWarning(name) {
-        const current = getWarnings(name);
-        if (current > 0) {
-            setWarnings(name, current - 1);
-        }
-    }
-
-    function addMember(name, role, warnings = 0) {
-        if (!name || name.trim() === '') return false;
-        name = name.trim();
-        const all = getAllMembers();
-        if (all.some(m => m.name.toLowerCase() === name.toLowerCase())) {
-            return false;
-        }
-        switch(role) {
-            case 'leader': membersData.leaders.push(name); break;
-            case 'deputy': membersData.deputies.push(name); break;
-            case 'admin': membersData.admins.push(name); break;
-            default: membersData.members.push(name);
-        }
-        if (warnings > 0) {
-            setWarnings(name, warnings);
-        }
-        saveMembersToStorage();
-        return true;
-    }
-
-    function removeMember(name) {
-        membersData.leaders = membersData.leaders.filter(m => m !== name);
-        membersData.deputies = membersData.deputies.filter(m => m !== name);
-        membersData.admins = membersData.admins.filter(m => m !== name);
-        membersData.members = membersData.members.filter(m => m !== name);
-        delete membersData.warnings[name];
-        saveMembersToStorage();
-        return true;
-    }
-
-    function updateMember(oldName, newName, newRole, warnings) {
-        removeMember(oldName);
-        return addMember(newName, newRole, warnings);
-    }
-
-   // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
+    // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
 function renderMembers() {
     const tbody = document.getElementById('membersTableBody');
     const stats = document.getElementById('membersStats');
     const controls = document.getElementById('membersControls');
     const actionsHeader = document.getElementById('actionsHeader');
     
-    // Панель управления и кнопки действий - только для админа
     controls.style.display = isAdmin ? 'flex' : 'none';
     actionsHeader.style.display = isAdmin ? 'table-cell' : 'none';
     
@@ -1319,22 +1231,16 @@ function renderMembers() {
         if (warnings >= 6) warningClass = 'warning-high';
         else if (warnings >= 3) warningClass = 'warning-medium';
         
-        // Кнопки управления выговорами показываем только админу
-        let warningControls = '';
-        if (isAdmin) {
-            warningControls = `
-                <button class="btn-warning" data-name="${escapeHtml(member.name)}" title="+1 выговор">➕</button>
-                <button class="btn-warning-minus" data-name="${escapeHtml(member.name)}" title="-1 выговор" ${warnings <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>➖</button>
-            `;
-        }
-        
         html += `<tr>
             <td>${index + 1}</td>
             <td>${escapeHtml(member.name)}</td>
             <td>${roleLabels[member.role] || roleLabels.member}</td>
             <td>
                 <span class="warning-count ${warningClass}">${warnings}</span>
-                ${warningControls}
+                ${isAdmin ? `
+                    <button class="btn-warning" data-name="${escapeHtml(member.name)}" title="+1 выговор">➕</button>
+                    <button class="btn-warning-minus" data-name="${escapeHtml(member.name)}" title="-1 выговор" ${warnings <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>➖</button>
+                ` : ''}
             </td>
             <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
                 <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}" data-warnings="${warnings}">✏️</button>
@@ -1355,7 +1261,7 @@ function renderMembers() {
         | Всего выговоров: <span>${totalWarnings}</span>
     `;
     
-    // Обработчики для кнопок (только для админа)
+    // Кнопки управления выговорами и редактирования - только для админа
     if (isAdmin) {
         document.querySelectorAll('.btn-edit').forEach(btn => {
             btn.addEventListener('click', () => {
