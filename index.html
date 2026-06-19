@@ -1286,101 +1286,105 @@
         return addMember(newName, newRole, warnings);
     }
 
-    // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
-    function renderMembers() {
-        const tbody = document.getElementById('membersTableBody');
-        const stats = document.getElementById('membersStats');
-        const controls = document.getElementById('membersControls');
-        const actionsHeader = document.getElementById('actionsHeader');
-        
-        controls.style.display = isAdmin ? 'flex' : 'none';
-        actionsHeader.style.display = isAdmin ? 'table-cell' : 'none';
-        
-        const all = getAllMembers();
-        
-        if (!all.length) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
-            stats.innerHTML = 'Всего участников: <span>0</span>';
-            return;
-        }
-        
-        let html = '';
-        all.forEach((member, index) => {
-            const roleLabels = {
-                leader: '<span class="role-badge leader">👑 Лидер</span>',
-                deputy: '<span class="role-badge deputy">⭐ Зам</span>',
-                admin: '<span class="role-badge admin">🛡️ Админ</span>',
-                member: '<span class="role-badge member">Участник</span>'
-            };
-            
-            const warnings = getWarnings(member.name);
-            let warningClass = 'warning-low';
-            if (warnings >= 6) warningClass = 'warning-high';
-            else if (warnings >= 3) warningClass = 'warning-medium';
-            
-            html += `<tr>
-                <td>${index + 1}</td>
-                <td>${escapeHtml(member.name)}</td>
-                <td>${roleLabels[member.role] || roleLabels.member}</td>
-                <td>
-                    <span class="warning-count ${warningClass}">${warnings}</span>
-                    ${isAdmin ? `
-                        <button class="btn-warning" data-name="${escapeHtml(member.name)}" title="+1 выговор">➕</button>
-                        <button class="btn-warning-minus" data-name="${escapeHtml(member.name)}" title="-1 выговор" ${warnings <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>➖</button>
-                    ` : ''}
-                </td>
-                <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
-                    <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}" data-warnings="${warnings}">✏️</button>
-                    <button class="btn-delete-member" data-name="${escapeHtml(member.name)}">🗑</button>
-                </td>
-            </tr>`;
-        });
-        tbody.innerHTML = html;
-        
-        const total = all.length;
-        const totalWarnings = Object.values(membersData.warnings).reduce((a, b) => a + b, 0);
-        stats.innerHTML = `
-            Всего участников: <span>${total}</span>
-            (Лидеров: <span>${membersData.leaders.length}</span>, 
-            Замов: <span>${membersData.deputies.length}</span>, 
-            Админов: <span>${membersData.admins.length}</span>, 
-            Участников: <span>${membersData.members.length}</span>)
-            | Всего выговоров: <span>${totalWarnings}</span>
-        `;
-        
-        if (isAdmin) {
-            // Кнопки редактирования
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    openEditModal(btn.dataset.name, btn.dataset.role, parseInt(btn.dataset.warnings));
-                });
-            });
-            // Кнопки удаления
-            document.querySelectorAll('.btn-delete-member').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (confirm(`Удалить участника "${btn.dataset.name}"?`)) {
-                        removeMember(btn.dataset.name);
-                        renderMembers();
-                    }
-                });
-            });
-            // Кнопки добавления выговора
-            document.querySelectorAll('.btn-warning').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    addWarning(btn.dataset.name);
-                    renderMembers();
-                });
-            });
-            // Кнопки удаления выговора
-            document.querySelectorAll('.btn-warning-minus').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (btn.disabled) return;
-                    removeWarning(btn.dataset.name);
-                    renderMembers();
-                });
-            });
-        }
+   // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
+function renderMembers() {
+    const tbody = document.getElementById('membersTableBody');
+    const stats = document.getElementById('membersStats');
+    const controls = document.getElementById('membersControls');
+    const actionsHeader = document.getElementById('actionsHeader');
+    
+    // Панель управления и кнопки действий - только для админа
+    controls.style.display = isAdmin ? 'flex' : 'none';
+    actionsHeader.style.display = isAdmin ? 'table-cell' : 'none';
+    
+    const all = getAllMembers();
+    
+    if (!all.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
+        stats.innerHTML = 'Всего участников: <span>0</span>';
+        return;
     }
+    
+    let html = '';
+    all.forEach((member, index) => {
+        const roleLabels = {
+            leader: '<span class="role-badge leader">👑 Лидер</span>',
+            deputy: '<span class="role-badge deputy">⭐ Зам</span>',
+            admin: '<span class="role-badge admin">🛡️ Админ</span>',
+            member: '<span class="role-badge member">Участник</span>'
+        };
+        
+        const warnings = getWarnings(member.name);
+        let warningClass = 'warning-low';
+        if (warnings >= 6) warningClass = 'warning-high';
+        else if (warnings >= 3) warningClass = 'warning-medium';
+        
+        // Кнопки управления выговорами показываем только админу
+        let warningControls = '';
+        if (isAdmin) {
+            warningControls = `
+                <button class="btn-warning" data-name="${escapeHtml(member.name)}" title="+1 выговор">➕</button>
+                <button class="btn-warning-minus" data-name="${escapeHtml(member.name)}" title="-1 выговор" ${warnings <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>➖</button>
+            `;
+        }
+        
+        html += `<tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(member.name)}</td>
+            <td>${roleLabels[member.role] || roleLabels.member}</td>
+            <td>
+                <span class="warning-count ${warningClass}">${warnings}</span>
+                ${warningControls}
+            </td>
+            <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
+                <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}" data-warnings="${warnings}">✏️</button>
+                <button class="btn-delete-member" data-name="${escapeHtml(member.name)}">🗑</button>
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+    
+    const total = all.length;
+    const totalWarnings = Object.values(membersData.warnings).reduce((a, b) => a + b, 0);
+    stats.innerHTML = `
+        Всего участников: <span>${total}</span>
+        (Лидеров: <span>${membersData.leaders.length}</span>, 
+        Замов: <span>${membersData.deputies.length}</span>, 
+        Админов: <span>${membersData.admins.length}</span>, 
+        Участников: <span>${membersData.members.length}</span>)
+        | Всего выговоров: <span>${totalWarnings}</span>
+    `;
+    
+    // Обработчики для кнопок (только для админа)
+    if (isAdmin) {
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', () => {
+                openEditModal(btn.dataset.name, btn.dataset.role, parseInt(btn.dataset.warnings));
+            });
+        });
+        document.querySelectorAll('.btn-delete-member').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (confirm(`Удалить участника "${btn.dataset.name}"?`)) {
+                    removeMember(btn.dataset.name);
+                    renderMembers();
+                }
+            });
+        });
+        document.querySelectorAll('.btn-warning').forEach(btn => {
+            btn.addEventListener('click', () => {
+                addWarning(btn.dataset.name);
+                renderMembers();
+            });
+        });
+        document.querySelectorAll('.btn-warning-minus').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                removeWarning(btn.dataset.name);
+                renderMembers();
+            });
+        });
+    }
+}
 
     // ==================== РЕДАКТИРОВАНИЕ УЧАСТНИКА ====================
     let editOldName = '';
