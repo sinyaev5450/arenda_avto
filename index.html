@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: url('images/background.png') no-repeat center center fixed;
+            background: url('images/background.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #eee;
             padding: 20px;
@@ -92,35 +92,6 @@
             color: #ff8844;
         }
 
-        .view-applications-btn, .view-returns-btn {
-            position: fixed;
-            top: 20px;
-            background: #1e88e5;
-            border: none;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 20;
-            font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            transition: background 0.2s;
-        }
-        .view-applications-btn {
-            right: 20px;
-        }
-        .view-returns-btn {
-            right: 180px;
-            background: #e67e22;
-        }
-        .view-applications-btn:hover {
-            background: #0d5b9e;
-        }
-        .view-returns-btn:hover {
-            background: #b45f1b;
-        }
-
         /* ============ НАВИГАЦИОННЫЕ ВКЛАДКИ ============ */
         .nav-tabs {
             display: flex;
@@ -163,201 +134,33 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ============ СТИЛИ ДЛЯ ВКЛАДКИ УЧАСТНИКИ ============ */
-        .members-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            margin-top: 20px;
-        }
-        .members-section {
-            background: rgba(20, 20, 35, 0.7);
-            backdrop-filter: blur(4px);
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .members-section h3 {
-            color: #88aaff;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-        .members-section h3 .crown {
-            color: #f1c40f;
-        }
-        .members-list {
-            list-style: none;
-            padding: 0;
-        }
-        .members-list li {
-            padding: 8px 12px;
-            margin: 4px 0;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            color: #ddd;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .view-applications-btn, .view-returns-btn {
+            position: fixed;
+            top: 20px;
+            background: #1e88e5;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             transition: background 0.2s;
         }
-        .members-list li:hover {
-            background: rgba(255,255,255,0.1);
+        .view-applications-btn {
+            right: 20px;
         }
-        .members-list li .rank {
-            color: #88aaff;
-            font-weight: bold;
-            font-size: 0.8rem;
-            min-width: 30px;
+        .view-returns-btn {
+            right: 180px;
+            background: #e67e22;
         }
-        .members-list li .badge-leader {
-            background: #f1c40f;
-            color: #333;
-            padding: 1px 8px;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: bold;
+        .view-applications-btn:hover {
+            background: #0d5b9e;
         }
-        .members-list li .badge-deputy {
-            background: #9b59b6;
-            color: white;
-            padding: 1px 8px;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: bold;
-        }
-        .members-list li .badge-member {
-            background: #1e88e5;
-            color: white;
-            padding: 1px 8px;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: bold;
-        }
-        .members-stats {
-            text-align: center;
-            color: #aaa;
-            font-size: 0.85rem;
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-        }
-        .members-stats span {
-            color: #88aaff;
-            font-weight: bold;
-        }
-
-        /* ============ СТИЛИ ДЛЯ ВКЛАДКИ ПРАВИЛА ============ */
-        .rules-container {
-            background: rgba(20, 20, 35, 0.7);
-            backdrop-filter: blur(4px);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .rules-container h2 {
-            text-align: center;
-            color: #88aaff;
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            padding-bottom: 15px;
-        }
-        .rules-container h3 {
-            color: #f1c40f;
-            font-size: 1.1rem;
-            margin: 20px 0 12px 0;
-            padding-left: 10px;
-            border-left: 3px solid #f1c40f;
-            padding: 8px 15px;
-            background: rgba(241, 196, 15, 0.1);
-            border-radius: 8px;
-        }
-        .rules-container .rule-item {
-            padding: 6px 15px;
-            margin: 4px 0;
-            color: #ddd;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            background: rgba(255,255,255,0.03);
-            border-radius: 6px;
-        }
-        .rules-container .rule-item .num {
-            color: #88aaff;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        .rules-container .rule-item .punishment {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-        .rules-container .rule-item .sub-item {
-            padding-left: 25px;
-            color: #bbb;
-            font-size: 0.85rem;
-            margin: 3px 0;
-        }
-        .rules-container .rule-item .sub-item .letter {
-            color: #88aaff;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-        .rules-container .rule-highlight {
-            background: rgba(231, 76, 60, 0.15);
-            border-left: 3px solid #e74c3c;
-            padding: 6px 15px;
-            margin: 4px 0;
-            border-radius: 0 6px 6px 0;
-            color: #ddd;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        .rules-container .rule-highlight .num {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        .rules-container .rule-highlight .punishment {
-            color: #f1c40f;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-        .rules-container .role-item {
-            padding: 8px 15px;
-            margin: 4px 0;
-            color: #ddd;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            background: rgba(30,136,229,0.08);
-            border-radius: 6px;
-            border-left: 3px solid #1e88e5;
-        }
-        .rules-container .role-item .role-name {
-            color: #88aaff;
-            font-weight: bold;
-        }
-        .rules-container .credit-example {
-            background: rgba(46, 204, 113, 0.08);
-            border: 1px solid rgba(46, 204, 113, 0.2);
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin: 10px 0;
-            font-family: monospace;
-            color: #6fcf97;
-            font-size: 0.85rem;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
-        .rules-container .credit-example .label {
-            color: #f1c40f;
-            font-weight: bold;
+        .view-returns-btn:hover {
+            background: #b45f1b;
         }
 
         .cars-grid {
@@ -367,7 +170,7 @@
         }
 
         .car-card {
-            background: rgba(20, 20, 35, 0.8);
+            background: rgba(216, 216, 216, 0.8);
             backdrop-filter: blur(4px);
             border-radius: 24px;
             overflow: hidden;
@@ -468,6 +271,134 @@
         }
         .return-card-btn:hover {
             background: #b45f1b;
+        }
+
+        /* ============ СТИЛИ ДЛЯ ВКЛАДКИ УЧАСТНИКИ ============ */
+        .members-container {
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+        .members-container h2 {
+            text-align: center;
+            color: #88aaff;
+            margin-bottom: 20px;
+        }
+        .members-table-wrap {
+            overflow-x: auto;
+        }
+        .members-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .members-table th {
+            background: #1e88e5;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        .members-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #ddd;
+        }
+        .members-table tr:hover td {
+            background: rgba(255,255,255,0.05);
+        }
+        .members-table .role-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .role-badge.leader {
+            background: #f1c40f;
+            color: #333;
+        }
+        .role-badge.deputy {
+            background: #9b59b6;
+            color: white;
+        }
+        .role-badge.admin {
+            background: #e74c3c;
+            color: white;
+        }
+        .role-badge.member {
+            background: #1e88e5;
+            color: white;
+        }
+        .members-table .btn-edit, .members-table .btn-delete-member {
+            border: none;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin: 0 3px;
+            transition: background 0.2s;
+        }
+        .members-table .btn-edit {
+            background: #f39c12;
+        }
+        .members-table .btn-edit:hover {
+            background: #d68910;
+        }
+        .members-table .btn-delete-member {
+            background: #d32f2f;
+        }
+        .members-table .btn-delete-member:hover {
+            background: #b71c1c;
+        }
+        .members-stats {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+        }
+        .members-stats span {
+            color: #88aaff;
+            font-weight: bold;
+        }
+        .members-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .members-controls input, .members-controls select {
+            padding: 8px 14px;
+            background: #2a2a3a;
+            border: 1px solid #445;
+            border-radius: 16px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .members-controls input:focus, .members-controls select:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+        .members-controls .btn-add-member {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .members-controls .btn-add-member:hover {
+            background: #27ae60;
         }
 
         .modal {
@@ -646,23 +577,22 @@
                 padding: 8px 12px;
                 font-size: 0.8rem;
             }
-            .members-container {
-                grid-template-columns: 1fr;
+            .members-table {
+                font-size: 0.75rem;
+            }
+            .members-table th, .members-table td {
+                padding: 5px 8px;
             }
             .nav-tab {
                 padding: 6px 14px;
                 font-size: 0.8rem;
             }
-            .rules-container {
-                padding: 15px;
-            }
-            .rules-container .credit-example {
-                font-size: 0.7rem;
-                padding: 10px;
+            .members-controls input, .members-controls select {
+                font-size: 0.8rem;
+                padding: 6px 10px;
             }
         }
-        
-        /* ============ СТИЛИ ДЛЯ СТАТУСОВ КАРТОЧЕК ============ */
+
         .car-card.booked {
             opacity: 0.85;
             border-color: #e67e22;
@@ -687,20 +617,6 @@
         }
         .car-card.available:hover {
             border-color: #27ae60;
-        }
-
-        .car-card.pending {
-            opacity: 0.85;
-            border-color: #f1c40f;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
-        }
-        .car-card.pending:hover {
-            transform: translateY(-3px);
-            border-color: #f1c40f;
-        }
-        .car-card.pending .take-btn {
-            background: #555;
-            cursor: not-allowed;
         }
 
         .btn-approve-return {
@@ -764,18 +680,6 @@
             font-weight: bold;
             z-index: 10;
         }
-        .status-pending {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(241, 196, 15, 0.9);
-            color: #333;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 10;
-        }
     </style>
     <link rel="icon" type="image/png" href="images/logo.png">
 </head>
@@ -791,7 +695,6 @@
     <div class="nav-tabs">
         <button class="nav-tab active" data-tab="cars">🚗 Автомобили</button>
         <button class="nav-tab" data-tab="members">👥 Участники</button>
-        <button class="nav-tab" data-tab="rules">📜 Правила</button>
     </div>
 
     <!-- Вкладка: Автомобили -->
@@ -801,12 +704,37 @@
 
     <!-- Вкладка: Участники -->
     <div class="tab-content" id="tab-members">
-        <div class="members-container" id="membersContainer"></div>
-    </div>
-
-    <!-- Вкладка: Правила -->
-    <div class="tab-content" id="tab-rules">
-        <div class="rules-container" id="rulesContainer"></div>
+        <div class="members-container" id="membersContainer">
+            <h2>👥 Участники семьи Deville</h2>
+            
+            <!-- Панель управления (только для админа) -->
+            <div id="membersControls" style="display:none;" class="members-controls">
+                <input type="text" id="newMemberName" placeholder="Имя участника">
+                <select id="newMemberRole">
+                    <option value="member">Участник</option>
+                    <option value="deputy">Зам</option>
+                    <option value="admin">Админ</option>
+                    <option value="leader">Лидер</option>
+                </select>
+                <button class="btn-add-member" id="addMemberBtn">➕ Добавить</button>
+            </div>
+            
+            <div class="members-table-wrap">
+                <table class="members-table" id="membersTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Имя</th>
+                            <th>Роль</th>
+                            <th id="actionsHeader" style="display:none;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="members-stats" id="membersStats"></div>
+        </div>
     </div>
 </div>
 
@@ -840,7 +768,7 @@
         <button id="adminLoginBtn" style="width: 100%; background: linear-gradient(135deg, #e67e22, #b45f1b); color: white; border: none; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 20px;">👑 Войти как администратор</button>
         <div id="registerError" style="color: #e74c3c; text-align: center; margin-bottom: 15px; font-size: 0.85rem;"></div>
         <div style="background: rgba(30,136,229,0.1); border-left: 3px solid #1e88e5; padding: 12px; border-radius: 12px;">
-            <span style="color: #aaa; font-size: 0.75rem;">ℹ️ Администратор может одобрять/отклонять заявки</span>
+            <span style="color: #aaa; font-size: 0.75rem;">ℹ️ Администратор может одобрять/отклонять заявки и управлять участниками</span>
         </div>
     </div>
 </div>
@@ -949,160 +877,255 @@
     </div>
 </div>
 
+<!-- Модалка редактирования участника -->
+<div id="editMemberModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeEditModal">&times;</span>
+        <h2>✏️ Редактировать участника</h2>
+        <form id="editMemberForm">
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" id="editMemberName" required>
+            </div>
+            <div class="form-group">
+                <label>Роль</label>
+                <select id="editMemberRole">
+                    <option value="member">Участник</option>
+                    <option value="deputy">Зам</option>
+                    <option value="admin">Админ</option>
+                    <option value="leader">Лидер</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="cancelEditBtn">Отмена</button>
+                <button type="submit" class="submit-btn">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     // ==================== ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpozYhSF3ZLw8p_EetSesN3uy-3hl4Z1YoZIPVJvQ5dBWf0tqSTbqQkn2TgHdf3ZZscA/exec';
     // ================================================================================
 
-    // ==================== ДАННЫЕ УЧАСТНИКОВ ====================
-   const membersData = {
-    leaders: [
-        "Adeline Deville",
-        "Anastasia Deville",
-        "James Deville"
-    ],
-    deputies: [
-        "Aleks_Deville"
-    ],
-     members: [
-        "Alexander Deville",
-        "Daniel Deville",
-        "Artem Deville",
-        "Alex Deville",
-        "Alexsey Deville",
-        "Konstantin_Deville",
-        "Elizaveta Deville",
-        "Ignat Deville",
-        "Di Deville",
-        "Mike Deville",
-        "Maks Deville",
-        "Reinhard_Deville",
-        "Nikita Deville",
-        "Pablo Deville",
-        "Stanislav Deville",
-        "Tayler Deville",
-        "Viktor Deville",
-        "Renat Deville",
-        "Roman Deville",
-        "Kirill Deville",
-        "Amin_Cherry",
-        "Kai_Mironov",
-        "Alexandr_Venevtsev",
-        "Pablo_Vinogradov" 
-    ]
-};
+    // ==================== ДАННЫЕ УЧАСТНИКОВ (с возможностью редактирования) ====================
+    let membersData = {
+        leaders: [
+            "Adeline Deville",
+            "Anastasia Deville",
+            "James Deville"
+        ],
+        deputies: [
+            "Aleks_Deville"
+        ],
+        admins: [
+            "Amin_Cherry",
+            "Kai_Mironov",
+            "Alexandr_Venevtsev",
+            "Pablo_Vinogradov"
+        ],
+        members: [
+            "Alexander Deville",
+            "Daniel Deville",
+            "Artem Deville",
+            "Alex Deville",
+            "Alexsey Deville",
+            "Konstantin_Deville",
+            "Elizaveta Deville",
+            "Ignat Deville",
+            "Di Deville",
+            "Mike Deville",
+            "Maks Deville",
+            "Reinhard_Deville",
+            "Nikita Deville",
+            "Pablo Deville",
+            "Stanislav Deville",
+            "Tayler Deville",
+            "Viktor Deville",
+            "Renat Deville",
+            "Roman Deville",
+            "Kirill Deville"
+        ]
+    };
 
-    // ==================== ПРАВИЛА ====================
-    function renderRules() {
-        const container = document.getElementById('rulesContainer');
-        container.innerHTML = `
-            <h2>📜 Правила семьи DEVILLE</h2>
-
-            <h3>1. Поведение в семье</h3>
-            <div class="rule-item"><span class="num">1.1</span> Запрещено оскорблять участников семьи на сервере и в каких либо беседах <span class="punishment">Наказание: предупреждение; повторное - 3 выговора</span></div>
-            <div class="rule-item"><span class="num">1.2</span> Запрещено выводить на конфликты участников семьи на сервере и в каких либо беседах <span class="punishment">Наказание: предупреждение; повторное - 3 выговора</span></div>
-            <div class="rule-item"><span class="num">1.3</span> Запрещено неадекватно себя вести на мероприятиях (драться и так далее) <span class="punishment">Наказание: 3 выговора; повторное - 6 выговоров</span></div>
-            <div class="rule-highlight"><span class="num">1.4</span> Запрещено затрагивать родственников и нацию участников семьи <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
-            <div class="rule-item"><span class="num">1.5</span> Игнорировать просьбы СС и не предупреждать об отсутствии <span class="punishment">Наказание: 3 выговора; повторное - 6 выговоров</span></div>
-
-            <h3>2. Правила семьи</h3>
-            <div class="rule-item"><span class="num">2.1</span> Знать внутренние правила сервера (DM, DB, MG, TK, SK, PG, RK, BH, WH, ЕПП, ЕПТ, ЕПР) <span class="punishment">Наказание: предупреждение; повторное - 2 выговора</span></div>
-            <div class="rule-item"><span class="num">2.2</span> Знать RP-отыгровки ( /me; /do; /s; /b; /w; /try; /todo) <span class="punishment">Наказание: предупреждение; повторное - 2 выговора</span></div>
-            <div class="rule-item"><span class="num">2.3</span> Запрещено намеренно оскорблять/таранить/избивать каких-либо игроков <span class="punishment">Наказание: 2 выговора; повторное - 4 выговора</span></div>
-            <div class="rule-item"><span class="num">2.4</span> Запрещено провоцировать на конфликты каких-либо игроков <span class="punishment">Наказание: 2 выговора; повторное - 4 выговора</span></div>
-            <div class="rule-item"><span class="num">2.5</span> Запрещено провоцировать фракции: ГУВД, ГИБДД, МО, ОПГ, МЗ <span class="punishment">Наказание: 2 выговора; повторное - 4 выговора</span></div>
-            <div class="rule-item"><span class="num">2.6</span> Запрещено вмешиваться в RP-процесс (увозить игрока с места оформления сотрудниками полиции не из нашей семьи) <span class="punishment">Наказание: предупреждение; повторное - 2 выговора</span></div>
-            <div class="rule-item"><span class="num">2.7</span> Запрещено играть в азартные игры (монетка) <span class="punishment">Наказание: 3 выговора; повторное - 5 выговоров (а так же запрещается выдача кредитов. Срок запрета на кредит назначает лидер.)</span></div>
-            <div class="rule-highlight"><span class="num">2.8</span> Запрещено затрагивать нацию, родственников <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
-            <div class="rule-highlight"><span class="num">2.9</span> Запрещено сливать внутреннюю информацию семьи <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
-            <div class="rule-highlight"><span class="num">2.10</span> Запрещено состоять с твинков в других семьях <span class="punishment">Наказание: исключение из семьи и занесение в черный список</span></div>
-
-            <h3>3. Организация</h3>
-            <div class="rule-item"><span class="num">3.1</span> Каждый участник семьи должен находиться в организации! <span class="punishment">Наказание: игрок не допускается в семью</span></div>
-            <div class="rule-item"><span class="num">3.2</span> Запрещено самовольно без объяснений покидать организацию <span class="punishment">Наказание: автоматическое исключение из семьи</span></div>
-            
-            <div class="rule-item" style="margin-top:10px;"><span class="num">3.3</span> Роли:</div>
-            <div class="role-item"><span class="role-name">А) Лидер:</span> следит за порядком семьи, рассматривает жалобы на форуме, принимает новых участников, урегулирует конфликты, выдает наказания, организует мероприятия, рассматривает заявки на взятие кредита, принимает отработку предов.</div>
-            <div class="role-item"><span class="role-name">Б) Заместитель:</span> докладывает о нарушениях, заполняет список об активности, помогает в организации мероприятий, принимает отработку предов.</div>
-            <div class="role-item"><span class="role-name">В) Основной состав:</span> участники семьи, которые должны знать и соблюдать правила семьи, докладывать о конфликтных ситуациях, вести запись игрового процесса, приходить на мероприятия.</div>
-            <div class="role-item"><span class="role-name">Г) Следящие за Транспортом:</span> участники которые проверяют транспорт, докладывают о том кто не починил/не заправил, так же должны вести видеофиксацию, приходить на различные мероприятия.</div>
-            <div class="role-item"><span class="role-name">Д) Повар:</span> участник который готовит еду в офисе, так же должны вести видеофиксацию, приходить на различные мероприятия.</div>
-            <div class="role-item"><span class="role-name">Е) Неактивные:</span> участники, которые пропали без предупреждения и от них ждут ответа</div>
-            <div class="role-item"><span class="role-name">Ё) На вылет:</span> участники, которые не выходят долгое время из отпуска или пропали и ответа от них нету</div>
-            <div class="role-item"><span class="role-name">Ж) Отпускные:</span> участники которые написали заявление на отпуск и отдыхают от игры или занимаются своими делами</div>
-            <div class="role-item"><span class="role-name">З) Тестовые:</span> участники которые на пробном периоде в семье, после сдачи правил они повышаются до "основного состава"</div>
-
-            <div class="rule-item" style="margin-top:10px;"><span class="num">3.4</span> Транспорт</div>
-            <div class="rule-item"><span class="num">1)</span> При взятии Т/С пишется отчет (см. пример в беседе "Транспорт/Объявления") <span class="punishment">Наказание: предупреждение; повторное - 2 выговора и понижение на роль ниже</span></div>
-            <div class="rule-item"><span class="num">2)</span> При возврате Т/С участник чинит, заправляет и ставит на место <span class="punishment">Наказание: предупреждение; повторное - 2 выговора и понижение на роль ниже</span></div>
-            <div class="rule-item"><span class="num">3)</span> Когда берете Т/С ставить аварийный знак <span class="punishment">Наказание: предупреждение</span></div>
-            <div class="rule-item"><span class="num">4)</span> Транспорт организации не может находиться во владении участника семьи более двух суток. Исключение транспорт из офиса. <span class="punishment">Наказание: предупреждение; повторное - 2 выговора.</span></div>
-
-            <h3>4. Семейный Бюджет</h3>
-            <div class="rule-item"><span class="num">4.1</span> Каждую неделю, каждый участник семьи переводит в организацию от 50к до 100к <span class="punishment">Наказание: предупреждение; повторное - приз на мероприятиях в случае выигрыша уменьшается на 50% а так же отказ в выдаче кредитов</span></div>
-            <div class="rule-item"><span class="num">4.2</span> Участник семьи может взять кредит, но:</div>
-            <div class="sub-item"><span class="letter">а)</span> Если Вас замечали в участии азартных игр и Вам выдавались преды за это - кредит не выдается</div>
-            <div class="sub-item"><span class="letter">б)</span> Если Вы редко играете и по большей части числитесь в списке "неактивных" - кредит не выдается</div>
-            <div class="sub-item"><span class="letter">в)</span> Если Вы часто попадаете в бан из-за нарушения ВПС - выдается на малые суммы (от 50к до 300к)</div>
-            <div class="sub-item"><span class="letter">г)</span> Если участник семьи не вносит каждую неделю положенную сумму - кредит не выдается</div>
-
-            <div class="credit-example">
-                <span class="label">📝 Пример кредитного договора:</span>
-Я Aliya Deville ознакомлена с правилами и условиями пользования банка семьи.
-Подпись: LiDV
-Я Aliya Deville в настоящий момент 10.10.25 прошу выдать мне 100.000 провинциальных рублей на покупку машины "Москвич-2140", и обязуюсь вернуть данную сумму 100.000 провинциальных рублей в период с 10.10.25 по 20.10.25, а также в случае задержки выплаты кредита готов выплатить штрафные санкции в "nn" количестве от общей суммы кредита.
-Дата: 10.10.25
-Подпись: LilDV
-            </div>
-
-            <div class="rule-item"><span class="num">4.3</span> Штрафные санкции:</div>
-            <div class="rule-item"><span class="num">а)</span> Если Вас забанили по жалобе на форуме и идет просрочка возвращения кредита:</div>
-            <div class="sub-item">1) 1-10 дней - 10%</div>
-            <div class="sub-item">2) 1-20 дней - 20%</div>
-            <div class="sub-item">3) 1-30 дней - 30%</div>
-            <div class="rule-item"><span class="num">б)</span> Если участник намеренно не работает и не фармит и идет просрочка кредита штрафные санкции будут в размере 40%</div>
-            <div class="rule-item"><span class="num">в)</span> Если участник взял кредит и ушел в АФК без предупреждения СС и идет просрочка кредита штрафные санкции будут в размере 70%</div>
-        `;
+    // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С УЧАСТНИКАМИ ====================
+    function loadMembersFromStorage() {
+        const stored = localStorage.getItem('devillecar_members');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (parsed.leaders && parsed.deputies && parsed.admins && parsed.members) {
+                    membersData = parsed;
+                }
+            } catch(e) {
+                console.log('Ошибка загрузки участников, используем данные по умолчанию');
+            }
+        }
+        saveMembersToStorage();
     }
 
-    // ==================== ОТРИСОВКА УЧАСТНИКОВ ====================
+    function saveMembersToStorage() {
+        localStorage.setItem('devillecar_members', JSON.stringify(membersData));
+    }
+
+    function getAllMembers() {
+        const all = [];
+        membersData.leaders.forEach(name => all.push({ name, role: 'leader' }));
+        membersData.deputies.forEach(name => all.push({ name, role: 'deputy' }));
+        membersData.admins.forEach(name => all.push({ name, role: 'admin' }));
+        membersData.members.forEach(name => all.push({ name, role: 'member' }));
+        return all;
+    }
+
+    function addMember(name, role) {
+        if (!name || name.trim() === '') return false;
+        name = name.trim();
+        // Проверяем, есть ли уже такой участник
+        const all = getAllMembers();
+        if (all.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+            return false;
+        }
+        switch(role) {
+            case 'leader': membersData.leaders.push(name); break;
+            case 'deputy': membersData.deputies.push(name); break;
+            case 'admin': membersData.admins.push(name); break;
+            default: membersData.members.push(name);
+        }
+        saveMembersToStorage();
+        return true;
+    }
+
+    function removeMember(name) {
+        let found = false;
+        membersData.leaders = membersData.leaders.filter(m => m !== name);
+        membersData.deputies = membersData.deputies.filter(m => m !== name);
+        membersData.admins = membersData.admins.filter(m => m !== name);
+        membersData.members = membersData.members.filter(m => m !== name);
+        saveMembersToStorage();
+        return true;
+    }
+
+    function updateMember(oldName, newName, newRole) {
+        // Удаляем старого
+        removeMember(oldName);
+        // Добавляем нового с новой ролью
+        return addMember(newName, newRole);
+    }
+
+    // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
     function renderMembers() {
-        const container = document.getElementById('membersContainer');
+        const tbody = document.getElementById('membersTableBody');
+        const stats = document.getElementById('membersStats');
+        const controls = document.getElementById('membersControls');
+        const actionsHeader = document.getElementById('actionsHeader');
         
-        let leadersHtml = '';
-        membersData.leaders.forEach((name, index) => {
-            leadersHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-leader">👑 Лидер</span></li>`;
+        // Показываем панель управления только для админа
+        controls.style.display = isAdmin ? 'flex' : 'none';
+        actionsHeader.style.display = isAdmin ? 'table-cell' : 'none';
+        
+        const all = getAllMembers();
+        
+        if (!all.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
+            stats.innerHTML = 'Всего участников: <span>0</span>';
+            return;
+        }
+        
+        let html = '';
+        all.forEach((member, index) => {
+            const roleLabels = {
+                leader: '<span class="role-badge leader">👑 Лидер</span>',
+                deputy: '<span class="role-badge deputy">⭐ Зам</span>',
+                admin: '<span class="role-badge admin">🛡️ Админ</span>',
+                member: '<span class="role-badge member">Участник</span>'
+            };
+            
+            html += `<tr>
+                <td>${index + 1}</td>
+                <td>${escapeHtml(member.name)}</td>
+                <td>${roleLabels[member.role] || roleLabels.member}</td>
+                <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
+                    <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}">✏️</button>
+                    <button class="btn-delete-member" data-name="${escapeHtml(member.name)}">🗑</button>
+                </td>
+            </tr>`;
         });
-
-        let deputiesHtml = '';
-        membersData.deputies.forEach((name, index) => {
-            deputiesHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-deputy">⭐ Зам</span></li>`;
-        });
-
-        let membersHtml = '';
-        membersData.members.forEach((name, index) => {
-            membersHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-member">Участник</span></li>`;
-        });
-
-        container.innerHTML = `
-            <div class="members-section">
-                <h3><span class="crown">👑</span> Лидеры</h3>
-                <ul class="members-list">${leadersHtml}</ul>
-            </div>
-            <div class="members-section">
-                <h3>⭐ Замы</h3>
-                <ul class="members-list">${deputiesHtml}</ul>
-            </div>
-            <div class="members-section">
-                <h3>👥 Участники</h3>
-                <ul class="members-list">${membersHtml}</ul>
-                <div class="members-stats">
-                    Всего участников: <span>${membersData.leaders.length + membersData.deputies.length + membersData.members.length}</span>
-                    (Лидеров: <span>${membersData.leaders.length}</span>, Замов: <span>${membersData.deputies.length}</span>, Участников: <span>${membersData.members.length}</span>)
-                </div>
-            </div>
+        tbody.innerHTML = html;
+        
+        const total = all.length;
+        stats.innerHTML = `
+            Всего участников: <span>${total}</span>
+            (Лидеров: <span>${membersData.leaders.length}</span>, 
+            Замов: <span>${membersData.deputies.length}</span>, 
+            Админов: <span>${membersData.admins.length}</span>, 
+            Участников: <span>${membersData.members.length}</span>)
         `;
+        
+        // Обработчики для кнопок (только для админа)
+        if (isAdmin) {
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openEditModal(btn.dataset.name, btn.dataset.role);
+                });
+            });
+            document.querySelectorAll('.btn-delete-member').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (confirm(`Удалить участника "${btn.dataset.name}"?`)) {
+                        removeMember(btn.dataset.name);
+                        renderMembers();
+                    }
+                });
+            });
+        }
     }
+
+    // ==================== РЕДАКТИРОВАНИЕ УЧАСТНИКА ====================
+    let editOldName = '';
+
+    function openEditModal(name, role) {
+        editOldName = name;
+        document.getElementById('editMemberName').value = name;
+        document.getElementById('editMemberRole').value = role;
+        document.getElementById('editMemberModal').style.display = 'block';
+    }
+
+    document.getElementById('closeEditModal').onclick = () => {
+        document.getElementById('editMemberModal').style.display = 'none';
+    };
+    document.getElementById('cancelEditBtn').onclick = () => {
+        document.getElementById('editMemberModal').style.display = 'none';
+    };
+    document.getElementById('editMemberForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newName = document.getElementById('editMemberName').value.trim();
+        const newRole = document.getElementById('editMemberRole').value;
+        if (!newName) { alert('Введите имя'); return; }
+        if (updateMember(editOldName, newName, newRole)) {
+            renderMembers();
+            document.getElementById('editMemberModal').style.display = 'none';
+            alert('✅ Участник обновлён!');
+        } else {
+            alert('❌ Ошибка: участник с таким именем уже существует');
+        }
+    });
+
+    // ==================== ДОБАВЛЕНИЕ УЧАСТНИКА ====================
+    document.getElementById('addMemberBtn').addEventListener('click', () => {
+        const name = document.getElementById('newMemberName').value.trim();
+        const role = document.getElementById('newMemberRole').value;
+        if (!name) { alert('Введите имя участника'); return; }
+        if (addMember(name, role)) {
+            document.getElementById('newMemberName').value = '';
+            renderMembers();
+            alert('✅ Участник добавлен!');
+        } else {
+            alert('❌ Участник с таким именем уже существует');
+        }
+    });
+    document.getElementById('newMemberName').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('addMemberBtn').click();
+    });
 
     // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
     function transliterate(plate) {
@@ -1133,7 +1156,7 @@
         { name: "BMW M760Li xDrive G12", desc: "Роскошный седан с V12 6.6 л, 610 л.с., потолок из алькантары.", engine: "6.6 л V12 Twin-Turbo", hp: 610, plate: "M760KA78" },
         { name: "Chevrolet Camaro ZL1", desc: "Американский мускул-кар с компрессорным V8.", engine: "6.2 л V8 Supercharged", hp: 650, plate: "B070OY77" },
         { name: "BMW X5 M", desc: "Высокопроизводительный SUV, M TwinPower V8, 600 л.с.", engine: "4.4 л V8 Twin-Turbo", hp: 600, plate: "A555OA77" },
-        { name: "BMW S1000 RR", desc: "Спортбайк с рядной четвёркой, 205 л.с., электроника.", engine: "999 cc", hp: 205, plate: "0O35MK63" },
+        { name: "BMW S1000 RR", desc: "Спортбайк с рядной четвёркой, 205 л.с., электроника.", engine: "999 cc", hp: 205, plate: "0035MK63" },
         { name: "Volkswagen Touareg V8 TDI", desc: "Мощный дизельный внедорожник, 4.0 л V8, 421 л.с.", engine: "4.0 л V8 TDI", hp: 421, plate: "K657PY63" },
         { name: "Audi R8", desc: "Суперкар с двигателем V10 и полным приводом Quattro.", engine: "5.2 л V10", hp: 602, plate: "B546OK63" },
         { name: "Subaru WRX STI", desc: "Полноприводной седан с оппозитным турбо 2.5 л.", engine: "2.5 л Boxer Turbo", hp: 310, plate: "O4O3EB78" },
@@ -1238,47 +1261,13 @@
 
     // ==================== ПРОВЕРКА СТАТУСА БРОНИРОВАНИЯ ====================
     function getBookingInfo(carPlate) {
-        // Проверяем, есть ли ОДОБРЕННЫЙ возврат для этой машины
-        const hasApprovedReturn = returns.some(ret => 
-            ret.carNumber === carPlate && 
-            ret.status === 'approved'
-        );
+        const hasApprovedReturn = returns.some(ret => ret.carNumber === carPlate && ret.status === 'approved');
+        if (hasApprovedReturn) return { isBooked: false };
         
-        // Если есть одобренный возврат - машина свободна
-        if (hasApprovedReturn) {
-            return { isBooked: false };
+        const booking = applications.find(app => app.carNumber === carPlate && app.status === 'approved');
+        if (booking) {
+            return { isBooked: true, user: booking.nickname, until: booking.takeTime || 'не указано' };
         }
-        
-        // Ищем ОДОБРЕННУЮ заявку (активное бронирование)
-        const approvedBooking = applications.find(app => 
-            app.carNumber === carPlate && 
-            app.status === 'approved'
-        );
-        
-        if (approvedBooking) {
-            return {
-                isBooked: true,
-                user: approvedBooking.nickname,
-                until: approvedBooking.takeTime || 'не указано',
-                status: 'approved'
-            };
-        }
-        
-        // Ищем ОЖИДАЮЩУЮ заявку (pending)
-        const pendingBooking = applications.find(app => 
-            app.carNumber === carPlate && 
-            app.status === 'pending'
-        );
-        
-        if (pendingBooking) {
-            return {
-                isBooked: true,
-                user: pendingBooking.nickname,
-                until: pendingBooking.takeTime || 'не указано',
-                status: 'pending'
-            };
-        }
-        
         return { isBooked: false };
     }
 
@@ -1290,11 +1279,7 @@
         const [loadedApplications, loadedReturns] = await Promise.all([loadApplicationsFromCloud(), loadReturnsFromCloud()]);
         applications = loadedApplications;
         returns = loadedReturns;
-        
         console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
-        console.log('📊 Заявки:', applications);
-        console.log('📊 Возвраты:', returns);
-        
         renderCars();
         
         if (showStatus) {
@@ -1305,95 +1290,102 @@
         if (window.currentReturnsModalOpen) renderReturnsList();
     }
 
-    // ============ ГЕНЕРАЦИЯ КАРТОЧЕК ============
-    function renderCars() {
-        const grid = document.getElementById('carsGrid');
-        grid.innerHTML = '';
+    // ============ ОТРИСОВКА ТАБЛИЦ ============
+    function renderApplicationsList() {
+        const container = document.getElementById('applicationsList');
+        let filteredApplications = applications;
+        if (!isAdmin) filteredApplications = applications.filter(app => app.nickname === currentUser);
         
-        cars.forEach(car => {
-            const bookingInfo = getBookingInfo(car.plate);
-            const isBooked = bookingInfo.isBooked;
-            const bookingStatus = bookingInfo.status;
-            
-            const card = document.createElement('div');
-            card.className = 'car-card';
-            if (isBooked) {
-                if (bookingStatus === 'pending') {
-                    card.classList.add('pending');
-                } else {
-                    card.classList.add('booked');
-                }
-            } else {
-                card.classList.add('available');
-            }
-            
-            const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
-            const imagePath = `images/${imageFileName}.jpg`;
-            let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
-            
-            // Статус на карточке
-            let statusHtml = '';
-            if (isBooked) {
-                if (bookingStatus === 'pending') {
-                    statusHtml = `<div class="status-pending">⏳ ОЖИДАЕТ ОДОБРЕНИЯ</div>`;
-                } else {
-                    statusHtml = `<div class="status-booked">🔒 ЗАНЯТА</div>`;
-                }
-            } else {
-                statusHtml = `<div class="status-free">✅ СВОБОДНА</div>`;
-            }
-            
-            // Блок информации о бронировании
-            let bookingInfoHtml = '';
-            if (currentUser && isBooked) {
-                let statusText = bookingStatus === 'pending' ? '⏳ Ожидает одобрения' : '✅ Активно';
-                let statusColor = bookingStatus === 'pending' ? '#f1c40f' : '#e67e22';
-                bookingInfoHtml = `
-                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(${bookingStatus === 'pending' ? '241, 196, 15' : '230, 126, 34'}, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid ${statusColor};">
-                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span>
-                        <span style="color: ${statusColor}; margin-left: 8px;">${statusText}</span>
-                    </div>
-                `;
-            } else if (currentUser && !isBooked) {
-                bookingInfoHtml = `
-                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.15); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;">
-                        <span style="color: #6fcf97;">✅ Доступна для заказа</span>
-                    </div>
-                `;
-            }
-            
-            const isButtonDisabled = isBooked;
-            card.innerHTML = `
-                <div class="car-image" style="position: relative;">${statusHtml}${imageHtml}</div>
-                <div class="car-info">
-                    <div class="car-name">
-                        ${escapeHtml(car.name)}
-                        ${!isBooked ? '<span class="status-free-badge">📋 ДОСТУПНА</span>' : ''}
-                    </div>
-                    <div class="car-desc">${escapeHtml(car.desc.substring(0, 80))}${car.desc.length > 80 ? '…' : ''}</div>
-                    <div class="car-spec">${escapeHtml(car.engine || '')} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
-                    <div class="car-plate">🚛 Госномер: ${escapeHtml(car.plate)}</div>
-                    ${bookingInfoHtml}
-                </div>
-                <div class="card-buttons">
-                    <button class="take-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}" ${isButtonDisabled ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>📝 Взять в пользование</button>
-                    <button class="return-card-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}">🔄 Вернуть транспорт</button>
-                </div>
-            `;
-            grid.appendChild(card);
+        if (!filteredApplications.length) {
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на взятие.</div>';
+            return;
+        }
+        
+        let html = `<table class="applications-table"><thead><tr><th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
+        
+        filteredApplications.forEach(app => {
+            html += `<tr><td>${escapeHtml(app.nickname)}</td><td>${escapeHtml(app.carBrand)}</td><td>${escapeHtml(app.carNumber)}</td><td>${escapeHtml(app.takeTime)}</td><td>${escapeHtml(app.reason)}</td><td>${escapeHtml(app.createdAt)}</td><td>`;
+            if (app.status === 'pending') {
+                if (isAdmin) html += `<div class="status-buttons"><button class="btn-approve" data-id="${app.id}">✔ Одобрить</button><button class="btn-reject" data-id="${app.id}">✖ Отказать</button></div>`;
+                else html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+            } else if (app.status === 'approved') html += `<span class="status-text-approved">✅ Одобрено</span>`;
+            else if (app.status === 'rejected') html += `<span class="status-text-rejected">❌ Отказано</span>`;
+            else if (app.status === 'returned') html += `<span class="status-text-approved">🔄 Возвращено</span>`;
+            html += `</td><td class="action-buttons">`;
+            if (isAdmin) html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
+            else html += `—`;
+            html += `</td></tr>`;
         });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+        
+        if (isAdmin) {
+            document.querySelectorAll('.btn-approve').forEach(btn => btn.onclick = () => updateApplicationStatus(btn.dataset.id, 'approved'));
+            document.querySelectorAll('.btn-reject').forEach(btn => btn.onclick = () => updateApplicationStatus(btn.dataset.id, 'rejected'));
+            document.querySelectorAll('.btn-delete').forEach(btn => btn.onclick = () => deleteApplication(btn.dataset.id));
+        }
     }
 
-    // ============ ФУНКЦИИ ДЛЯ РАБОТЫ С ЗАЯВКАМИ ============
-    
-    // Одобрение возврата (освобождает машину)
+    function renderReturnsList() {
+        const container = document.getElementById('returnsList');
+        let filteredReturns = returns;
+        if (!isAdmin) filteredReturns = returns.filter(ret => ret.nickname === currentUser);
+        
+        if (!filteredReturns.length) {
+            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на возврат.</div>';
+            return;
+        }
+        
+        let html = `<table class="returns-table"><thead><tr><th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время возврата</th><th>Пробег</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
+        
+        filteredReturns.forEach(ret => {
+            let returnStatus = ret.status || 'pending';
+            let statusHtml = '';
+            if (returnStatus === 'pending') statusHtml = `<span class="status-text-pending">⏳ Ожидает</span>`;
+            else if (returnStatus === 'approved') statusHtml = `<span class="status-text-approved">✅ Одобрен</span>`;
+            else if (returnStatus === 'rejected') statusHtml = `<span class="status-text-rejected">❌ Отказан</span>`;
+            
+            html += `<tr><td>${escapeHtml(ret.nickname)}</td><td>${escapeHtml(ret.carBrand)}</td><td>${escapeHtml(ret.carNumber)}</td><td>${escapeHtml(ret.returnTime)}</td><td>${escapeHtml(ret.mileage)}</td><td>${escapeHtml(ret.condition)}</td><td>${escapeHtml(ret.servicePerformed)}</td><td>${escapeHtml(ret.comment)}</td><td>${escapeHtml(ret.createdAt)}</td><td>${statusHtml}</td><td class="action-buttons">`;
+            
+            if (isAdmin && returnStatus === 'pending') {
+                html += `<button class="btn-approve-return" data-id="${ret.id}" data-car="${ret.carNumber}">✅ Одобрить возврат</button>
+                         <button class="btn-reject-return" data-id="${ret.id}">❌ Отказать</button>
+                         <button class="btn-delete-return" data-id="${ret.id}">🗑 Удалить</button>`;
+            } else if (isAdmin) {
+                html += `<button class="btn-delete-return" data-id="${ret.id}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
+            html += `</td></tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+        
+        if (isAdmin) {
+            document.querySelectorAll('.btn-approve-return').forEach(btn => btn.onclick = () => approveReturn(btn.dataset.id, btn.dataset.car));
+            document.querySelectorAll('.btn-reject-return').forEach(btn => btn.onclick = () => rejectReturn(btn.dataset.id));
+            document.querySelectorAll('.btn-delete-return').forEach(btn => btn.onclick = () => deleteReturnApplication(btn.dataset.id));
+        }
+    }
+
+    async function updateApplicationStatus(id, newStatus) {
+        await updateStatusInCloud(id, newStatus);
+        await loadAllData(false);
+        if (window.currentApplicationsModalOpen) renderApplicationsList();
+    }
+
+    async function deleteApplication(id) {
+        if (confirm('Удалить заявку на взятие?')) {
+            await deleteFromCloud(id);
+            await loadAllData(false);
+            if (window.currentApplicationsModalOpen) renderApplicationsList();
+        }
+    }
+
     async function approveReturn(id, carNumber) {
         if (confirm('✅ Одобрить возврат? Машина снова станет доступной.')) {
             await updateReturnStatusInCloud(id, 'approved');
-            const activeTakeApplication = applications.find(app => 
-                app.carNumber === carNumber && 
-                app.status === 'approved'
-            );
+            const activeTakeApplication = applications.find(app => app.carNumber === carNumber && app.status === 'approved');
             if (activeTakeApplication) {
                 await updateStatusInCloud(activeTakeApplication.id, 'returned');
             }
@@ -1401,8 +1393,7 @@
             alert('✅ Возврат одобрен! Машина снова доступна.');
         }
     }
-    
-    // Отказ в возврате
+
     async function rejectReturn(id) {
         if (confirm('❌ Отказать в возврате?')) {
             await updateReturnStatusInCloud(id, 'rejected');
@@ -1410,8 +1401,7 @@
             alert('❌ В возврате отказано.');
         }
     }
-    
-    // Удаление заявки на возврат
+
     async function deleteReturnApplication(id) {
         if (confirm('🗑 Удалить заявку на возврат?')) {
             await deleteReturnFromCloud(id);
@@ -1478,82 +1468,56 @@
         }
     }
 
-    // ============ ОТРИСОВКА ТАБЛИЦ ============
-    function renderApplicationsList() {
-        const container = document.getElementById('applicationsList');
-        let filteredApplications = applications;
-        if (!isAdmin) filteredApplications = applications.filter(app => app.nickname === currentUser);
-        
-        if (!filteredApplications.length) {
-            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на взятие.</div>';
-            return;
-        }
-        
-        let html = `<table class="applications-table"><thead><tr><th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время взятия</th><th>Причина</th><th>Дата подачи</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
-        
-        filteredApplications.forEach(app => {
-            html += `<tr><td>${escapeHtml(app.nickname)}</td><td>${escapeHtml(app.carBrand)}</td><td>${escapeHtml(app.carNumber)}</td><td>${escapeHtml(app.takeTime)}</td><td>${escapeHtml(app.reason)}</td><td>${escapeHtml(app.createdAt)}</td><td>`;
-            if (app.status === 'pending') {
-                if (isAdmin) html += `<div class="status-buttons"><button class="btn-approve" data-id="${app.id}">✔ Одобрить</button><button class="btn-reject" data-id="${app.id}">✖ Отказать</button></div>`;
-                else html += `<span class="status-text-pending">⏳ Ожидает</span>`;
-            } else if (app.status === 'approved') html += `<span class="status-text-approved">✅ Одобрено</span>`;
-            else if (app.status === 'rejected') html += `<span class="status-text-rejected">❌ Отказано</span>`;
-            else if (app.status === 'returned') html += `<span class="status-text-approved">🔄 Возвращено</span>`;
-            html += `</td><td class="action-buttons">`;
-            if (isAdmin) html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
-            else html += `—`;
-            html += `</td></tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-        
-        if (isAdmin) {
-            document.querySelectorAll('.btn-approve').forEach(btn => btn.onclick = () => updateStatusInCloud(btn.dataset.id, 'approved').then(() => loadAllData(false)));
-            document.querySelectorAll('.btn-reject').forEach(btn => btn.onclick = () => updateStatusInCloud(btn.dataset.id, 'rejected').then(() => loadAllData(false)));
-            document.querySelectorAll('.btn-delete').forEach(btn => btn.onclick = () => { if(confirm('Удалить?')) deleteFromCloud(btn.dataset.id).then(() => loadAllData(false)); });
-        }
-    }
-
-    function renderReturnsList() {
-        const container = document.getElementById('returnsList');
-        let filteredReturns = returns;
-        if (!isAdmin) filteredReturns = returns.filter(ret => ret.nickname === currentUser);
-        
-        if (!filteredReturns.length) {
-            container.innerHTML = '<div class="empty-apps">📭 У вас нет заявок на возврат.</div>';
-            return;
-        }
-        
-        let html = `<table class="returns-table"><thead><tr><th>Ник</th><th>Марка / модель</th><th>Номер ТС</th><th>Время возврата</th><th>Пробег</th><th>Состояние</th><th>Обслужено</th><th>Комментарий</th><th>Дата подачи</th><th>Статус</th><th>Действия</th></tr></thead><tbody>`;
-        
-        filteredReturns.forEach(ret => {
-            let returnStatus = ret.status || 'pending';
-            let statusHtml = '';
-            if (returnStatus === 'pending') statusHtml = `<span class="status-text-pending">⏳ Ожидает</span>`;
-            else if (returnStatus === 'approved') statusHtml = `<span class="status-text-approved">✅ Одобрен</span>`;
-            else if (returnStatus === 'rejected') statusHtml = `<span class="status-text-rejected">❌ Отказан</span>`;
-            
-            html += `<tr><td>${escapeHtml(ret.nickname)}</td><td>${escapeHtml(ret.carBrand)}</td><td>${escapeHtml(ret.carNumber)}</td><td>${escapeHtml(ret.returnTime)}</td><td>${escapeHtml(ret.mileage)}</td><td>${escapeHtml(ret.condition)}</td><td>${escapeHtml(ret.servicePerformed)}</td><td>${escapeHtml(ret.comment)}</td><td>${escapeHtml(ret.createdAt)}</td><td>${statusHtml}</td><td class="action-buttons">`;
-            
-            if (isAdmin && returnStatus === 'pending') {
-                html += `<button class="btn-approve-return" data-id="${ret.id}" data-car="${ret.carNumber}">✅ Одобрить возврат</button>
-                         <button class="btn-reject-return" data-id="${ret.id}">❌ Отказать</button>
-                         <button class="btn-delete-return" data-id="${ret.id}">🗑 Удалить</button>`;
-            } else if (isAdmin) {
-                html += `<button class="btn-delete-return" data-id="${ret.id}">🗑 Удалить</button>`;
+    // ============ ГЕНЕРАЦИЯ КАРТОЧЕК ============
+    function renderCars() {
+        const grid = document.getElementById('carsGrid');
+        grid.innerHTML = '';
+        cars.forEach(car => {
+            const bookingInfo = getBookingInfo(car.plate);
+            const isBooked = bookingInfo.isBooked;
+            const card = document.createElement('div');
+            card.className = 'car-card';
+            if (isBooked) {
+                card.classList.add('booked');
             } else {
-                html += `—`;
+                card.classList.add('available');
             }
-            html += `</td></tr>`;
+            
+            const imageFileName = transliterate(car.plate).toUpperCase().replace(/\s/g, '');
+            const imagePath = `images/${imageFileName}.jpg`;
+            let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
+            
+            let statusHtml = '';
+            if (isBooked) {
+                statusHtml = `<div class="status-booked">🔒 ЗАНЯТА</div>`;
+            } else {
+                statusHtml = `<div class="status-free">✅ СВОБОДНА</div>`;
+            }
+            
+            let bookingInfoHtml = '';
+            if (currentUser && isBooked) {
+                bookingInfoHtml = `<div style="margin-top: 8px; padding: 6px 10px; background: rgba(230, 126, 34, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #e67e22;"><span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span></div>`;
+            } else if (currentUser && !isBooked) {
+                bookingInfoHtml = `<div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.15); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;"><span style="color: #6fcf97;">✅ Доступна для заказа</span></div>`;
+            }
+            
+            const isButtonDisabled = isBooked;
+            card.innerHTML = `
+                <div class="car-image" style="position: relative;">${statusHtml}${imageHtml}</div>
+                <div class="car-info">
+                    <div class="car-name">${escapeHtml(car.name)}${!isBooked ? '<span class="status-free-badge">📋 ДОСТУПНА</span>' : ''}</div>
+                    <div class="car-desc">${escapeHtml(car.desc.substring(0, 80))}${car.desc.length > 80 ? '…' : ''}</div>
+                    <div class="car-spec">${escapeHtml(car.engine || '')} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
+                    <div class="car-plate">🚛 Госномер: ${escapeHtml(car.plate)}</div>
+                    ${bookingInfoHtml}
+                </div>
+                <div class="card-buttons">
+                    <button class="take-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}" ${isButtonDisabled ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>📝 Взять в пользование</button>
+                    <button class="return-card-btn" data-car-name="${escapeHtml(car.name)}" data-car-plate="${escapeHtml(car.plate)}">🔄 Вернуть транспорт</button>
+                </div>
+            `;
+            grid.appendChild(card);
         });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-        
-        if (isAdmin) {
-            document.querySelectorAll('.btn-approve-return').forEach(btn => btn.onclick = () => approveReturn(btn.dataset.id, btn.dataset.car));
-            document.querySelectorAll('.btn-reject-return').forEach(btn => btn.onclick = () => rejectReturn(btn.dataset.id));
-            document.querySelectorAll('.btn-delete-return').forEach(btn => btn.onclick = () => deleteReturnApplication(btn.dataset.id));
-        }
     }
 
     // ============ СИСТЕМА РЕГИСТРАЦИИ ============
@@ -1596,6 +1560,8 @@
         document.getElementById('nickname').value = currentUser;
         document.getElementById('returnNickname').value = currentUser;
         updateFilterInfo();
+        // Обновляем таблицу участников при показе интерфейса
+        renderMembers();
     }
 
     function showRegisterModal() {
@@ -1614,6 +1580,8 @@
         localStorage.setItem('devillecar_isAdmin', 'false');
         showUserInterface();
         loadAllData(true);
+        loadMembersFromStorage();
+        renderMembers();
     }
 
     function loginAsAdmin() {
@@ -1626,6 +1594,8 @@
             showUserInterface();
             alert('✅ Вы вошли как администратор.');
             loadAllData(true);
+            loadMembersFromStorage();
+            renderMembers();
         } else if (password !== null) {
             registerError.textContent = 'Неверный пароль администратора';
         }
@@ -1650,6 +1620,8 @@
             refreshBtn.innerHTML = '🔄 ...';
             refreshBtn.disabled = true;
             await loadAllData(true);
+            loadMembersFromStorage();
+            renderMembers();
             refreshBtn.innerHTML = '🔄 Обновить';
             refreshBtn.disabled = false;
         };
@@ -1661,8 +1633,7 @@
         const tabs = document.querySelectorAll('.nav-tab');
         const contents = {
             'cars': document.getElementById('tab-cars'),
-            'members': document.getElementById('tab-members'),
-            'rules': document.getElementById('tab-rules')
+            'members': document.getElementById('tab-members')
         };
 
         tabs.forEach(tab => {
@@ -1677,6 +1648,10 @@
                 const tabId = this.dataset.tab;
                 if (contents[tabId]) {
                     contents[tabId].classList.add('active');
+                    if (tabId === 'members') {
+                        loadMembersFromStorage();
+                        renderMembers();
+                    }
                 }
             });
         });
@@ -1691,12 +1666,12 @@
             isAdmin = savedAdmin === 'true';
             showUserInterface();
             loadAllData(true);
+            loadMembersFromStorage();
             renderMembers();
-            renderRules();
         } else {
             showRegisterModal();
+            loadMembersFromStorage();
             renderMembers();
-            renderRules();
         }
     }
 
@@ -1705,7 +1680,7 @@
     registerNick.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginAsUser(); });
     logoutBtn.addEventListener('click', logout);
 
-    // ---- МОДАЛКА АНКЕТЫ ВЗЯТИЯ ----
+    // Модалки
     const modalAnketa = document.getElementById('anketaModal');
     const closeModalSpan = document.getElementById('closeModal');
     const cancelModalBtn = document.getElementById('cancelModalBtn');
@@ -1739,7 +1714,6 @@
     closeModalSpan.onclick = closeAnketaModal;
     cancelModalBtn.onclick = closeAnketaModal;
 
-    // ---- МОДАЛКА АНКЕТЫ ВОЗВРАТА ----
     const returnModal = document.getElementById('returnModal');
     const closeReturnSpan = document.getElementById('closeReturnModal');
     const cancelReturnBtn = document.getElementById('cancelReturnBtn');
@@ -1781,7 +1755,6 @@
     closeReturnSpan.onclick = closeReturnModal;
     cancelReturnBtn.onclick = closeReturnModal;
 
-    // ---- МОДАЛКИ ЗАЯВОК ----
     const modalApps = document.getElementById('applicationsModal');
     const closeAppsSpan = document.getElementById('closeAppsModal');
     const viewAppsBtn = document.getElementById('viewAppsBtn');
@@ -1796,7 +1769,15 @@
     closeAppsSpan.onclick = closeApplicationsModal;
     viewReturnsBtn.addEventListener('click', openReturnsModal);
     closeReturnsSpan.onclick = closeReturnsModal;
-    window.onclick = function(event) { if(event.target == modalAnketa) closeAnketaModal(); if(event.target == returnModal) closeReturnModal(); if(event.target == modalApps) closeApplicationsModal(); if(event.target == modalReturns) closeReturnsModal(); };
+    window.onclick = function(event) { 
+        if(event.target == modalAnketa) closeAnketaModal(); 
+        if(event.target == returnModal) closeReturnModal();
+        if(event.target == modalApps) closeApplicationsModal(); 
+        if(event.target == modalReturns) closeReturnsModal();
+        if(event.target == document.getElementById('editMemberModal')) {
+            document.getElementById('editMemberModal').style.display = 'none';
+        }
+    };
 
     document.addEventListener('click', (e) => {
         if(e.target.classList.contains('take-btn')) openAnketaModal(e.target.dataset.carName, e.target.dataset.carPlate);
@@ -1805,8 +1786,8 @@
 
     addRefreshButton();
     setupTabs();
+    loadMembersFromStorage();
     renderMembers();
-    renderRules();
     setInterval(() => { if (currentUser) loadAllData(false); }, 30000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) loadAllData(false); });
     checkAuth();
