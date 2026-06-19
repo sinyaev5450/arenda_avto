@@ -275,77 +275,85 @@
 
         /* ============ СТИЛИ ДЛЯ ВКЛАДКИ УЧАСТНИКИ ============ */
         .members-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            margin-top: 20px;
-        }
-        .members-section {
             background: rgba(20, 20, 35, 0.7);
             backdrop-filter: blur(4px);
             border-radius: 20px;
             padding: 24px;
             border: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
         }
-        .members-section h3 {
-            color: #88aaff;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+        .members-container h2 {
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-        .members-section h3 .crown {
-            color: #f1c40f;
-        }
-        .members-list {
-            list-style: none;
-            padding: 0;
-        }
-        .members-list li {
-            padding: 8px 12px;
-            margin: 4px 0;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            color: #ddd;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.2s;
-        }
-        .members-list li:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        .members-list li .rank {
             color: #88aaff;
-            font-weight: bold;
-            font-size: 0.8rem;
-            min-width: 30px;
+            margin-bottom: 20px;
         }
-        .members-list li .badge-leader {
-            background: #f1c40f;
-            color: #333;
-            padding: 1px 8px;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: bold;
+        .members-table-wrap {
+            overflow-x: auto;
         }
-        .members-list li .badge-deputy {
-            background: #9b59b6;
-            color: white;
-            padding: 1px 8px;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: bold;
+        .members-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
         }
-        .members-list li .badge-member {
+        .members-table th {
             background: #1e88e5;
             color: white;
-            padding: 1px 8px;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        .members-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #ddd;
+        }
+        .members-table tr:hover td {
+            background: rgba(255,255,255,0.05);
+        }
+        .members-table .role-badge {
+            display: inline-block;
+            padding: 2px 10px;
             border-radius: 20px;
-            font-size: 0.6rem;
+            font-size: 0.7rem;
             font-weight: bold;
+        }
+        .role-badge.leader {
+            background: #f1c40f;
+            color: #333;
+        }
+        .role-badge.deputy {
+            background: #9b59b6;
+            color: white;
+        }
+        .role-badge.admin {
+            background: #e74c3c;
+            color: white;
+        }
+        .role-badge.member {
+            background: #1e88e5;
+            color: white;
+        }
+        .members-table .btn-edit, .members-table .btn-delete-member {
+            border: none;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin: 0 3px;
+            transition: background 0.2s;
+        }
+        .members-table .btn-edit {
+            background: #f39c12;
+        }
+        .members-table .btn-edit:hover {
+            background: #d68910;
+        }
+        .members-table .btn-delete-member {
+            background: #d32f2f;
+        }
+        .members-table .btn-delete-member:hover {
+            background: #b71c1c;
         }
         .members-stats {
             text-align: center;
@@ -359,6 +367,38 @@
         .members-stats span {
             color: #88aaff;
             font-weight: bold;
+        }
+        .members-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .members-controls input, .members-controls select {
+            padding: 8px 14px;
+            background: #2a2a3a;
+            border: 1px solid #445;
+            border-radius: 16px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .members-controls input:focus, .members-controls select:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+        .members-controls .btn-add-member {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .members-controls .btn-add-member:hover {
+            background: #27ae60;
         }
 
         .modal {
@@ -537,12 +577,19 @@
                 padding: 8px 12px;
                 font-size: 0.8rem;
             }
-            .members-container {
-                grid-template-columns: 1fr;
+            .members-table {
+                font-size: 0.75rem;
+            }
+            .members-table th, .members-table td {
+                padding: 5px 8px;
             }
             .nav-tab {
                 padding: 6px 14px;
                 font-size: 0.8rem;
+            }
+            .members-controls input, .members-controls select {
+                font-size: 0.8rem;
+                padding: 6px 10px;
             }
         }
 
@@ -657,7 +704,37 @@
 
     <!-- Вкладка: Участники -->
     <div class="tab-content" id="tab-members">
-        <div class="members-container" id="membersContainer"></div>
+        <div class="members-container" id="membersContainer">
+            <h2>👥 Участники семьи Deville</h2>
+            
+            <!-- Панель управления (только для админа) -->
+            <div id="membersControls" style="display:none;" class="members-controls">
+                <input type="text" id="newMemberName" placeholder="Имя участника">
+                <select id="newMemberRole">
+                    <option value="member">Участник</option>
+                    <option value="deputy">Зам</option>
+                    <option value="admin">Админ</option>
+                    <option value="leader">Лидер</option>
+                </select>
+                <button class="btn-add-member" id="addMemberBtn">➕ Добавить</button>
+            </div>
+            
+            <div class="members-table-wrap">
+                <table class="members-table" id="membersTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Имя</th>
+                            <th>Роль</th>
+                            <th id="actionsHeader" style="display:none;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="members-stats" id="membersStats"></div>
+        </div>
     </div>
 </div>
 
@@ -691,7 +768,7 @@
         <button id="adminLoginBtn" style="width: 100%; background: linear-gradient(135deg, #e67e22, #b45f1b); color: white; border: none; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 20px;">👑 Войти как администратор</button>
         <div id="registerError" style="color: #e74c3c; text-align: center; margin-bottom: 15px; font-size: 0.85rem;"></div>
         <div style="background: rgba(30,136,229,0.1); border-left: 3px solid #1e88e5; padding: 12px; border-radius: 12px;">
-            <span style="color: #aaa; font-size: 0.75rem;">ℹ️ Администратор может одобрять/отклонять заявки</span>
+            <span style="color: #aaa; font-size: 0.75rem;">ℹ️ Администратор может одобрять/отклонять заявки и управлять участниками</span>
         </div>
     </div>
 </div>
@@ -800,13 +877,40 @@
     </div>
 </div>
 
+<!-- Модалка редактирования участника -->
+<div id="editMemberModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeEditModal">&times;</span>
+        <h2>✏️ Редактировать участника</h2>
+        <form id="editMemberForm">
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" id="editMemberName" required>
+            </div>
+            <div class="form-group">
+                <label>Роль</label>
+                <select id="editMemberRole">
+                    <option value="member">Участник</option>
+                    <option value="deputy">Зам</option>
+                    <option value="admin">Админ</option>
+                    <option value="leader">Лидер</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="cancelEditBtn">Отмена</button>
+                <button type="submit" class="submit-btn">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     // ==================== ВАШ URL ИЗ GOOGLE APPS SCRIPT ====================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpozYhSF3ZLw8p_EetSesN3uy-3hl4Z1YoZIPVJvQ5dBWf0tqSTbqQkn2TgHdf3ZZscA/exec';
     // ================================================================================
 
-    // ==================== ДАННЫЕ УЧАСТНИКОВ ====================
-    const membersData = {
+    // ==================== ДАННЫЕ УЧАСТНИКОВ (с возможностью редактирования) ====================
+    let membersData = {
         leaders: [
             "Adeline Deville",
             "Anastasia Deville",
@@ -814,6 +918,12 @@
         ],
         deputies: [
             "Aleks_Deville"
+        ],
+        admins: [
+            "Amin_Cherry",
+            "Kai_Mironov",
+            "Alexandr_Venevtsev",
+            "Pablo_Vinogradov"
         ],
         members: [
             "Alexander Deville",
@@ -838,6 +948,184 @@
             "Kirill Deville"
         ]
     };
+
+    // ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С УЧАСТНИКАМИ ====================
+    function loadMembersFromStorage() {
+        const stored = localStorage.getItem('devillecar_members');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (parsed.leaders && parsed.deputies && parsed.admins && parsed.members) {
+                    membersData = parsed;
+                }
+            } catch(e) {
+                console.log('Ошибка загрузки участников, используем данные по умолчанию');
+            }
+        }
+        saveMembersToStorage();
+    }
+
+    function saveMembersToStorage() {
+        localStorage.setItem('devillecar_members', JSON.stringify(membersData));
+    }
+
+    function getAllMembers() {
+        const all = [];
+        membersData.leaders.forEach(name => all.push({ name, role: 'leader' }));
+        membersData.deputies.forEach(name => all.push({ name, role: 'deputy' }));
+        membersData.admins.forEach(name => all.push({ name, role: 'admin' }));
+        membersData.members.forEach(name => all.push({ name, role: 'member' }));
+        return all;
+    }
+
+    function addMember(name, role) {
+        if (!name || name.trim() === '') return false;
+        name = name.trim();
+        // Проверяем, есть ли уже такой участник
+        const all = getAllMembers();
+        if (all.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+            return false;
+        }
+        switch(role) {
+            case 'leader': membersData.leaders.push(name); break;
+            case 'deputy': membersData.deputies.push(name); break;
+            case 'admin': membersData.admins.push(name); break;
+            default: membersData.members.push(name);
+        }
+        saveMembersToStorage();
+        return true;
+    }
+
+    function removeMember(name) {
+        let found = false;
+        membersData.leaders = membersData.leaders.filter(m => m !== name);
+        membersData.deputies = membersData.deputies.filter(m => m !== name);
+        membersData.admins = membersData.admins.filter(m => m !== name);
+        membersData.members = membersData.members.filter(m => m !== name);
+        saveMembersToStorage();
+        return true;
+    }
+
+    function updateMember(oldName, newName, newRole) {
+        // Удаляем старого
+        removeMember(oldName);
+        // Добавляем нового с новой ролью
+        return addMember(newName, newRole);
+    }
+
+    // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
+    function renderMembers() {
+        const tbody = document.getElementById('membersTableBody');
+        const stats = document.getElementById('membersStats');
+        const controls = document.getElementById('membersControls');
+        const actionsHeader = document.getElementById('actionsHeader');
+        
+        // Показываем панель управления только для админа
+        controls.style.display = isAdmin ? 'flex' : 'none';
+        actionsHeader.style.display = isAdmin ? 'table-cell' : 'none';
+        
+        const all = getAllMembers();
+        
+        if (!all.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
+            stats.innerHTML = 'Всего участников: <span>0</span>';
+            return;
+        }
+        
+        let html = '';
+        all.forEach((member, index) => {
+            const roleLabels = {
+                leader: '<span class="role-badge leader">👑 Лидер</span>',
+                deputy: '<span class="role-badge deputy">⭐ Зам</span>',
+                admin: '<span class="role-badge admin">🛡️ Админ</span>',
+                member: '<span class="role-badge member">Участник</span>'
+            };
+            
+            html += `<tr>
+                <td>${index + 1}</td>
+                <td>${escapeHtml(member.name)}</td>
+                <td>${roleLabels[member.role] || roleLabels.member}</td>
+                <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
+                    <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}">✏️</button>
+                    <button class="btn-delete-member" data-name="${escapeHtml(member.name)}">🗑</button>
+                </td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+        
+        const total = all.length;
+        stats.innerHTML = `
+            Всего участников: <span>${total}</span>
+            (Лидеров: <span>${membersData.leaders.length}</span>, 
+            Замов: <span>${membersData.deputies.length}</span>, 
+            Админов: <span>${membersData.admins.length}</span>, 
+            Участников: <span>${membersData.members.length}</span>)
+        `;
+        
+        // Обработчики для кнопок (только для админа)
+        if (isAdmin) {
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openEditModal(btn.dataset.name, btn.dataset.role);
+                });
+            });
+            document.querySelectorAll('.btn-delete-member').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (confirm(`Удалить участника "${btn.dataset.name}"?`)) {
+                        removeMember(btn.dataset.name);
+                        renderMembers();
+                    }
+                });
+            });
+        }
+    }
+
+    // ==================== РЕДАКТИРОВАНИЕ УЧАСТНИКА ====================
+    let editOldName = '';
+
+    function openEditModal(name, role) {
+        editOldName = name;
+        document.getElementById('editMemberName').value = name;
+        document.getElementById('editMemberRole').value = role;
+        document.getElementById('editMemberModal').style.display = 'block';
+    }
+
+    document.getElementById('closeEditModal').onclick = () => {
+        document.getElementById('editMemberModal').style.display = 'none';
+    };
+    document.getElementById('cancelEditBtn').onclick = () => {
+        document.getElementById('editMemberModal').style.display = 'none';
+    };
+    document.getElementById('editMemberForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newName = document.getElementById('editMemberName').value.trim();
+        const newRole = document.getElementById('editMemberRole').value;
+        if (!newName) { alert('Введите имя'); return; }
+        if (updateMember(editOldName, newName, newRole)) {
+            renderMembers();
+            document.getElementById('editMemberModal').style.display = 'none';
+            alert('✅ Участник обновлён!');
+        } else {
+            alert('❌ Ошибка: участник с таким именем уже существует');
+        }
+    });
+
+    // ==================== ДОБАВЛЕНИЕ УЧАСТНИКА ====================
+    document.getElementById('addMemberBtn').addEventListener('click', () => {
+        const name = document.getElementById('newMemberName').value.trim();
+        const role = document.getElementById('newMemberRole').value;
+        if (!name) { alert('Введите имя участника'); return; }
+        if (addMember(name, role)) {
+            document.getElementById('newMemberName').value = '';
+            renderMembers();
+            alert('✅ Участник добавлен!');
+        } else {
+            alert('❌ Участник с таким именем уже существует');
+        }
+    });
+    document.getElementById('newMemberName').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('addMemberBtn').click();
+    });
 
     // ----- ФУНКЦИЯ ТРАНСЛИТЕРАЦИИ -----
     function transliterate(plate) {
@@ -1232,45 +1520,6 @@
         });
     }
 
-    // ============ ОТРИСОВКА УЧАСТНИКОВ ============
-    function renderMembers() {
-        const container = document.getElementById('membersContainer');
-        
-        let leadersHtml = '';
-        membersData.leaders.forEach((name, index) => {
-            leadersHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-leader">👑 Лидер</span></li>`;
-        });
-
-        let deputiesHtml = '';
-        membersData.deputies.forEach((name, index) => {
-            deputiesHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-deputy">⭐ Зам</span></li>`;
-        });
-
-        let membersHtml = '';
-        membersData.members.forEach((name, index) => {
-            membersHtml += `<li><span class="rank">${index + 1}.</span> ${escapeHtml(name)} <span class="badge-member">Участник</span></li>`;
-        });
-
-        container.innerHTML = `
-            <div class="members-section">
-                <h3><span class="crown">👑</span> Лидеры</h3>
-                <ul class="members-list">${leadersHtml}</ul>
-            </div>
-            <div class="members-section">
-                <h3>⭐ Замы</h3>
-                <ul class="members-list">${deputiesHtml}</ul>
-            </div>
-            <div class="members-section">
-                <h3>👥 Участники</h3>
-                <ul class="members-list">${membersHtml}</ul>
-                <div class="members-stats">
-                    Всего участников: <span>${membersData.leaders.length + membersData.deputies.length + membersData.members.length}</span>
-                    (Лидеров: <span>${membersData.leaders.length}</span>, Замов: <span>${membersData.deputies.length}</span>, Участников: <span>${membersData.members.length}</span>)
-                </div>
-            </div>
-        `;
-    }
-
     // ============ СИСТЕМА РЕГИСТРАЦИИ ============
     const registerModal = document.getElementById('registerModal');
     const registerNick = document.getElementById('registerNick');
@@ -1311,6 +1560,8 @@
         document.getElementById('nickname').value = currentUser;
         document.getElementById('returnNickname').value = currentUser;
         updateFilterInfo();
+        // Обновляем таблицу участников при показе интерфейса
+        renderMembers();
     }
 
     function showRegisterModal() {
@@ -1329,6 +1580,8 @@
         localStorage.setItem('devillecar_isAdmin', 'false');
         showUserInterface();
         loadAllData(true);
+        loadMembersFromStorage();
+        renderMembers();
     }
 
     function loginAsAdmin() {
@@ -1341,6 +1594,8 @@
             showUserInterface();
             alert('✅ Вы вошли как администратор.');
             loadAllData(true);
+            loadMembersFromStorage();
+            renderMembers();
         } else if (password !== null) {
             registerError.textContent = 'Неверный пароль администратора';
         }
@@ -1365,6 +1620,8 @@
             refreshBtn.innerHTML = '🔄 ...';
             refreshBtn.disabled = true;
             await loadAllData(true);
+            loadMembersFromStorage();
+            renderMembers();
             refreshBtn.innerHTML = '🔄 Обновить';
             refreshBtn.disabled = false;
         };
@@ -1391,6 +1648,10 @@
                 const tabId = this.dataset.tab;
                 if (contents[tabId]) {
                     contents[tabId].classList.add('active');
+                    if (tabId === 'members') {
+                        loadMembersFromStorage();
+                        renderMembers();
+                    }
                 }
             });
         });
@@ -1405,9 +1666,11 @@
             isAdmin = savedAdmin === 'true';
             showUserInterface();
             loadAllData(true);
+            loadMembersFromStorage();
             renderMembers();
         } else {
             showRegisterModal();
+            loadMembersFromStorage();
             renderMembers();
         }
     }
@@ -1506,7 +1769,15 @@
     closeAppsSpan.onclick = closeApplicationsModal;
     viewReturnsBtn.addEventListener('click', openReturnsModal);
     closeReturnsSpan.onclick = closeReturnsModal;
-    window.onclick = function(event) { if(event.target == modalAnketa) closeAnketaModal(); if(event.target == returnModal) closeReturnModal(); if(event.target == modalApps) closeApplicationsModal(); if(event.target == modalReturns) closeReturnsModal(); };
+    window.onclick = function(event) { 
+        if(event.target == modalAnketa) closeAnketaModal(); 
+        if(event.target == returnModal) closeReturnModal();
+        if(event.target == modalApps) closeApplicationsModal(); 
+        if(event.target == modalReturns) closeReturnsModal();
+        if(event.target == document.getElementById('editMemberModal')) {
+            document.getElementById('editMemberModal').style.display = 'none';
+        }
+    };
 
     document.addEventListener('click', (e) => {
         if(e.target.classList.contains('take-btn')) openAnketaModal(e.target.dataset.carName, e.target.dataset.carPlate);
@@ -1515,6 +1786,7 @@
 
     addRefreshButton();
     setupTabs();
+    loadMembersFromStorage();
     renderMembers();
     setInterval(() => { if (currentUser) loadAllData(false); }, 30000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) loadAllData(false); });
