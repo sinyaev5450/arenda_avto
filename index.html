@@ -558,6 +558,121 @@
             font-weight: bold;
         }
 
+        /* ============ СТИЛИ ДЛЯ СТАТУСОВ КАРТОЧЕК ============ */
+        .car-card.booked {
+            opacity: 0.85;
+            border-color: #e67e22;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+        }
+        .car-card.booked:hover {
+            transform: translateY(-3px);
+            border-color: #e67e22;
+        }
+        .car-card.booked .take-btn {
+            background: #555;
+            cursor: not-allowed;
+        }
+        .car-card.booked .take-btn:hover {
+            background: #555;
+            transform: none;
+        }
+
+        .car-card.available {
+            border-color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+        }
+        .car-card.available:hover {
+            border-color: #27ae60;
+        }
+
+        .car-card.pending {
+            opacity: 0.85;
+            border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
+        }
+        .car-card.pending:hover {
+            transform: translateY(-3px);
+            border-color: #f1c40f;
+        }
+        .car-card.pending .take-btn {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .status-free {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+        .status-free-badge {
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .status-booked {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(230, 126, 34, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+        .status-pending {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(241, 196, 15, 0.9);
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .btn-approve-return {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .btn-approve-return:hover {
+            background: #27ae60;
+        }
+        .btn-reject-return {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .btn-reject-return:hover {
+            background: #d35400;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -755,94 +870,6 @@
                 font-size: 0.7rem;
                 padding: 10px;
             }
-        }
-
-        .car-card.booked {
-            opacity: 0.85;
-            border-color: #e67e22;
-            box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
-        }
-        .car-card.booked:hover {
-            transform: translateY(-3px);
-            border-color: #e67e22;
-        }
-        .car-card.booked .take-btn {
-            background: #555;
-            cursor: not-allowed;
-        }
-        .car-card.booked .take-btn:hover {
-            background: #555;
-            transform: none;
-        }
-
-        .car-card.available {
-            border-color: #2ecc71;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
-        }
-        .car-card.available:hover {
-            border-color: #27ae60;
-        }
-
-        .btn-approve-return {
-            background: #2ecc71;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        .btn-approve-return:hover {
-            background: #27ae60;
-        }
-        .btn-reject-return {
-            background: #e67e22;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        .btn-reject-return:hover {
-            background: #d35400;
-        }
-
-        .status-free {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(46, 204, 113, 0.9);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 10;
-        }
-        .status-free-badge {
-            display: inline-block;
-            background: #2ecc71;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-        .status-booked {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(230, 126, 34, 0.9);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 10;
         }
     </style>
     <link rel="icon" type="image/png" href="images/logo.png">
@@ -1286,105 +1313,102 @@
         return addMember(newName, newRole, warnings);
     }
 
-   // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
-function renderMembers() {
-    const tbody = document.getElementById('membersTableBody');
-    const stats = document.getElementById('membersStats');
-    const controls = document.getElementById('membersControls');
-    const actionsHeader = document.getElementById('actionsHeader');
-    
-    // Панель управления и кнопки действий - только для админа
-    controls.style.display = isAdmin ? 'flex' : 'none';
-    actionsHeader.style.display = isAdmin ? 'table-cell' : 'none';
-    
-    const all = getAllMembers();
-    
-    if (!all.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
-        stats.innerHTML = 'Всего участников: <span>0</span>';
-        return;
-    }
-    
-    let html = '';
-    all.forEach((member, index) => {
-        const roleLabels = {
-            leader: '<span class="role-badge leader">👑 Лидер</span>',
-            deputy: '<span class="role-badge deputy">⭐ Зам</span>',
-            admin: '<span class="role-badge admin">🛡️ Админ</span>',
-            member: '<span class="role-badge member">Участник</span>'
-        };
+    // ==================== ОТРИСОВКА УЧАСТНИКОВ (ТАБЛИЦА) ====================
+    function renderMembers() {
+        const tbody = document.getElementById('membersTableBody');
+        const stats = document.getElementById('membersStats');
+        const controls = document.getElementById('membersControls');
+        const actionsHeader = document.getElementById('actionsHeader');
         
-        const warnings = getWarnings(member.name);
-        let warningClass = 'warning-low';
-        if (warnings >= 6) warningClass = 'warning-high';
-        else if (warnings >= 3) warningClass = 'warning-medium';
+        controls.style.display = isAdmin ? 'flex' : 'none';
+        actionsHeader.style.display = isAdmin ? 'table-cell' : 'none';
         
-        // Кнопки управления выговорами показываем только админу
-        let warningControls = '';
-        if (isAdmin) {
-            warningControls = `
-                <button class="btn-warning" data-name="${escapeHtml(member.name)}" title="+1 выговор">➕</button>
-                <button class="btn-warning-minus" data-name="${escapeHtml(member.name)}" title="-1 выговор" ${warnings <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>➖</button>
-            `;
+        const all = getAllMembers();
+        
+        if (!all.length) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">Нет участников</td></tr>';
+            stats.innerHTML = 'Всего участников: <span>0</span>';
+            return;
         }
         
-        html += `<tr>
-            <td>${index + 1}</td>
-            <td>${escapeHtml(member.name)}</td>
-            <td>${roleLabels[member.role] || roleLabels.member}</td>
-            <td>
-                <span class="warning-count ${warningClass}">${warnings}</span>
-                ${warningControls}
-            </td>
-            <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
-                <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}" data-warnings="${warnings}">✏️</button>
-                <button class="btn-delete-member" data-name="${escapeHtml(member.name)}">🗑</button>
-            </td>
-        </tr>`;
-    });
-    tbody.innerHTML = html;
-    
-    const total = all.length;
-    const totalWarnings = Object.values(membersData.warnings).reduce((a, b) => a + b, 0);
-    stats.innerHTML = `
-        Всего участников: <span>${total}</span>
-        (Лидеров: <span>${membersData.leaders.length}</span>, 
-        Замов: <span>${membersData.deputies.length}</span>, 
-        Админов: <span>${membersData.admins.length}</span>, 
-        Участников: <span>${membersData.members.length}</span>)
-        | Всего выговоров: <span>${totalWarnings}</span>
-    `;
-    
-    // Обработчики для кнопок (только для админа)
-    if (isAdmin) {
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', () => {
-                openEditModal(btn.dataset.name, btn.dataset.role, parseInt(btn.dataset.warnings));
-            });
+        let html = '';
+        all.forEach((member, index) => {
+            const roleLabels = {
+                leader: '<span class="role-badge leader">👑 Лидер</span>',
+                deputy: '<span class="role-badge deputy">⭐ Зам</span>',
+                admin: '<span class="role-badge admin">🛡️ Админ</span>',
+                member: '<span class="role-badge member">Участник</span>'
+            };
+            
+            const warnings = getWarnings(member.name);
+            let warningClass = 'warning-low';
+            if (warnings >= 6) warningClass = 'warning-high';
+            else if (warnings >= 3) warningClass = 'warning-medium';
+            
+            let warningControls = '';
+            if (isAdmin) {
+                warningControls = `
+                    <button class="btn-warning" data-name="${escapeHtml(member.name)}" title="+1 выговор">➕</button>
+                    <button class="btn-warning-minus" data-name="${escapeHtml(member.name)}" title="-1 выговор" ${warnings <= 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>➖</button>
+                `;
+            }
+            
+            html += `<tr>
+                <td>${index + 1}</td>
+                <td>${escapeHtml(member.name)}</td>
+                <td>${roleLabels[member.role] || roleLabels.member}</td>
+                <td>
+                    <span class="warning-count ${warningClass}">${warnings}</span>
+                    ${warningControls}
+                </td>
+                <td id="actionsCell_${index}" style="${isAdmin ? '' : 'display:none;'}">
+                    <button class="btn-edit" data-name="${escapeHtml(member.name)}" data-role="${member.role}" data-warnings="${warnings}">✏️</button>
+                    <button class="btn-delete-member" data-name="${escapeHtml(member.name)}">🗑</button>
+                </td>
+            </tr>`;
         });
-        document.querySelectorAll('.btn-delete-member').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (confirm(`Удалить участника "${btn.dataset.name}"?`)) {
-                    removeMember(btn.dataset.name);
+        tbody.innerHTML = html;
+        
+        const total = all.length;
+        const totalWarnings = Object.values(membersData.warnings).reduce((a, b) => a + b, 0);
+        stats.innerHTML = `
+            Всего участников: <span>${total}</span>
+            (Лидеров: <span>${membersData.leaders.length}</span>, 
+            Замов: <span>${membersData.deputies.length}</span>, 
+            Админов: <span>${membersData.admins.length}</span>, 
+            Участников: <span>${membersData.members.length}</span>)
+            | Всего выговоров: <span>${totalWarnings}</span>
+        `;
+        
+        if (isAdmin) {
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openEditModal(btn.dataset.name, btn.dataset.role, parseInt(btn.dataset.warnings));
+                });
+            });
+            document.querySelectorAll('.btn-delete-member').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (confirm(`Удалить участника "${btn.dataset.name}"?`)) {
+                        removeMember(btn.dataset.name);
+                        renderMembers();
+                    }
+                });
+            });
+            document.querySelectorAll('.btn-warning').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    addWarning(btn.dataset.name);
                     renderMembers();
-                }
+                });
             });
-        });
-        document.querySelectorAll('.btn-warning').forEach(btn => {
-            btn.addEventListener('click', () => {
-                addWarning(btn.dataset.name);
-                renderMembers();
+            document.querySelectorAll('.btn-warning-minus').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.disabled) return;
+                    removeWarning(btn.dataset.name);
+                    renderMembers();
+                });
             });
-        });
-        document.querySelectorAll('.btn-warning-minus').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                removeWarning(btn.dataset.name);
-                renderMembers();
-            });
-        });
+        }
     }
-}
 
     // ==================== РЕДАКТИРОВАНИЕ УЧАСТНИКА ====================
     let editOldName = '';
@@ -1571,14 +1595,80 @@ function renderMembers() {
 
     // ==================== ПРОВЕРКА СТАТУСА БРОНИРОВАНИЯ ====================
     function getBookingInfo(carPlate) {
-        const hasApprovedReturn = returns.some(ret => ret.carNumber === carPlate && ret.status === 'approved');
-        if (hasApprovedReturn) return { isBooked: false };
+        // Проверяем, есть ли ОДОБРЕННЫЙ возврат для этой машины
+        const hasApprovedReturn = returns.some(ret => 
+            ret.carNumber === carPlate && 
+            ret.status === 'approved'
+        );
         
-        const booking = applications.find(app => app.carNumber === carPlate && app.status === 'approved');
-        if (booking) {
-            return { isBooked: true, user: booking.nickname, until: booking.takeTime || 'не указано' };
+        // Если есть одобренный возврат - машина свободна
+        if (hasApprovedReturn) {
+            return { isBooked: false };
         }
+        
+        // Сначала ищем ОДОБРЕННУЮ заявку (активное бронирование)
+        const approvedBooking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'approved'
+        );
+        
+        if (approvedBooking) {
+            return {
+                isBooked: true,
+                user: approvedBooking.nickname,
+                until: approvedBooking.takeTime || 'не указано',
+                status: 'approved'
+            };
+        }
+        
+        // Затем ищем ОЖИДАЮЩУЮ заявку (pending)
+        const pendingBooking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'pending'
+        );
+        
+        if (pendingBooking) {
+            return {
+                isBooked: true,
+                user: pendingBooking.nickname,
+                until: pendingBooking.takeTime || 'не указано',
+                status: 'pending'
+            };
+        }
+        
         return { isBooked: false };
+    }
+
+    // Функция для проверки, забронирована ли машина
+    function isCarBooked(carPlate) {
+        // Проверяем, есть ли одобренный возврат
+        const hasApprovedReturn = returns.some(ret => 
+            ret.carNumber === carPlate && 
+            ret.status === 'approved'
+        );
+        
+        // Если есть одобренный возврат - машина свободна
+        if (hasApprovedReturn) {
+            return false;
+        }
+        
+        // Проверяем наличие активной одобренной заявки на взятие
+        const activeBooking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'approved'
+        );
+        
+        if (activeBooking) {
+            return true;
+        }
+        
+        // Проверяем наличие ожидающей заявки
+        const pendingBooking = applications.find(app => 
+            app.carNumber === carPlate && 
+            app.status === 'pending'
+        );
+        
+        return !!pendingBooking;
     }
 
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
@@ -1782,13 +1872,20 @@ function renderMembers() {
     function renderCars() {
         const grid = document.getElementById('carsGrid');
         grid.innerHTML = '';
+        
         cars.forEach(car => {
             const bookingInfo = getBookingInfo(car.plate);
             const isBooked = bookingInfo.isBooked;
+            const bookingStatus = bookingInfo.status;
+            
             const card = document.createElement('div');
             card.className = 'car-card';
             if (isBooked) {
-                card.classList.add('booked');
+                if (bookingStatus === 'pending') {
+                    card.classList.add('pending');
+                } else {
+                    card.classList.add('booked');
+                }
             } else {
                 card.classList.add('available');
             }
@@ -1797,25 +1894,57 @@ function renderMembers() {
             const imagePath = `images/${imageFileName}.jpg`;
             let imageHtml = `<img src="${imagePath}" alt="${car.name}" loading="lazy" onerror="this.parentElement.innerHTML = '<div style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(145deg, #2a3a4a, #1a2a3a);\'><span style=\'font-size: 4rem;\'>🚗</span></div>'">`;
             
+            // Статус на карточке
             let statusHtml = '';
             if (isBooked) {
-                statusHtml = `<div class="status-booked">🔒 ЗАНЯТА</div>`;
+                if (bookingStatus === 'pending') {
+                    statusHtml = `
+                        <div class="status-pending">
+                            ⏳ ОЖИДАЕТ ОДОБРЕНИЯ
+                        </div>
+                    `;
+                } else {
+                    statusHtml = `
+                        <div class="status-booked">
+                            🔒 ЗАНЯТА
+                        </div>
+                    `;
+                }
             } else {
-                statusHtml = `<div class="status-free">✅ СВОБОДНА</div>`;
+                statusHtml = `
+                    <div class="status-free">
+                        ✅ СВОБОДНА
+                    </div>
+                `;
             }
             
+            // Блок информации о бронировании
             let bookingInfoHtml = '';
             if (currentUser && isBooked) {
-                bookingInfoHtml = `<div style="margin-top: 8px; padding: 6px 10px; background: rgba(230, 126, 34, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #e67e22;"><span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span></div>`;
+                let statusText = bookingStatus === 'pending' ? '⏳ Ожидает одобрения' : '✅ Активно';
+                let statusColor = bookingStatus === 'pending' ? '#f1c40f' : '#e67e22';
+                bookingInfoHtml = `
+                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(${bookingStatus === 'pending' ? '241, 196, 15' : '230, 126, 34'}, 0.2); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid ${statusColor};">
+                        <span style="color: #ffaa66;">👤 Занято: ${escapeHtml(bookingInfo.user)}</span>
+                        <span style="color: ${statusColor}; margin-left: 8px;">${statusText}</span>
+                    </div>
+                `;
             } else if (currentUser && !isBooked) {
-                bookingInfoHtml = `<div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.15); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;"><span style="color: #6fcf97;">✅ Доступна для заказа</span></div>`;
+                bookingInfoHtml = `
+                    <div style="margin-top: 8px; padding: 6px 10px; background: rgba(46, 204, 113, 0.15); border-radius: 12px; font-size: 0.7rem; border-left: 3px solid #2ecc71;">
+                        <span style="color: #6fcf97;">✅ Доступна для заказа</span>
+                    </div>
+                `;
             }
             
             const isButtonDisabled = isBooked;
             card.innerHTML = `
                 <div class="car-image" style="position: relative;">${statusHtml}${imageHtml}</div>
                 <div class="car-info">
-                    <div class="car-name">${escapeHtml(car.name)}${!isBooked ? '<span class="status-free-badge">📋 ДОСТУПНА</span>' : ''}</div>
+                    <div class="car-name">
+                        ${escapeHtml(car.name)}
+                        ${!isBooked ? '<span class="status-free-badge">📋 ДОСТУПНА</span>' : ''}
+                    </div>
                     <div class="car-desc">${escapeHtml(car.desc.substring(0, 80))}${car.desc.length > 80 ? '…' : ''}</div>
                     <div class="car-spec">${escapeHtml(car.engine || '')} • ${car.hp ? car.hp + ' л.с.' : '—'}</div>
                     <div class="car-plate">🚛 Госномер: ${escapeHtml(car.plate)}</div>
