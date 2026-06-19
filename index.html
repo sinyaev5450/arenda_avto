@@ -1639,38 +1639,6 @@
         return { isBooked: false };
     }
 
-    // Функция для проверки, забронирована ли машина
-    function isCarBooked(carPlate) {
-        // Проверяем, есть ли одобренный возврат
-        const hasApprovedReturn = returns.some(ret => 
-            ret.carNumber === carPlate && 
-            ret.status === 'approved'
-        );
-        
-        // Если есть одобренный возврат - машина свободна
-        if (hasApprovedReturn) {
-            return false;
-        }
-        
-        // Проверяем наличие активной одобренной заявки на взятие
-        const activeBooking = applications.find(app => 
-            app.carNumber === carPlate && 
-            app.status === 'approved'
-        );
-        
-        if (activeBooking) {
-            return true;
-        }
-        
-        // Проверяем наличие ожидающей заявки
-        const pendingBooking = applications.find(app => 
-            app.carNumber === carPlate && 
-            app.status === 'pending'
-        );
-        
-        return !!pendingBooking;
-    }
-
     // ----- ОСНОВНЫЕ ФУНКЦИИ -----
     async function loadAllData(showStatus = true) {
         const statusDiv = document.getElementById('syncStatus');
@@ -1680,6 +1648,8 @@
         applications = loadedApplications;
         returns = loadedReturns;
         console.log(`✅ Загружено: ${applications.length} заявок, ${returns.length} возвратов`);
+        
+        // Принудительное обновление карточек
         renderCars();
         
         if (showStatus) {
@@ -1706,23 +1676,61 @@
         filteredApplications.forEach(app => {
             html += `<tr><td>${escapeHtml(app.nickname)}</td><td>${escapeHtml(app.carBrand)}</td><td>${escapeHtml(app.carNumber)}</td><td>${escapeHtml(app.takeTime)}</td><td>${escapeHtml(app.reason)}</td><td>${escapeHtml(app.createdAt)}</td><td>`;
             if (app.status === 'pending') {
-                if (isAdmin) html += `<div class="status-buttons"><button class="btn-approve" data-id="${app.id}">✔ Одобрить</button><button class="btn-reject" data-id="${app.id}">✖ Отказать</button></div>`;
-                else html += `<span class="status-text-pending">⏳ Ожидает</span>`;
-            } else if (app.status === 'approved') html += `<span class="status-text-approved">✅ Одобрено</span>`;
-            else if (app.status === 'rejected') html += `<span class="status-text-rejected">❌ Отказано</span>`;
-            else if (app.status === 'returned') html += `<span class="status-text-approved">🔄 Возвращено</span>`;
+                if (isAdmin) {
+                    html += `<div class="status-buttons">
+                                <button class="btn-approve" data-id="${app.id}">✔ Одобрить</button>
+                                <button class="btn-reject" data-id="${app.id}">✖ Отказать</button>
+                            </div>`;
+                } else {
+                    html += `<span class="status-text-pending">⏳ Ожидает</span>`;
+                }
+            } else if (app.status === 'approved') {
+                html += `<span class="status-text-approved">✅ Одобрено</span>`;
+            } else if (app.status === 'rejected') {
+                html += `<span class="status-text-rejected">❌ Отказано</span>`;
+            } else if (app.status === 'returned') {
+                html += `<span class="status-text-approved">🔄 Возвращено</span>`;
+            }
             html += `</td><td class="action-buttons">`;
-            if (isAdmin) html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
-            else html += `—`;
+            if (isAdmin) {
+                html += `<button class="btn-delete" data-id="${app.id}">🗑 Удалить</button>`;
+            } else {
+                html += `—`;
+            }
             html += `</td></tr>`;
         });
         html += `</tbody></table>`;
         container.innerHTML = html;
         
         if (isAdmin) {
-            document.querySelectorAll('.btn-approve').forEach(btn => btn.onclick = () => updateApplicationStatus(btn.dataset.id, 'approved'));
-            document.querySelectorAll('.btn-reject').forEach(btn => btn.onclick = () => updateApplicationStatus(btn.dataset.id, 'rejected'));
-            document.querySelectorAll('.btn-delete').forEach(btn => btn.onclick = () => deleteApplication(btn.dataset.id));
+            document.querySelectorAll('.btn-approve').forEach(btn => {
+                btn.onclick = async function() {
+                    const id = this.dataset.id;
+                    await updateStatusInCloud(id, 'approved');
+                    await loadAllData(true);
+                    if (window.currentApplicationsModalOpen) renderApplicationsList();
+                    renderCars();
+                };
+            });
+            document.querySelectorAll('.btn-reject').forEach(btn => {
+                btn.onclick = async function() {
+                    const id = this.dataset.id;
+                    await updateStatusInCloud(id, 'rejected');
+                    await loadAllData(true);
+                    if (window.currentApplicationsModalOpen) renderApplicationsList();
+                    renderCars();
+                };
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.onclick = async function() {
+                    if (confirm('Удалить заявку?')) {
+                        await deleteFromCloud(this.dataset.id);
+                        await loadAllData(true);
+                        if (window.currentApplicationsModalOpen) renderApplicationsList();
+                        renderCars();
+                    }
+                };
+            });
         }
     }
 
@@ -1762,23 +1770,64 @@
         container.innerHTML = html;
         
         if (isAdmin) {
-            document.querySelectorAll('.btn-approve-return').forEach(btn => btn.onclick = () => approveReturn(btn.dataset.id, btn.dataset.car));
-            document.querySelectorAll('.btn-reject-return').forEach(btn => btn.onclick = () => rejectReturn(btn.dataset.id));
-            document.querySelectorAll('.btn-delete-return').forEach(btn => btn.onclick = () => deleteReturnApplication(btn.dataset.id));
+            document.querySelectorAll('.btn-approve-return').forEach(btn => {
+                btn.onclick = async function() {
+                    const id = this.dataset.id;
+                    const carNumber = this.dataset.car;
+                    if (confirm('✅ Одобрить возврат? Машина снова станет доступной.')) {
+                        await updateReturnStatusInCloud(id, 'approved');
+                        // Находим активную заявку на взятие этой машины
+                        const activeTakeApplication = applications.find(app => 
+                            app.carNumber === carNumber && 
+                            app.status === 'approved'
+                        );
+                        if (activeTakeApplication) {
+                            await updateStatusInCloud(activeTakeApplication.id, 'returned');
+                        }
+                        await loadAllData(true);
+                        if (window.currentReturnsModalOpen) renderReturnsList();
+                        renderCars();
+                        alert('✅ Возврат одобрен! Машина снова доступна.');
+                    }
+                };
+            });
+            document.querySelectorAll('.btn-reject-return').forEach(btn => {
+                btn.onclick = async function() {
+                    if (confirm('❌ Отказать в возврате?')) {
+                        await updateReturnStatusInCloud(this.dataset.id, 'rejected');
+                        await loadAllData(true);
+                        if (window.currentReturnsModalOpen) renderReturnsList();
+                        renderCars();
+                        alert('❌ В возврате отказано.');
+                    }
+                };
+            });
+            document.querySelectorAll('.btn-delete-return').forEach(btn => {
+                btn.onclick = async function() {
+                    if (confirm('🗑 Удалить заявку на возврат?')) {
+                        await deleteReturnFromCloud(this.dataset.id);
+                        await loadAllData(true);
+                        if (window.currentReturnsModalOpen) renderReturnsList();
+                        renderCars();
+                    }
+                };
+            });
         }
     }
 
     async function updateApplicationStatus(id, newStatus) {
         await updateStatusInCloud(id, newStatus);
-        await loadAllData(false);
+        await loadAllData(true);
         if (window.currentApplicationsModalOpen) renderApplicationsList();
+        renderCars();
     }
 
     async function deleteApplication(id) {
         if (confirm('Удалить заявку на взятие?')) {
             await deleteFromCloud(id);
-            await loadAllData(false);
+            await loadAllData(true);
             if (window.currentApplicationsModalOpen) renderApplicationsList();
+            renderCars();
         }
     }
 
@@ -1805,8 +1854,9 @@
     async function deleteReturnApplication(id) {
         if (confirm('🗑 Удалить заявку на возврат?')) {
             await deleteReturnFromCloud(id);
-            await loadAllData(false);
+            await loadAllData(true);
             if (window.currentReturnsModalOpen) renderReturnsList();
+            renderCars();
         }
     }
 
