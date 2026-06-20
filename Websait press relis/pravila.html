@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Правила семьи | MTA Province</title>
+
+    <!-- 
+        ВНИМАНИЕ: Все стили ниже ты можешь скопировать 
+        и перенести в свой файл css/main.css 
+    -->
+	<style>
+        /* =========================================
+           ПАТТЕРНЫ И БАЗОВЫЕ НАСТРОЙКИ CSS
+           ========================================= */
+        :root {
+            /* Цветовая палитра: благородные серые оттенки */
+            --bg-main: #1c1d21;        /* Основной фон (темно-серый) */
+            --bg-surface: #282a30;     /* Фон карточек и блоков */
+            --bg-surface-hover: #32353c; /* Фон карточек при наведении */
+            
+            --text-primary: #ffffff;   /* Основной текст */
+            --text-secondary: #a0a5b1; /* Второстепенный текст */
+            
+            --accent-color: #d13030;   /* Акцентный цвет (красный для строгости) */
+            --border-color: #3b3e46;   /* Цвет границ */
+
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           НАВИГАЦИЯ (ИЗ ТВОЕГО ПРИМЕРА + УЛУЧШЕНИЯ)
+           ========================================= */
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-header {
+            width: 100%;
+            background-color: rgba(28, 29, 33, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Заглушка для логотипа, чтобы красиво смотрелось без картинки */
+        .logo {
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .navbar ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: var(--transition);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .navbar ul li a:hover,
+        .navbar ul li a.active {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* =========================================
+           ПАТТЕРНЫ КОНТЕНТА: ПРАВИЛА
+           ========================================= */
+        .content {
+            max-width: 1000px;
+            width: 100%;
+            padding: 40px 20px;
+        }
+
+        /* Заголовок страницы */
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+        }
+
+        /* Сетка для блоков с правилами */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        /* Паттерн: Карточка правила */
+        .rule-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        .rule-card:hover {
+            border-color: #525660;
+            background-color: var(--bg-surface-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Заголовок внутри карточки с номером */
+        .rule-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .rule-icon {
+            background-color: rgba(209, 48, 48, 0.1);
+            color: var(--accent-color);
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .rule-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* Список внутри карточки */
+        .rule-list {
+            list-style: none;
+        }
+
+        .rule-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .rule-list li::before {
+            content: "•";
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -4px;
+        }
+
+        .rule-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Наказания за нарушения */
+        .punishment {
+            color: var(--accent-color);
+            font-size: 0.9em;
+            margin-left: 5px;
+            font-weight: 500;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .navbar ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .page-title {
+                font-size: 2rem;
+            }
+            .rule-card {
+                padding: 20px;
+            }
+        }
+	</style>
+</head>
+<body>
+
+	<div class="wrapper">
+		
+        <!-- НАВИГАЦИОННЫЙ БЛОК -->
+        <header class="main-header">
+            <div class="navbar">
+                <!-- Логотип (с заглушкой-текстом, если картинка не загрузится) -->
+                <a href="deville_family.html" class="logo">
+                    <img src="img/logo.png" alt="FAM" style="max-width: 100%; height: auto; display: none;" onload="this.style.display='block'; this.parentNode.style.backgroundColor='transparent'; this.parentNode.innerText='';">
+                    FAM
+                </a>
+                
+                <ul>
+                    <li><a href="deville_family.html">Домой</a></li>
+                    <li><a href="pravila.html" class="active">Правила семьи</a></li>
+                    <li><a href="arenda_auto.html">Аренда авто</a></li>
+                    <li><a href="sostav.html">Состав семьи</a></li>
+                </ul>
+            </div>
+        </header>
+
+        <!-- ОСНОВНОЙ КОНТЕНТ: ПРАВИЛА -->
+		<main class="content">
+            
+            <h1 class="page-title">Свод правил семьи</h1>
+            <p class="page-subtitle">Незнание правил не освобождает от ответственности. Обязательно к прочтению.</p>
+
+            <div class="rules-grid">
+
+                <!-- БЛОК 1: Поведение в семье -->
+                <div class="rule-card">
+                    <div class="rule-header">
+                        <div class="rule-icon">1</div>
+                        <h2 class="rule-title">Поведение в семье</h2>
+                    </div>
+                    <ul class="rule-list">
+                        <li><strong>1.1</strong> Запрещено оскорблять участников семьи на сервере и в каких либо беседах <span class="punishment">[Наказание: предупреждение; повторное - 3 выговора]</span></li>
+                        <li><strong>1.2</strong> Запрещено выводить на конфликты участников семьи на сервере и в каких либо беседах <span class="punishment">[Наказание: предупреждение; повторное -  3 выговора]</span></li>
+                        <li><strong>1.3</strong> Запрещено неадекватно себя вести на мероприятиях (драться и так далее) <span class="punishment">[Наказание: 3 выговора; повторное - 6 выговоров]</span></li>
+                        <li><strong>1.4</strong> Запрещено затрагивать родственников и нацию участников семьи <span class="punishment">[Наказание: исключение из семьи и занесение в черный список]</span></li>
+                        <li><strong>1.5</strong> Игнорировать просьбы СС и не предупреждать об отсутствии <span class="punishment">[Наказание: 3 выговора; повторное - 6 выговоров]</span></li>
+                    </ul>
+                </div>
+
+                <!-- БЛОК 2: Правила семьи -->
+                <div class="rule-card">
+                    <div class="rule-header">
+                        <div class="rule-icon">2</div>
+                        <h2 class="rule-title">Правила семьи</h2>
+                    </div>
+                    <ul class="rule-list">
+                        <li><strong>2.1</strong> Знать внутренние правила сервера (DM, DB, MG, TK, SK, PG, RK, BH, WH, ЕПП, ЕПТ, ЕПР) <span class="punishment">[Наказание: предупреждение; повторное - 2 выговора]</span></li>
+                        <li><strong>2.2</strong> Знать RP-отыгровки ( /me; /do; /s; /b; /w; /try; /todo) <span class="punishment">[Наказание: предупреждение; повторное - 2 выговора]</span></li>
+                        <li><strong>2.3</strong> Запрещено намеренно оскорблять/таранить/избивать каких-либо игроков <span class="punishment">[Наказание: 2 выговора; повторное - 4 выговора]</span></li>
+                        <li><strong>2.4</strong> Запрещено провоцировать на конфликты каких-либо игроков <span class="punishment">[Наказание: 2 выговора; повторное - 4 выговора]</span></li>
+                        <li><strong>2.5</strong> Запрещено провоцировать фракции: ГУВД, ГИБДД, МО, ОПГ, МЗ <span class="punishment">[Наказание: 2 выговора; повторное - 4 выговора]</span></li>
+                        <li><strong>2.6</strong> Запрещено вмешиваться в RP-процесс (увозить игрока с места оформления сотрудниками полиции  не из нашей семьи) <span class="punishment">[Наказание: предупреждение; повторное - 2 выговора]</span></li>
+                        <li><strong>2.7</strong> Запрещено играть в азартные игры (монетка) <span class="punishment">[Наказание: 3 выговора; повторное - 5 выговоров (а так же запрещается выдача кредитов. Срок запрета на кредит назначает лидер.)]</span></li>
+                        <li><strong>2.8</strong> Запрещено затрагивать нацию, родственников <span class="punishment">[Наказание: исключение из семьи и занесение в черный список]</span></li>
+                        <li><strong>2.9</strong> Запрещено сливать внутреннюю информацию семьи <span class="punishment">[Наказание: исключение из семьи и занесение в черный список]</span></li>
+                        <li><strong>2.10</strong> Запрещено состоять с твинков в других семьях <span class="punishment">[Наказание: исключение из семьи и занесение в черный список]</span></li>
+                    </ul>
+                </div>
+
+                <!-- БЛОК 3: Организация -->
+                <div class="rule-card">
+                    <div class="rule-header">
+                        <div class="rule-icon">3</div>
+                        <h2 class="rule-title">Организация</h2>
+                    </div>
+                    <ul class="rule-list">
+                        <li><strong>3.1</strong> Каждый участник семьи должен находиться в организации! <span class="punishment">[Наказание: игрок не допускается в семью]</span></li>
+                        <li><strong>3.2</strong> Запрещено самовольно без объяснений покидать организацию <span class="punishment">[Наказание: автоматическое исключение из семьи]</span></li>
+                        <li><strong>3.3 Роли:</strong>
+                            <ul class="rule-list" style="margin-top: 10px; margin-left: 20px;">
+                                <li><strong>А) Лидер:</strong> следит за порядком семьи, рассматривает жалобы на форуме, принимает новых участников, урегулирует конфликты, выдает наказания, организует мероприятия, рассматривает заявки на взятие кредита, принимает отработку предов.</li>
+                                <li><strong>Б) Заместитель:</strong> докладывает о нарушениях, заполняет список об активности, помогает в организации мероприятий, принимает отработку предов.</li>
+                                <li><strong>В) Основной состав:</strong> участники семьи, которые должны знать и соблюдать правила семьи, докладывать о конфликтных ситуациях, вести запись игрового процесса, приходить на мероприятия.</li>
+                                <li><strong>Г) Следящие за Транспортом:</strong> участники которые проверяют транспорт, докладывают о том кто не починил/не заправил, так же должны вести видеофиксацию, приходить на различные мероприятия.</li>
+                                <li><strong>Д) Повар:</strong> участник который готовит еду в офисе, так же должны вести видеофиксацию, приходить на различные мероприятия.</li>
+                                <li><strong>Е) Неактивные:</strong> участники, которые пропали без предупреждения и от них ждут ответа</li>
+                                <li><strong>Ё) На вылет:</strong> участники, которые не выходят долгое время из отпуска или пропали и ответа от них нету</li>
+                                <li><strong>Ж) Отпускные:</strong> участники которые написали заявление на отпуск и отдыхают от игры или занимаются своими делами</li>
+                                <li><strong>З) Тестовые:</strong> участники которые на пробном периоде в семье, после сдачи правил они повышаются до “основного состава”</li>
+                            </ul>
+                        </li>
+                        <li><strong>3.4 Транспорт:</strong>
+                            <ul class="rule-list" style="margin-top: 10px; margin-left: 20px;">
+                                <li><strong>1)</strong> При взятии Т/С пишется отчет (см. пример в беседе “Транспорт/Объявления”) <span class="punishment">[Наказание: предупреждение; повторное - 2 выговора и понижение на роль ниже]</span></li>
+                                <li><strong>2)</strong> При возврате Т/С участник чинит, заправляет и ставит на место <span class="punishment">[Наказание: предупреждение; повторное - 2 выговора и понижение на роль ниже]</span></li>
+                                <li><strong>3)</strong> Когда берете Т/С ставить аварийный знак <span class="punishment">[Наказание: предупреждение]</span></li>
+                                <li><strong>4)</strong> Транспорт организации не может находиться во владении участника семьи более двух суток. Исключение транспорт из офиса. <span class="punishment">[Наказание: предупреждение; повторное - 2 выговора]</span></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- БЛОК 4: Семейный Бюджет -->
+                <div class="rule-card">
+                    <div class="rule-header">
+                        <div class="rule-icon">4</div>
+                        <h2 class="rule-title">Семейный Бюджет</h2>
+                    </div>
+                    <ul class="rule-list">
+                        <li><strong>4.1</strong> Каждую неделю, каждый участник семьи переводит в организацию от 50к до 100к <span class="punishment">[Наказание: предупреждение; повторное - приз на мероприятиях в случае выигрыша уменьшается на 50% а так же отказ в выдаче кредитов]</span></li>
+                        <li><strong>4.2</strong> Участник семьи может взять кредит, но:
+                            <ul class="rule-list" style="margin-top: 10px; margin-left: 20px;">
+                                <li><strong>а)</strong> Если Вас замечали в участии азартных игр и Вам выдавались преды за это - кредит не выдается</li>
+                                <li><strong>б)</strong> Если Вы редко играете и по большей части числитесь в списке “неактивных” - кредит не выдается</li>
+                                <li><strong>в)</strong> Если Вы часто попадаете в бан из-за нарушения ВПС - выдается на малые суммы (от 50к до 300к)</li>
+                                <li><strong>г)</strong> Если участник семьи не вносит каждую неделю положенную сумму - кредит не выдается</li>
+                            </ul>
+                            
+                            <!-- Блок с примером договора -->
+                            <div style="margin-top: 15px; padding: 20px; background-color: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.9em; color: var(--text-secondary); border-left: 3px solid var(--accent-color);">
+                                <strong style="color: var(--text-primary);">Пример кредитного договора:</strong><br><br>
+                                Я Aliya Deville ознакомлена с правилами и условиями пользования банка семьи.<br>
+                                Подпись: LiDV<br><br>
+                                Я Aliya Deville в настоящий момент 10.10.25 прошу выдать мне 100.000 провинциальных рублей на покупку машины “Москвич-2140”, и обязуюсь вернуть данную сумму 100.000 провинциальных рублей в период с 10.10.25 по 20.10.25, а также в случае задержки выплаты кредита готов выплатить штрафные санкции в “nn” количестве от общей суммы кредита.<br>
+                                Дата: 10.10.25 <br>
+                                Подпись: LilDV
+                            </div>
+                        </li>
+                        <li style="margin-top: 20px;"><strong>4.3 Штрафные санкции:</strong>
+                            <ul class="rule-list" style="margin-top: 10px; margin-left: 20px;">
+                                <li><strong>а)</strong> Если Вас забанили по жалобе на форуме и идет просрочка возвращения кредита:
+                                    <ul class="rule-list" style="margin-top: 5px; margin-left: 20px;">
+                                        <li><strong>1)</strong> 1-10 дней - 10%</li>
+                                        <li><strong>2)</strong> 1-20 дней - 20%</li>
+                                        <li><strong>3)</strong> 1-30 дней - 30%</li>
+                                    </ul>
+                                </li>
+                                <li><strong>б)</strong> Если участник намеренно не работает и не фармит и идет просрочка кредита штрафные санкции будут в размере 40%</li>
+                                <li><strong>в)</strong> Если участник взял кредит и ушел в АФК без предупреждения СС и идет просрочка кредита штрафные санкции будут в размере 70%</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+		</main>
+
+	</div>
+
+</body>
+</html>

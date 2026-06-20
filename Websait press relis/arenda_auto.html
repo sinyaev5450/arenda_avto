@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аренда авто | MTA Province</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --accent: #d13030; }
+        body { background-color: #1c1d21; color: white; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        /* Стили для скроллбара */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1c1d21; }
+        ::-webkit-scrollbar-thumb { background: #3b3e46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #525660; }
+
+        /* Лоадер */
+        .loader {
+            border: 3px solid #3b3e46;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- Уведомления (Всплывающие окна) -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- НАВИГАЦИОННЫЙ БЛОК -->
+    <div class="max-w-6xl mx-auto mb-8">
+        <header class="w-full bg-[#1c1d21]/95 backdrop-blur border-b border-[#3b3e46] sticky top-0 z-50 mb-8 rounded-lg shadow-lg">
+            <div class="px-5 py-4 flex justify-between items-center">
+                <a href="deville_family.html" class="flex items-center justify-center w-10 h-10 rounded-full bg-[#3b3e46] text-white font-bold no-underline">FAM</a>
+                <ul class="flex gap-6 list-none m-0 p-0 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                    <li><a href="deville_family.html" class="text-[#a0a5b1] hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition no-underline">Домой</a></li>
+                    <li><a href="pravila.html" class="text-[#a0a5b1] hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition no-underline">Правила семьи</a></li>
+                    <li><a href="arenda_auto.html" class="text-white bg-white/5 px-3 py-2 rounded-md transition no-underline font-medium">Аренда авто</a></li>
+                    <li><a href="sostav.html" class="text-[#a0a5b1] hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition no-underline">Состав семьи</a></li>
+                </ul>
+            </div>
+        </header>
+    </div>
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold flex items-center gap-3">
+                    Автопарк семьи
+                    <span id="loadingIndicator" class="hidden"><span class="loader"></span></span>
+                </h1>
+                <p class="text-gray-400 mt-1">Оставляйте заявку на транспорт. Максимум 2 авто на человека.</p>
+            </div>
+            
+            <!-- Блок Авторизации -->
+            <div id="authContainer" class="bg-[#282a30] p-4 rounded-lg border border-[#3b3e46] flex items-center gap-3 w-full md:w-auto">
+                <!-- Рендерится через JS -->
+            </div>
+        </header>
+
+        <!-- ПАНЕЛЬ АДМИНИСТРАТОРА (Отображается только для роли admin) -->
+        <div id="adminPanel" class="bg-[#282a30] p-6 rounded-lg border border-orange-500/50 mb-8 hidden shadow-lg shadow-orange-500/10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-orange-400">
+                <span>🛡️</span> Заявки на аренду
+            </h2>
+            <div id="requestsList" class="flex flex-col gap-3 mb-8">
+                <!-- Заявки рендерятся здесь -->
+            </div>
+
+            <!-- БЛОК АУДИТА -->
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-blue-400 border-t border-[#3b3e46] pt-6">
+                <span>📋</span> Журнал аудита (Последние 77 действий)
+            </h2>
+            <div class="bg-[#1c1d21] rounded border border-[#3b3e46] overflow-x-auto shadow-inner">
+                <table class="w-full text-left text-sm min-w-[600px] border-collapse">
+                    <thead class="bg-black/40 text-gray-400 border-b border-[#3b3e46]">
+                        <tr>
+                            <th class="p-3 font-medium">Дата и время</th>
+                            <th class="p-3 font-medium">Игрок</th>
+                            <th class="p-3 font-medium">Действие</th>
+                            <th class="p-3 font-medium">Транспорт</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditList" class="divide-y divide-[#3b3e46]">
+                        <!-- Аудит рендерится здесь -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- СЕТКА АВТОМОБИЛЕЙ -->
+        <div id="carsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Карточки рендерятся здесь -->
+        </div>
+
+        <!-- СЧЕТЧИК АВТОМОБИЛЕЙ -->
+        <div class="mt-10 pt-6 border-t border-[#3b3e46] text-center mb-6 flex flex-col items-center">
+            <p class="text-gray-400 text-lg">Всего автомобилей в автопарке: <span id="totalCarsCount" class="text-white font-bold text-2xl">0</span> шт.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // ВСТАВЬ СВОЮ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT НИЖЕ
+        // ==========================================
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCf9FcOsXi-6x6fi5Beu8W3j0psrRui2Ru75Hlk3JQkpcgHEwkmjri50iAVUwAYYk/exec'; 
+
+        // --- БАЗОВЫЕ ДАННЫЕ (Машины по умолчанию - 28 шт) ---
+        const defaultCars = [
+            { id: 1, brand: 'Mercedes-Benz G63 AMG', speed: '240 км/ч', plate: 'В777ОР | 99', fuel: '100 л', image: 'https://images.unsplash.com/photo-1520031441872-265e4ff70366?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 2, brand: 'BMW M5 F90', speed: '310 км/ч', plate: 'А111АА | 77', fuel: '80 л', image: 'https://images.unsplash.com/photo-1555353540-64fd1b01ba0f?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 3, brand: 'Audi RS6 Avant', speed: '305 км/ч', plate: 'О888ОО | 97', fuel: '85 л', image: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 4, brand: 'Toyota Camry 3.5', speed: '230 км/ч', plate: 'М001ММ | 50', fuel: '70 л', image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fd?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 5, brand: 'Porsche 911 Turbo', speed: '330 км/ч', plate: 'Х999ХХ | 77', fuel: '65 л', image: 'https://images.unsplash.com/photo-1503376760367-15ea400f912e?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 6, brand: 'Lada Vesta Sport', speed: '190 км/ч', plate: 'Е123КХ | 77', fuel: '50 л', image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 7, brand: 'Nissan GT-R R35', speed: '315 км/ч', plate: 'Н777РР | 99', fuel: '74 л', image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 8, brand: 'BMW M4 Competition', speed: '290 км/ч', plate: 'М444ВВ | 77', fuel: '59 л', image: 'https://images.unsplash.com/photo-1616422285623-14ff0162a4b6?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 9, brand: 'Mercedes-Benz E63s AMG', speed: '300 км/ч', plate: 'Е666ЕЕ | 99', fuel: '80 л', image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 10, brand: 'Audi R8 V10', speed: '330 км/ч', plate: 'Р888РР | 97', fuel: '83 л', image: 'https://images.unsplash.com/photo-1614026480418-bd11fde45ae6?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 11, brand: 'Toyota Land Cruiser 300', speed: '210 км/ч', plate: 'Т300КК | 50', fuel: '110 л', image: 'https://images.unsplash.com/photo-1595741599364-77e8e5fb3756?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 12, brand: 'Lexus LX 570', speed: '220 км/ч', plate: 'Л570ХХ | 77', fuel: '138 л', image: 'https://images.unsplash.com/photo-1626668893632-6ea02e860bc0?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 13, brand: 'Ford Mustang GT', speed: '250 км/ч', plate: 'Ф500ТТ | 99', fuel: '61 л', image: 'https://images.unsplash.com/photo-1584345604476-8f5e396d11de?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 14, brand: 'Chevrolet Camaro ZL1', speed: '318 км/ч', plate: 'Ч777ММ | 77', fuel: '72 л', image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 15, brand: 'Dodge Challenger SRT', speed: '320 км/ч', plate: 'Д007ЖЖ | 97', fuel: '70 л', image: 'https://images.unsplash.com/photo-1620882814836-78a05b38ed3a?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 16, brand: 'Jeep Grand Cherokee Trackhawk', speed: '290 км/ч', plate: 'Д777ИП | 50', fuel: '93 л', image: 'https://images.unsplash.com/photo-1533558701576-23c65e0272fb?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 17, brand: 'Range Rover Sport SVR', speed: '280 км/ч', plate: 'Р001РР | 77', fuel: '104 л', image: 'https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 18, brand: 'Bentley Continental GT', speed: '333 км/ч', plate: 'Б777ГТ | 99', fuel: '90 л', image: 'https://images.unsplash.com/photo-1611821064430-0d40289e7ba0?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 19, brand: 'Rolls-Royce Cullinan', speed: '250 км/ч', plate: 'Р777ОЛ | 77', fuel: '100 л', image: 'https://images.unsplash.com/photo-1631835398285-80f4f910aab6?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 20, brand: 'Lamborghini Urus', speed: '305 км/ч', plate: 'Л001АМ | 97', fuel: '85 л', image: 'https://images.unsplash.com/photo-1663080649567-0c58742d17c5?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 21, brand: 'Ferrari F8 Tributo', speed: '340 км/ч', plate: 'Ф888ФФ | 50', fuel: '78 л', image: 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 22, brand: 'McLaren 720S', speed: '341 км/ч', plate: 'М720АК | 77', fuel: '72 л', image: 'https://images.unsplash.com/photo-1600832320150-13f8c857d9f7?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 23, brand: 'Aston Martin DB11', speed: '322 км/ч', plate: 'А011МР | 99', fuel: '78 л', image: 'https://images.unsplash.com/photo-1603513369467-f7c11f7c5e23?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 24, brand: 'Mercedes-Maybach S-Class', speed: '250 км/ч', plate: 'М777АЙ | 77', fuel: '80 л', image: 'https://images.unsplash.com/photo-1622359487449-7c152a5c40ee?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 25, brand: 'BMW X6 M Competition', speed: '290 км/ч', plate: 'Х666ХХ | 97', fuel: '83 л', image: 'https://images.unsplash.com/photo-1617586523916-24e6c387bda1?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 26, brand: 'Porsche Cayenne Turbo', speed: '286 км/ч', plate: 'П999ОР | 50', fuel: '90 л', image: 'https://images.unsplash.com/photo-1503376760367-15ea400f912e?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 27, brand: 'Volkswagen Golf R', speed: '250 км/ч', plate: 'В001ВВ | 77', fuel: '55 л', image: 'https://images.unsplash.com/photo-1596541571212-0085816d9bba?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null },
+            { id: 28, brand: 'Skoda Octavia RS', speed: '250 км/ч', plate: 'С777СС | 99', fuel: '50 л', image: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&q=80&w=600', status: 'free', occupiedBy: null, requestedBy: null }
+        ];
+
+        let cars = defaultCars;
+        let logs = []; 
+        let currentUser = JSON.parse(localStorage.getItem('famAuth')) || null;
+
+        // --- STREAMING_CHUNK:Вспомогательные функции UI ---
+        function showMessage(msg, isError = false) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded shadow-lg text-white text-sm font-medium transition-opacity duration-300 pointer-events-auto ${isError ? 'bg-red-600' : 'bg-emerald-600'}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        const showLoading = () => document.getElementById('loadingIndicator').classList.remove('hidden');
+        const hideLoading = () => document.getElementById('loadingIndicator').classList.add('hidden');
+
+        // --- STREAMING_CHUNK:Функции связи с Google Таблицей ---
+        async function loadCars() {
+            if(SCRIPT_URL === 'ТВОЯ_ССЫЛКА_ВСТАВЛЯЕТСЯ_СЮДА') {
+                let local = JSON.parse(localStorage.getItem('famCarsLoc'));
+                if(local && local.length === 28) cars = local;
+                renderAll();
+                return;
+            }
+
+            try {
+                showLoading();
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                
+                if (Array.isArray(data) && data.length === 0) {
+                    await initDatabase();
+                } else {
+                    if (data.cars) {
+                        cars = data.cars;
+                        logs = data.logs || [];
+                    } else {
+                        cars = data; 
+                    }
+                    renderAll();
+                }
+            } catch (error) {
+                console.error("Ошибка загрузки:", error);
+                showMessage("Связь с сервером отсутствует. Показана локальная версия.", true);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function initDatabase() {
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'init', cars: defaultCars })
+                });
+                showMessage("База данных успешно инициализирована!");
+                await loadCars();
+            } catch (error) {
+                showMessage("Ошибка инициализации БД.", true);
+            }
+        }
+
+        async function sendStatusUpdate(carId, newStatus, occupiedBy, requestedBy, actionBy) {
+            // Локальное обновление для скорости
+            const idx = cars.findIndex(c => c.id == carId);
+            if(idx !== -1) {
+                cars[idx].status = newStatus;
+                cars[idx].occupiedBy = occupiedBy;
+                cars[idx].requestedBy = requestedBy;
+            }
+            localStorage.setItem('famCarsLoc', JSON.stringify(cars));
+            renderAll();
+
+            if(SCRIPT_URL === 'ТВОЯ_ССЫЛКА_ВСТАВЛЯЕТСЯ_СЮДА') return;
+
+            // Отправка в облако (добавили actionBy для отслеживания того, кто жмет кнопку)
+            showLoading();
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'updateStatus',
+                        id: carId,
+                        status: newStatus,
+                        occupiedBy: occupiedBy || "",
+                        requestedBy: requestedBy || "",
+                        actionBy: actionBy || (currentUser ? currentUser.name : "Неизвестный")
+                    })
+                });
+                await loadCars(); // Подтягиваем свежие логи
+            } catch (error) {
+                showMessage("Ошибка отправки на сервер.", true);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // --- STREAMING_CHUNK:Функции логики и авторизации ---
+        window.login = () => {
+            const nameInput = document.getElementById('loginName').value.trim();
+            const passInput = document.getElementById('loginPass').value.trim();
+
+            if (!nameInput || !passInput) return showMessage('Введите ник и пароль!', true);
+
+            if (nameInput.toLowerCase() === 'админ' && passInput === 'JMoriartyDeville') {
+                currentUser = { name: 'Администратор', role: 'admin' };
+                showMessage('Успешный вход в панель Администратора');
+            } else {
+                currentUser = { name: nameInput, role: 'user' };
+                showMessage(`Добро пожаловать, ${nameInput}!`);
+            }
+
+            localStorage.setItem('famAuth', JSON.stringify(currentUser));
+            renderAll();
+        };
+
+        window.logout = () => {
+            currentUser = null;
+            localStorage.setItem('famAuth', JSON.stringify(null));
+            showMessage('Вы вышли из аккаунта');
+            renderAll();
+        };
+
+        window.requestCar = (carId) => {
+            if (!currentUser) return showMessage('Сначала авторизуйтесь!', true);
+
+            const userCarsCount = cars.filter(c => c.occupiedBy === currentUser.name || c.requestedBy === currentUser.name).length;
+            if (userCarsCount >= 2) {
+                return showMessage('Лимит! Максимум 2 автомобиля на человека.', true);
+            }
+
+            const carIndex = cars.findIndex(c => c.id === carId);
+            if (carIndex !== -1 && cars[carIndex].status === 'free') {
+                sendStatusUpdate(carId, 'pending', null, currentUser.name, currentUser.name);
+                showMessage('Заявка на аренду отправлена!');
+            }
+        };
+
+        window.returnCar = (carId) => {
+            const carIndex = cars.findIndex(c => c.id === carId);
+            if (carIndex !== -1) {
+                sendStatusUpdate(carId, 'free', null, null, currentUser.name);
+                showMessage('Транспорт возвращен / изъят');
+            }
+        };
+
+        window.approveCar = (carId) => {
+            const carIndex = cars.findIndex(c => c.id === carId);
+            if (carIndex !== -1) {
+                sendStatusUpdate(carId, 'occupied', cars[carIndex].requestedBy, null, currentUser.name);
+                showMessage('Заявка одобрена');
+            }
+        };
+
+        window.rejectCar = (carId) => {
+            const carIndex = cars.findIndex(c => c.id === carId);
+            if (carIndex !== -1) {
+                sendStatusUpdate(carId, 'free', null, null, currentUser.name);
+                showMessage('Заявка отклонена', true);
+            }
+        };
+
+        // --- STREAMING_CHUNK:Отрисовка компонентов (Рендеринг) ---
+        function renderAll() {
+            renderAuth();
+            renderAdminPanel();
+            renderCars();
+        }
+
+        function renderAuth() {
+            const authContainer = document.getElementById('authContainer');
+            if (!currentUser) {
+                // Если форма входа уже отрисована на экране, мы её не трогаем! 
+                // Это предотвращает стирание текста и потерю фокуса каждые 15 секунд.
+                if (document.getElementById('loginName')) return;
+
+                authContainer.innerHTML = `
+                    <input type="text" id="loginName" placeholder="Ваш никнейм" class="bg-[#1c1d21] border border-[#3b3e46] rounded p-2 text-white w-32 md:w-40 text-sm outline-none focus:border-red-500">
+                    <input type="password" id="loginPass" placeholder="Пароль" class="bg-[#1c1d21] border border-[#3b3e46] rounded p-2 text-white w-24 md:w-32 text-sm outline-none focus:border-red-500">
+                    <button onclick="login()" class="bg-[#d13030] hover:bg-red-700 transition px-4 py-2 rounded text-sm font-bold">Войти</button>
+                `;
+            } else {
+                const badgeColor = currentUser.role === 'admin' ? 'bg-orange-500' : 'bg-emerald-600';
+                authContainer.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center gap-3">
+                        <div class="text-sm">
+                            <span class="text-gray-400">Профиль:</span> 
+                            <span class="font-bold text-white ml-1">${currentUser.name}</span>
+                            <span class="${badgeColor} text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ml-2">${currentUser.role === 'admin' ? 'Админ' : 'Игрок'}</span>
+                        </div>
+                        <button onclick="logout()" class="bg-gray-700 hover:bg-gray-600 transition px-3 py-1.5 rounded text-xs font-bold w-max">Выйти</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderAdminPanel() {
+            const adminPanel = document.getElementById('adminPanel');
+            const requestsList = document.getElementById('requestsList');
+            const auditList = document.getElementById('auditList');
+            
+            if (!currentUser || currentUser.role !== 'admin') {
+                adminPanel.classList.add('hidden');
+                return;
+            }
+
+            // Рендер заявок
+            const pendingCars = cars.filter(c => c.status === 'pending');
+            if (pendingCars.length === 0) {
+                requestsList.innerHTML = `<p class="text-gray-400 text-sm">Новых заявок пока нет.</p>`;
+            } else {
+                requestsList.innerHTML = pendingCars.map(car => `
+                    <div class="flex flex-col md:flex-row justify-between md:items-center bg-[#1c1d21] p-3 rounded border border-[#3b3e46]">
+                        <div class="mb-2 md:mb-0 text-sm">
+                            Игрок <span class="font-bold text-emerald-400">${car.requestedBy}</span> хочет взять <span class="font-bold text-white">${car.brand}</span> <span class="text-gray-500 text-xs">(${car.plate})</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="approveCar(${car.id})" class="bg-emerald-600 hover:bg-emerald-500 transition px-3 py-1 rounded text-xs font-bold text-white shadow-lg">Одобрить</button>
+                            <button onclick="rejectCar(${car.id})" class="bg-red-600 hover:bg-red-500 transition px-3 py-1 rounded text-xs font-bold text-white shadow-lg">Отклонить</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Рендер журнала аудита с новыми цветами действий
+            if (logs.length === 0) {
+                auditList.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-500">История действий пуста.</td></tr>`;
+            } else {
+                auditList.innerHTML = logs.map(log => {
+                    let actionColor = "text-gray-300";
+                    if (log.action === "Одобрена аренда") actionColor = "text-emerald-400";
+                    if (log.action === "Т/С возвращено") actionColor = "text-orange-400";
+                    if (log.action.includes("изъято")) actionColor = "text-red-500 font-bold";
+                    if (log.action === "Заявка отклонена") actionColor = "text-red-400";
+                    if (log.action === "Заявка отменена") actionColor = "text-gray-400";
+                    if (log.action === "Запросил аренду") actionColor = "text-blue-400";
+
+                    return `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="p-3 text-gray-400 whitespace-nowrap">${log.date}</td>
+                        <td class="p-3 font-bold text-white">${log.user}</td>
+                        <td class="p-3 font-medium ${actionColor}">${log.action}</td>
+                        <td class="p-3 text-gray-300">${log.car} <span class="text-xs text-gray-500">(${log.plate})</span></td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+
+            adminPanel.classList.remove('hidden');
+        }
+
+        // --- STREAMING_CHUNK:Отрисовка карточек автомобилей ---
+        function renderCars() {
+            const carsGrid = document.getElementById('carsGrid');
+            carsGrid.innerHTML = cars.map(car => {
+                
+                let statusBadge = '';
+                let actionBtn = '';
+                let overlay = '';
+
+                if (car.status === 'free') {
+                    statusBadge = `<span class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/50 px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">Свободно</span>`;
+                    actionBtn = `<button onclick="requestCar(${car.id})" class="w-full mt-4 bg-[#d13030] hover:bg-red-700 transition py-2 rounded font-bold text-sm shadow-md">Запросить аренду</button>`;
+                } 
+                else if (car.status === 'pending') {
+                    statusBadge = `<span class="bg-orange-500/20 text-orange-400 border border-orange-500/50 px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">Ожидание...</span>`;
+                    actionBtn = `<button disabled class="w-full mt-4 bg-gray-700 text-gray-400 py-2 rounded font-bold text-sm cursor-not-allowed">Заявка на рассмотрении</button>`;
+                    
+                    if (currentUser && car.requestedBy === currentUser.name) {
+                        actionBtn = `
+                            <button disabled class="w-full mt-4 bg-gray-700 text-gray-400 py-2 rounded font-bold text-sm cursor-not-allowed mb-2">Ожидание одобрения</button>
+                            <button onclick="returnCar(${car.id})" class="w-full bg-gray-600 hover:bg-gray-500 transition py-1 rounded text-xs border border-gray-400/20">Отменить заявку</button>
+                        `;
+                    }
+                } 
+                else if (car.status === 'occupied') {
+                    statusBadge = `<span class="bg-red-600/20 text-red-400 border border-red-600/50 px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">Занято: ${car.occupiedBy}</span>`;
+                    overlay = `<div class="absolute inset-0 bg-black/40 z-10 rounded-t-lg"></div>`;
+                    
+                    if (currentUser && car.occupiedBy === currentUser.name) {
+                        actionBtn = `<button onclick="returnCar(${car.id})" class="w-full mt-4 bg-orange-600 hover:bg-orange-500 transition py-2 rounded font-bold text-sm shadow-md">Вернуть авто</button>`;
+                        overlay = ``; 
+                    } else if (currentUser && currentUser.role === 'admin') {
+                        actionBtn = `<button onclick="returnCar(${car.id})" class="w-full mt-4 bg-gray-600 hover:bg-gray-500 border border-red-500/30 transition py-2 rounded font-bold text-sm text-red-300">Изъять Т/С (Админ)</button>`;
+                    } else {
+                        actionBtn = `<button disabled class="w-full mt-4 bg-[#1c1d21] border border-[#3b3e46] text-gray-500 py-2 rounded font-bold text-sm cursor-not-allowed">Недоступно</button>`;
+                    }
+                }
+
+                return `
+                <div class="bg-[#282a30] rounded-lg border border-[#3b3e46] flex flex-col transition hover:border-[#525660] group relative overflow-hidden shadow-md">
+                    <div class="relative h-48 w-full">
+                        ${overlay}
+                        <img src="${car.image}" alt="${car.brand}" class="w-full h-full object-cover rounded-t-lg">
+                        <div class="absolute top-3 right-3 z-20 shadow-md">
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col">
+                        <h3 class="text-xl font-bold mb-3 leading-tight">${car.brand}</h3>
+                        
+                        <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm mb-auto">
+                            <div class="flex items-center text-gray-400">
+                                <span class="w-5 text-center mr-1">🏎️</span>
+                                <span class="text-white">${car.speed}</span>
+                            </div>
+                            <div class="flex items-center text-gray-400">
+                                <span class="w-5 text-center mr-1">⛽</span>
+                                <span class="text-white">${car.fuel}</span>
+                            </div>
+                            <div class="flex items-center text-gray-400 col-span-2 mt-2 bg-[#1c1d21] p-1.5 rounded border border-[#3b3e46] justify-center shadow-inner">
+                                <span class="font-mono font-bold tracking-widest text-white">${car.plate}</span>
+                            </div>
+                        </div>
+
+                        ${actionBtn}
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            const totalCounter = document.getElementById('totalCarsCount');
+            if (totalCounter) totalCounter.innerText = cars.length;
+        }
+
+        // --- STREAMING_CHUNK:Запуск приложения ---
+        loadCars();
+        setInterval(loadCars, 15000); // Синхронизация каждые 15 сек
+
+    </script>
+</body>
+</html>

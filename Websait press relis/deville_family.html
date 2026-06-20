@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Главная | Deville Family</title>
+
+    <!-- Подключение Tailwind CSS для общего стиля -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Твой файл стилей (оставлен для совместимости с твоими старыми скриптами) -->
+    <link rel="stylesheet" href="css/main.css">
+
+    <style>
+        :root { --accent: #d13030; }
+        body { 
+            background-color: #1c1d21; 
+            color: white; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Эффект параллакса для фона */
+        .bg-parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col">
+
+    <div class="max-w-6xl w-full mx-auto mb-8">
+        <header class="w-full bg-[#1c1d21]/95 backdrop-blur border-b border-[#3b3e46] sticky top-0 z-50 rounded-lg shadow-lg">
+            <div class="px-5 py-4 flex justify-between items-center flex-wrap gap-4">
+                <!-- Логотип (Текст) -->
+                <a href="deville_family.html" class="flex items-center text-white font-extrabold text-xl tracking-widest no-underline active:scale-95 transition-transform uppercase">
+                    Deville Family
+                </a>
+                
+                <!-- Ссылки на страницы -->
+                <ul class="flex flex-wrap gap-4 md:gap-6 list-none m-0 p-0 justify-center items-center">
+                            <li><a href="deville_family.html" class="text-white bg-white/5 px-3 py-2 rounded-md transition-all duration-200 active:scale-95 active:bg-white/10 no-underline font-medium block">Домой</a></li>
+                            <li><a href="pravila.html" class="text-[#a0a5b1] hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition-all duration-200 active:scale-95 active:bg-white/10 no-underline block">Правила семьи</a></li>
+                            <li><a href="arenda_auto.html" class="text-[#a0a5b1] hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition-all duration-200 active:scale-95 active:bg-white/10 no-underline block">Аренда авто</a></li>
+                            <li><a href="sostav.html" class="text-[#a0a5b1] hover:text-white hover:bg-white/5 px-3 py-2 rounded-md transition-all duration-200 active:scale-95 active:bg-white/10 no-underline block">Состав семьи</a></li>
+                        </ul>
+                    </div>
+                </header>
+            </div>
+
+            <!-- Блок картинки (очищен от старых конфликтующих классов layers) -->
+            <div class="w-full relative rounded-2xl overflow-hidden border border-[#3b3e46] shadow-2xl mb-12 bg-parallax h-[50vh] min-h-[350px] flex items-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&q=80&w=1920');">
+                <!-- Темное наложение для читаемости текста -->
+                <div class="absolute inset-0 bg-gradient-to-b from-[#1c1d21]/80 via-[#1c1d21]/60 to-[#1c1d21]/90"></div>
+                
+                <div class="relative z-10 text-center px-4">
+                    <div class="text-[#a0a5b1] tracking-[0.2em] uppercase text-sm md:text-base font-semibold mb-3">
+                        Welcome to website
+                    </div>
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6 drop-shadow-lg">
+                        Deville Family
+                    </h1>
+                    <div class="w-24 h-1 bg-[#d13030] mx-auto rounded-full mb-8"></div>
+                    <a href="rules.html" class="inline-block bg-[#d13030] hover:bg-red-700 active:scale-95 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg shadow-red-500/20">
+                        Ознакомиться с правилами
+                    </a>
+                </div>
+            </div>
+
+            <!-- Блок Коротко о главном (очищен от старого класса main-article, теперь позиция жестко фиксирована) -->
+            <article class="max-w-4xl mx-auto w-full bg-[#282a30] rounded-xl border border-[#3b3e46] shadow-xl overflow-hidden mb-12 relative flex-shrink-0">
+                <!-- Декоративная линия сверху -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-[#d13030]"></div>
+                
+                <div class="p-8 md:p-12">
+                    <h2 class="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded bg-[#d13030]/20 text-[#d13030] flex items-center justify-center text-lg">✦</span>
+                        Коротко о главном
+                    </h2>
+                    
+                    <!-- Стилизованная цитата -->
+                    <blockquote class="bg-[#1c1d21] border-l-4 border-[#d13030] p-6 rounded-r-lg shadow-inner mb-6">
+                        <p class="text-xl text-gray-300 italic leading-relaxed mb-4">
+                            "В мире закрытых дверей тот, у кого есть ключ, — король. <br>
+                            И, дорогуша, ты должен увидеть меня в короне."
+                        </p>
+                        <footer class="text-sm text-gray-500 font-medium">
+                            — <span onclick="toggleMusic()" class="cursor-pointer hover:text-[#d13030] transition-colors duration-300" title="Секретная кнопка...">Джеймс Мориарти</span>
+                        </footer>
+                    </blockquote>
+                    
+                    <p class="text-[#a0a5b1] leading-relaxed">
+                        Мы — больше, чем просто объединение игроков. Мы — семья, объединенная общими целями, уважением друг к другу и стремлением к лидерству на просторах MTA Province.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Футер жестко отталкивается вниз благодаря mt-auto -->
+            <footer class="w-full flex flex-col items-center justify-center border-t border-[#3b3e46] pt-8 pb-4 mt-auto flex-shrink-0">
+                <p class="text-gray-500 text-sm text-center w-full">
+                    © <span onclick="toggleMusic()" class="cursor-pointer hover:text-[#d13030] transition-colors duration-300">James_Moriarty</span> (Ярик Садыхов) | @Aleks_Deville (Александр Синяев)
+                </p>
+                <p class="text-gray-600 text-xs mt-2 text-center w-full">
+                    Deville Family • MTA Province
+                </p>
+            </footer>
+
+    <!-- Скрытый аудиоплеер для пасхалки -->
+    <audio id="secretMusic" src="song.mp3"></audio>
+
+    <!-- Скрипт для управления музыкой -->
+    <script>
+        function toggleMusic() {
+            const music = document.getElementById('secretMusic');
+            if (music.paused) {
+                music.play();
+            } else {
+                music.pause();
+            }
+        }
+    </script>
+
+</body>
+</html>
